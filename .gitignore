@@ -1,0 +1,31 @@
+# Système
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Éditeurs
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Logs
+*.log
+
+# Node (si utilisé un jour)
+node_modules/
+npm-debug.log*
+
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+
+# Fichiers temporaires
+*.tmp
+*.bak
+*.orig
+
+# Sources JSON brutes (embarquées en .js, pas nécessaires sur GH Pages)
+# Décommenter si tu veux les exclure du dépôt :
+# data/*.json

@@ -1,0 +1,1820 @@
+<!DOCTYPE html>
+<!--
+  pages/cours.html — Fiches de cours TSSR
+  Données : ../data/modules.json
+  Logique partagée : ../assets/js/main.js
+-->
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Fiches de cours TSSR — Synthèses par module" />
+  <title>Cours — TSSR Notes</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+
+  <link rel="stylesheet" href="../assets/css/style.css" />
+
+  <style>
+    /* ════════════════════════════════════════════
+       LAYOUT COURS (3 colonnes sur desktop)
+       Sidebar gauche | Contenu | TOC droite
+       ════════════════════════════════════════════ */
+
+    .cours-layout {
+      display: flex;
+      min-height: calc(100vh - var(--nav-height));
+      padding-top: var(--nav-height);
+    }
+
+    /* ── Sidebar gauche ── */
+    .cours-sidebar {
+      position: fixed;
+      top: var(--nav-height);
+      left: 0;
+      bottom: 0;
+      width: var(--sidebar-width);
+      background: var(--bg);
+      border-right: 1px solid var(--border);
+      display: flex;
+      flex-direction: column;
+      z-index: 50;
+      overflow: hidden;
+    }
+
+    .cours-sidebar__search {
+      padding: 12px;
+      border-bottom: 1px solid var(--border);
+      flex-shrink: 0;
+    }
+
+    .cours-sidebar__filters {
+      padding: 10px 12px;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      flex-wrap: wrap;
+      gap: 5px;
+      flex-shrink: 0;
+    }
+
+    .cours-sidebar__list {
+      flex: 1;
+      overflow-y: auto;
+      padding: 8px 0;
+      scrollbar-width: thin;
+      scrollbar-color: var(--border) transparent;
+    }
+
+    .cours-sidebar__list::-webkit-scrollbar { width: 4px; }
+    .cours-sidebar__list::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
+
+    .sidebar-module {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 9px 14px;
+      cursor: pointer;
+      border-left: 3px solid transparent;
+      transition: background var(--transition), border-color var(--transition);
+      text-decoration: none;
+      color: inherit;
+    }
+
+    .sidebar-module:hover { background: var(--bg-secondary); }
+
+    .sidebar-module.active {
+      background: var(--primary-light);
+      border-left-color: var(--primary);
+    }
+
+    .sidebar-module__icon {
+      font-size: 18px;
+      width: 28px;
+      text-align: center;
+      flex-shrink: 0;
+    }
+
+    .sidebar-module__info { flex: 1; min-width: 0; }
+
+    .sidebar-module__name {
+      font-size: var(--text-sm);
+      font-weight: var(--weight-medium);
+      color: var(--text);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .sidebar-module.active .sidebar-module__name { color: var(--primary-dark); }
+
+    .sidebar-module__bar {
+      height: 3px;
+      background: var(--bg-tertiary);
+      border-radius: var(--radius-full);
+      overflow: hidden;
+      margin-top: 5px;
+    }
+
+    .sidebar-module__bar-fill {
+      height: 100%;
+      border-radius: var(--radius-full);
+      background: var(--primary);
+      transition: width var(--transition-slow);
+    }
+
+    .sidebar-module__pct {
+      font-size: 10px;
+      color: var(--text-muted);
+      font-variant-numeric: tabular-nums;
+      flex-shrink: 0;
+    }
+
+    .sidebar-module.done .sidebar-module__bar-fill { background: var(--success); }
+    .sidebar-module.done .sidebar-module__name::after {
+      content: ' ✓';
+      color: var(--success);
+      font-weight: var(--weight-bold);
+    }
+
+    /* ── Groupes de cours (accordion) ── */
+    .sidebar-course__header {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 12px;
+      cursor: pointer;
+      font-size: var(--text-xs);
+      font-weight: var(--weight-semibold);
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: var(--text-muted);
+      border-bottom: 1px solid var(--border);
+      user-select: none;
+      background: var(--bg);
+      position: sticky;
+      top: 0;
+      z-index: 1;
+    }
+
+    .sidebar-course__header:hover { background: var(--bg-secondary); color: var(--text); }
+
+    .sidebar-course__emoji { font-size: 14px; flex-shrink: 0; }
+
+    .sidebar-course__name { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
+    .sidebar-course__count {
+      font-size: 10px;
+      background: var(--bg-tertiary);
+      border-radius: var(--radius-full);
+      padding: 1px 6px;
+      flex-shrink: 0;
+    }
+
+    .sidebar-course__chevron {
+      font-size: 10px;
+      flex-shrink: 0;
+      transition: transform var(--transition);
+      color: var(--text-muted);
+    }
+
+    .sidebar-course__header.open .sidebar-course__chevron { transform: rotate(90deg); }
+
+    .sidebar-course__modules { display: none; }
+    .sidebar-course__modules.open { display: block; }
+
+    /* Modules à l'intérieur d'un groupe : léger indent */
+    .sidebar-course .sidebar-module { padding-left: 22px; }
+
+    /* ── Zone de contenu principale ── */
+    .cours-main {
+      flex: 1;
+      margin-left: var(--sidebar-width);
+      min-width: 0;
+      background: var(--bg-secondary);
+    }
+
+    .cours-inner {
+      display: flex;
+      max-width: 1180px;
+      margin: 0 auto;
+      padding: 32px 24px;
+      gap: 32px;
+      align-items: flex-start;
+    }
+
+    /* ── Contenu de la fiche ── */
+    .cours-content {
+      flex: 1;
+      min-width: 0;
+    }
+
+    /* En-tête du module */
+    .module-header {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-xl);
+      padding: 28px 32px;
+      margin-bottom: 24px;
+      box-shadow: var(--shadow);
+    }
+
+    .module-header__top {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 16px;
+      margin-bottom: 16px;
+      flex-wrap: wrap;
+    }
+
+    .module-header__identity {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .module-header__emoji {
+      font-size: 40px;
+      width: 64px;
+      height: 64px;
+      background: var(--bg-secondary);
+      border-radius: var(--radius-lg);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .module-header__title {
+      font-size: var(--text-3xl);
+      font-weight: var(--weight-bold);
+      color: var(--text);
+      margin-bottom: 6px;
+      line-height: 1.2;
+    }
+
+    .module-header__desc {
+      font-size: var(--text-sm);
+      color: var(--text-muted);
+      margin: 0;
+    }
+
+    .module-header__actions {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+      flex-shrink: 0;
+    }
+
+    .module-header__meta {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      flex-wrap: wrap;
+      padding-top: 16px;
+      border-top: 1px solid var(--border);
+      font-size: var(--text-sm);
+      color: var(--text-muted);
+    }
+
+    .module-header__meta-item {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .module-header__tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      flex: 1;
+    }
+
+    /* Barre de progression du module */
+    .module-progress-bar {
+      margin-top: 16px;
+    }
+
+    .module-progress-bar__header {
+      display: flex;
+      justify-content: space-between;
+      font-size: var(--text-xs);
+      color: var(--text-muted);
+      margin-bottom: 6px;
+    }
+
+    /* ── Sections de cours ── */
+    .cours-section {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      margin-bottom: 20px;
+      box-shadow: var(--shadow);
+      overflow: hidden;
+      scroll-margin-top: calc(var(--nav-height) + 24px);
+    }
+
+    .cours-section__header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 16px 24px;
+      border-bottom: 1px solid var(--border);
+      background: var(--bg-secondary);
+      gap: 12px;
+      flex-wrap: wrap;
+      cursor: pointer;
+      user-select: none;
+    }
+
+    .cours-section__title {
+      font-size: var(--text-lg);
+      font-weight: var(--weight-semibold);
+      color: var(--text);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin: 0;
+      text-align: left;
+      flex: 1;
+      min-width: 0;
+    }
+
+    .cours-section__type-icon {
+      font-size: 16px;
+      opacity: 0.7;
+    }
+
+    .cours-section__actions {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-shrink: 0;
+    }
+
+    .cours-section.mastered {
+      border-color: var(--success);
+    }
+
+    .cours-section.mastered .cours-section__header {
+      background: rgba(166,227,161,0.1);
+    }
+
+    .cours-section__body {
+      padding: 24px;
+      overflow: hidden;
+      max-height: 8000px;
+      transition: max-height 0.35s ease, padding 0.2s ease;
+    }
+
+    .cours-section.collapsed .cours-section__body {
+      max-height: 0;
+      padding-top: 0;
+      padding-bottom: 0;
+    }
+
+    /* Chevron rétractable style Obsidian (dans le h2, pas un enfant direct du header) */
+    .section-chevron {
+      font-size: 16px;
+      color: var(--text-muted);
+      transition: transform 0.2s ease;
+      flex-shrink: 0;
+      line-height: 1;
+      transform: rotate(90deg);
+      user-select: none;
+    }
+
+    .cours-section.collapsed .cours-section__title .section-chevron {
+      transform: rotate(0deg);
+    }
+
+    /* Boutons Tout déplier / replier */
+    .sections-controls {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 16px;
+      justify-content: flex-end;
+    }
+
+    .section-desc {
+      color: var(--text-secondary);
+      font-size: var(--text-sm);
+      margin-bottom: 16px;
+      line-height: var(--leading-relaxed);
+    }
+
+    /* Type "list" dans les sections */
+    .section-list {
+      list-style: none;
+    }
+
+    .section-list li {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      padding: 8px 0;
+      border-bottom: 1px solid var(--border);
+      font-size: var(--text-sm);
+      color: var(--text-secondary);
+      line-height: var(--leading-relaxed);
+    }
+
+    .section-list li:last-child { border-bottom: none; }
+
+    .section-list li::before {
+      content: '›';
+      color: var(--primary);
+      font-weight: var(--weight-bold);
+      font-size: var(--text-base);
+      margin-top: 1px;
+      flex-shrink: 0;
+    }
+
+    /* Type "highlight" — Points clés */
+    .highlight-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 10px;
+    }
+
+    .highlight-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      padding: 12px 14px;
+      background: linear-gradient(135deg, rgba(203,166,247,0.12), rgba(180,190,254,0.06));
+      border: 1px solid rgba(203,166,247,0.25);
+      border-radius: var(--radius);
+      font-size: var(--text-sm);
+      color: var(--text);
+      line-height: var(--leading-relaxed);
+    }
+
+    .highlight-item::before {
+      content: '⚡';
+      font-size: 14px;
+      flex-shrink: 0;
+      margin-top: 1px;
+    }
+
+    /* Bloc séparateur entre blocs mixed */
+    .mixed-block + .mixed-block {
+      margin-top: 20px;
+    }
+
+    .mixed-block-label {
+      font-size: var(--text-xs);
+      font-weight: var(--weight-semibold);
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--text-muted);
+      margin-bottom: 8px;
+    }
+
+    /* ── Table des matières (TOC) ── */
+    .cours-toc {
+      width: 220px;
+      flex-shrink: 0;
+      position: sticky;
+      top: calc(var(--nav-height) + 24px);
+      max-height: calc(100vh - var(--nav-height) - 48px);
+      overflow-y: auto;
+      scrollbar-width: thin;
+      scrollbar-color: var(--border) transparent;
+    }
+
+    .cours-toc::-webkit-scrollbar { width: 3px; }
+    .cours-toc::-webkit-scrollbar-thumb { background: var(--border); }
+
+    .toc-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      overflow: hidden;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .toc-card__header {
+      padding: 12px 16px;
+      border-bottom: 1px solid var(--border);
+      font-size: var(--text-xs);
+      font-weight: var(--weight-semibold);
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--text-muted);
+      background: var(--bg-secondary);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .toc-list {
+      padding: 8px 0;
+    }
+
+    .toc-item {
+      display: block;
+      padding: 7px 14px;
+      font-size: var(--text-xs);
+      color: var(--text-secondary);
+      border-left: 2px solid transparent;
+      transition: color var(--transition), border-color var(--transition), background var(--transition);
+      line-height: var(--leading-snug);
+      text-decoration: none;
+    }
+
+    .toc-item:hover {
+      color: var(--primary);
+      background: var(--bg-secondary);
+    }
+
+    .toc-item.active {
+      color: var(--primary-dark);
+      border-left-color: var(--primary);
+      background: var(--primary-light);
+      font-weight: var(--weight-medium);
+    }
+
+    .toc-item.mastered {
+      color: #059669;
+    }
+
+    .toc-item.mastered::after { content: ' ✓'; }
+
+    /* Progression globale dans la TOC */
+    .toc-progress {
+      padding: 12px 14px;
+      border-top: 1px solid var(--border);
+      background: var(--bg-secondary);
+    }
+
+    .toc-progress__label {
+      font-size: var(--text-xs);
+      color: var(--text-muted);
+      margin-bottom: 6px;
+      display: flex;
+      justify-content: space-between;
+    }
+
+    /* ── État vide / chargement ── */
+    .cours-placeholder {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 400px;
+      gap: 16px;
+      text-align: center;
+      color: var(--text-muted);
+    }
+
+    .cours-placeholder__icon { font-size: 56px; }
+    .cours-placeholder__title { font-size: var(--text-xl); font-weight: var(--weight-semibold); color: var(--text); }
+    .cours-placeholder__desc { font-size: var(--text-sm); max-width: 400px; line-height: var(--leading-relaxed); }
+
+    /* Skeleton de chargement */
+    .skeleton-header { height: 140px; border-radius: var(--radius-xl); margin-bottom: 24px; }
+    .skeleton-section { height: 180px; border-radius: var(--radius-lg); margin-bottom: 20px; }
+
+    /* ════════════════════════════════════════════
+       IMPRESSION
+       ════════════════════════════════════════════ */
+    @media print {
+      * { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+
+      /* Déplier toutes les sections à l'impression */
+      .cours-section.collapsed .cours-section__body {
+        max-height: none !important;
+        padding: 24px !important;
+        overflow: visible !important;
+      }
+
+      .navbar, .cours-sidebar, .cours-toc,
+      .cours-section__actions, .module-header__actions,
+      .cours-sidebar__filters, .page-progress,
+      .btn, .filter-chip { display: none !important; }
+
+      .cours-layout { padding-top: 0; }
+      .cours-main { margin-left: 0; }
+      .cours-inner { padding: 0; gap: 0; }
+      .cours-content { max-width: 100%; }
+
+      .module-header {
+        border: 2px solid #1E40AF;
+        border-radius: 8px;
+        padding: 16px;
+        margin-bottom: 16px;
+        break-inside: avoid;
+      }
+
+      .cours-section {
+        border: 1px solid #E5E7EB;
+        border-radius: 6px;
+        margin-bottom: 16px;
+        break-inside: avoid;
+        box-shadow: none;
+      }
+
+      .cours-section__header { padding: 10px 16px; }
+      .cours-section__body  { padding: 12px 16px; }
+
+      table { font-size: 10px; }
+      thead th, tbody td { padding: 5px 8px; }
+
+      .code-block {
+        border: 1px solid #334155;
+        border-radius: 4px;
+      }
+
+      .code-block code { font-size: 10px; line-height: 1.5; }
+
+      .highlight-grid { grid-template-columns: 1fr 1fr; }
+      .highlight-item { border: 1px solid #93C5FD; background: #EFF6FF; }
+
+      h1, h2, h3 { page-break-after: avoid; }
+      table, .code-block, .highlight-grid { page-break-inside: avoid; }
+
+      /* En-tête d'impression */
+      body::before {
+        content: 'TSSR Notes — ' attr(data-print-title);
+        display: block;
+        font-family: Inter, sans-serif;
+        font-size: 11px;
+        color: #6B7280;
+        border-bottom: 1px solid #E5E7EB;
+        padding-bottom: 8px;
+        margin-bottom: 16px;
+      }
+
+      /* Pied de page d'impression */
+      body::after {
+        content: 'Imprimé le ' attr(data-print-date) ' — tssr-notes.github.io';
+        display: block;
+        font-family: Inter, sans-serif;
+        font-size: 10px;
+        color: #9CA3AF;
+        border-top: 1px solid #E5E7EB;
+        padding-top: 8px;
+        margin-top: 24px;
+        text-align: center;
+      }
+    }
+
+    /* ════════════════════════════════════════════
+       RESPONSIVE
+       ════════════════════════════════════════════ */
+    @media (max-width: 1100px) {
+      .cours-toc { display: none; }
+    }
+
+    @media (max-width: 768px) {
+      .cours-sidebar { display: none; }
+      .cours-sidebar.mobile-open {
+        display: flex;
+        width: 280px;
+        z-index: 200;
+        box-shadow: var(--shadow-xl);
+      }
+      .cours-main { margin-left: 0; }
+      .cours-inner { padding: 16px; gap: 0; }
+      .module-header { padding: 20px; border-radius: var(--radius-lg); }
+      .module-header__emoji { width: 48px; height: 48px; font-size: 28px; }
+      .module-header__title { font-size: var(--text-2xl); }
+      .cours-section__body { padding: 16px; }
+      .highlight-grid { grid-template-columns: 1fr; }
+    }
+
+    /* Overlay mobile sidebar */
+    .sidebar-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,.4);
+      z-index: 199;
+    }
+
+    .sidebar-overlay.active { display: block; }
+  </style>
+</head>
+
+<body class="page-wrapper" id="cours-page">
+
+  <div class="page-progress" aria-hidden="true"></div>
+
+  <!-- ═══════════════════════════════════
+       NAVIGATION
+       ═══════════════════════════════════ -->
+  <header>
+    <nav class="navbar" aria-label="Navigation principale">
+      <div class="navbar__inner">
+        <a href="../index.html" class="navbar__logo" aria-label="TSSR Notes — Accueil">
+          <div class="navbar__logo-icon" aria-hidden="true">T</div>
+          <span class="navbar__logo-text">TSSR<span>Notes</span></span>
+        </a>
+
+        <ul class="navbar__nav" role="list">
+          <li><a href="../index.html" class="navbar__link">🏠 Accueil</a></li>
+          <li><a href="cours.html" class="navbar__link active" aria-current="page">📖 Cours</a></li>
+          <li><a href="quiz.html" class="navbar__link">📝 Quiz</a></li>
+          <li><a href="checklist.html" class="navbar__link">✅ Checklist</a></li>
+          <li><a href="tableau.html" class="navbar__link">📊 Tableaux</a></li>
+          <li><a href="glossaire.html" class="navbar__link">📚 Glossaire</a></li>
+          <li><a href="ressources.html" class="navbar__link">🔗 Ressources</a></li>
+        </ul>
+
+        <div class="navbar__actions">
+          <div class="navbar__auth-slot"></div>
+          <!-- Bouton sidebar mobile -->
+          <button class="btn btn--secondary btn--sm" id="btn-sidebar-toggle"
+                  aria-label="Ouvrir la liste des modules" style="display:none;">
+            ☰ Modules
+          </button>
+
+          <button class="navbar__burger" aria-label="Menu" aria-expanded="false">
+            <span></span><span></span><span></span>
+          </button>
+        </div>
+      </div>
+    </nav>
+    <div class="navbar__mobile-menu" role="navigation" aria-label="Menu mobile">
+      <a href="../index.html" class="navbar__mobile-link">🏠 Accueil</a>
+      <a href="cours.html" class="navbar__mobile-link active">📖 Cours</a>
+      <a href="quiz.html" class="navbar__mobile-link">📝 Quiz</a>
+      <a href="checklist.html" class="navbar__mobile-link">✅ Checklist</a>
+      <a href="tableau.html" class="navbar__mobile-link">📊 Tableaux</a>
+      <a href="glossaire.html" class="navbar__mobile-link">📚 Glossaire</a>
+      <a href="ressources.html" class="navbar__mobile-link">🔗 Ressources</a>
+    </div>
+  </header>
+
+  <!-- Overlay sidebar mobile -->
+  <div class="sidebar-overlay" id="sidebar-overlay" aria-hidden="true"></div>
+
+  <div class="cours-layout">
+
+    <!-- ═══════════════════════════════════
+         SIDEBAR GAUCHE
+         ═══════════════════════════════════ -->
+    <aside class="cours-sidebar" id="cours-sidebar" aria-label="Liste des modules">
+
+      <!-- Recherche -->
+      <div class="cours-sidebar__search">
+        <div class="search-bar">
+          <svg class="search-bar__icon" aria-hidden="true" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="9" cy="9" r="6"/><path d="m15 15 3 3" stroke-linecap="round"/>
+          </svg>
+          <input type="search" id="sidebar-search" class="form-input"
+                 placeholder="Rechercher…" aria-label="Rechercher un module" />
+        </div>
+      </div>
+
+      <!-- Filtres par domaine -->
+      <div class="cours-sidebar__filters" role="group" aria-label="Filtrer par domaine">
+        <button class="filter-chip active" data-domain="all" aria-pressed="true">Tous</button>
+        <button class="filter-chip" data-domain="reseau"        aria-pressed="false">🌐</button>
+        <button class="filter-chip" data-domain="linux"         aria-pressed="false">🐧</button>
+        <button class="filter-chip" data-domain="windows"       aria-pressed="false">🪟</button>
+        <button class="filter-chip" data-domain="securite"      aria-pressed="false">🔒</button>
+        <button class="filter-chip" data-domain="virtualisation" aria-pressed="false">☁️</button>
+        <button class="filter-chip" data-domain="scripting"     aria-pressed="false">⚙️</button>
+        <button class="filter-chip" data-domain="itil"          aria-pressed="false">📋</button>
+      </div>
+
+      <!-- Liste des modules -->
+      <nav class="cours-sidebar__list" id="sidebar-module-list" aria-label="Modules de cours">
+        <!-- Rendu par JS -->
+        <div class="skeleton skeleton--text" style="margin:12px;width:80%"></div>
+        <div class="skeleton skeleton--text" style="margin:12px;width:65%"></div>
+        <div class="skeleton skeleton--text" style="margin:12px;width:75%"></div>
+      </nav>
+    </aside>
+
+    <!-- ═══════════════════════════════════
+         CONTENU PRINCIPAL
+         ═══════════════════════════════════ -->
+    <main class="cours-main" role="main">
+      <div class="cours-inner">
+
+        <!-- Fiche du module (rendue par JS) -->
+        <div class="cours-content" id="cours-content">
+          <!-- Skeletons de chargement initial -->
+          <div class="skeleton skeleton-header"></div>
+          <div class="skeleton skeleton-section"></div>
+          <div class="skeleton skeleton-section"></div>
+        </div>
+
+        <!-- Table des matières (rendue par JS) -->
+        <aside class="cours-toc" id="cours-toc" aria-label="Table des matières">
+          <!-- Rendu par JS -->
+        </aside>
+
+      </div>
+    </main>
+  </div>
+
+  <!-- Toast container -->
+  <div class="toast-container" role="status" aria-live="polite" aria-atomic="true"></div>
+
+  <!-- Scripts -->
+  <script src="../data/modules.js"></script>
+  <script src="../assets/js/auth.js"></script>
+  <script src="../assets/js/main.js"></script>
+  <script>
+  /* ════════════════════════════════════════════════════════
+     COURS.JS — Logique de la page de cours
+     ════════════════════════════════════════════════════════ */
+
+  'use strict';
+
+  // ── État local ──
+  const CoursState = {
+    cours:         [],        // Tous les cours JSON (hiérarchique)
+    currentId:     null,      // ID du module affiché
+    searchQuery:   '',
+    domainFilter:  'all',
+    masteredSections: {},     // { "moduleId.sectionId": true }
+    openCours:     new Set(), // IDs des cours ouverts dans la sidebar
+  };
+
+  /** Trouve un module par son id dans tous les cours, retourne le module enrichi du domaine du cours */
+  function findModuleById(id) {
+    for (const cours of CoursState.cours) {
+      const m = cours.modules.find(m => m.id === id);
+      if (m) return { ...m, domain: m.domain || cours.domain, tags: m.tags || cours.tags || [], coursId: cours.id, coursTitre: cours.titre };
+    }
+    return null;
+  }
+
+  /** Retourne tous les modules à plat, enrichis du domaine de leur cours */
+  function getAllModules() {
+    return CoursState.cours.flatMap(c =>
+      c.modules.map(m => ({ ...m, domain: m.domain || c.domain, tags: m.tags || c.tags || [], coursId: c.id, coursTitre: c.titre }))
+    );
+  }
+
+  // Clé localStorage pour les sections maîtrisées (scoped au compte si connecté)
+  function getMasteredKey() {
+    return typeof TSSRAuth !== 'undefined'
+      ? TSSRAuth.getUserKey('mastered_sections')
+      : 'tssr_mastered_sections';
+  }
+
+  // ── Chargement des données ──
+  function init() {
+    CoursState.masteredSections = window.TSSR?.Store?.get(getMasteredKey(), {}) || {};
+    CoursState.cours = MODULES_DATA.cours || [];
+
+    // Ouvrir le premier cours par défaut
+    if (CoursState.cours.length > 0) {
+      CoursState.openCours.add(CoursState.cours[0].id);
+    }
+
+    renderSidebarModules();
+    initSidebarSearch();
+    initDomainFilters();
+    initSidebarMobileToggle();
+
+    // Lire le hash de l'URL pour sélectionner le module
+    const hashId = location.hash.replace('#', '');
+    const target = findModuleById(hashId) || getAllModules()[0];
+
+    if (target) loadModule(target.id);
+  }
+
+  // ── SIDEBAR ──
+  function renderSidebarModules() {
+    const list = document.getElementById('sidebar-module-list');
+    const localModules = window.TSSR?.getModules() || [];
+    const q = CoursState.searchQuery.toLowerCase();
+    const d = CoursState.domainFilter;
+
+    let totalVisible = 0;
+    const html = CoursState.cours.map(cours => {
+      // Filtrer les modules de ce cours
+      const filteredModules = cours.modules.filter(m => {
+        const domain = m.domain || cours.domain;
+        const matchDomain = d === 'all' || domain === d;
+        const matchSearch = !q
+          || m.titre.toLowerCase().includes(q)
+          || (m.description || '').toLowerCase().includes(q)
+          || (m.tags || cours.tags || []).some(t => t.toLowerCase().includes(q));
+        return matchDomain && matchSearch;
+      });
+
+      if (!filteredModules.length) return '';
+      totalVisible += filteredModules.length;
+
+      const isOpen = CoursState.openCours.has(cours.id) || filteredModules.some(m => m.id === CoursState.currentId);
+      const modulesHTML = filteredModules.map(m => {
+        const domain = m.domain || cours.domain;
+        const local = localModules.find(lm => lm.id === m.id) || {};
+        const progress = local.progress || 0;
+        const isDone   = local.status === 'done' || progress === 100;
+        const isActive = m.id === CoursState.currentId;
+        const masteredCount = countMastered({ ...m, id: m.id });
+        const totalSections = (m.sections || []).length;
+
+        return `
+          <a class="sidebar-module ${isActive ? 'active' : ''} ${isDone ? 'done' : ''}"
+             href="#${m.id}"
+             data-module-id="${m.id}"
+             data-domain="${domain}"
+             role="menuitem"
+             aria-current="${isActive ? 'page' : 'false'}"
+             onclick="handleSidebarClick(event, '${m.id}')">
+            <span class="sidebar-module__icon" aria-hidden="true">${m.emoji}</span>
+            <div class="sidebar-module__info">
+              <div class="sidebar-module__name">${m.titre}</div>
+              <div class="sidebar-module__bar" role="progressbar"
+                   aria-valuenow="${progress}" aria-valuemin="0" aria-valuemax="100">
+                <div class="sidebar-module__bar-fill" style="width:${progress}%"></div>
+              </div>
+            </div>
+            <span class="sidebar-module__pct">${totalSections > 0 ? masteredCount + '/' + totalSections : ''}</span>
+          </a>`;
+      }).join('');
+
+      return `
+        <div class="sidebar-course" data-cours-id="${cours.id}">
+          <div class="sidebar-course__header ${isOpen ? 'open' : ''}"
+               onclick="toggleCourse('${cours.id}')"
+               title="${cours.titre}">
+            <span class="sidebar-course__emoji">${cours.emoji}</span>
+            <span class="sidebar-course__name">${cours.titre}</span>
+            <span class="sidebar-course__count">${filteredModules.length}</span>
+            <span class="sidebar-course__chevron">›</span>
+          </div>
+          <div class="sidebar-course__modules ${isOpen ? 'open' : ''}">
+            ${modulesHTML}
+          </div>
+        </div>`;
+    }).join('');
+
+    if (!totalVisible) {
+      list.innerHTML = `
+        <div style="padding:20px;text-align:center;color:var(--text-muted);font-size:var(--text-sm);">
+          Aucun module trouvé
+        </div>`;
+      return;
+    }
+
+    list.innerHTML = html;
+  }
+
+  /** Ouvre / ferme un groupe cours dans la sidebar */
+  function toggleCourse(coursId) {
+    if (CoursState.openCours.has(coursId)) {
+      CoursState.openCours.delete(coursId);
+    } else {
+      CoursState.openCours.add(coursId);
+    }
+    // MAJ DOM directement (sans re-render complet)
+    const courseEl = document.querySelector(`.sidebar-course[data-cours-id="${coursId}"]`);
+    if (!courseEl) return;
+    const header  = courseEl.querySelector('.sidebar-course__header');
+    const modules = courseEl.querySelector('.sidebar-course__modules');
+    const isOpen  = CoursState.openCours.has(coursId);
+    header?.classList.toggle('open', isOpen);
+    modules?.classList.toggle('open', isOpen);
+  }
+
+  function handleSidebarClick(e, moduleId) {
+    e.preventDefault();
+    loadModule(moduleId);
+    closeMobileSidebar();
+  }
+
+  // ── CHARGEMENT D'UN MODULE ──
+  function loadModule(moduleId) {
+    const module = findModuleById(moduleId);
+    if (!module) return;
+
+    // Ouvrir le groupe cours correspondant
+    if (module.coursId) CoursState.openCours.add(module.coursId);
+
+    CoursState.currentId = moduleId;
+    history.replaceState(null, '', `#${moduleId}`);
+
+    // MAJ sidebar
+    renderSidebarModules();
+
+    // Enregistrer la visite dans localStorage
+    if (window.TSSR) {
+      window.TSSR.Store.updateModule(moduleId, {
+        lastVisit: new Date().toISOString(),
+        status: (window.TSSR.getModules().find(m => m.id === moduleId)?.status === 'todo')
+          ? 'wip' : undefined
+      });
+      window.TSSR.Store.addActivity({
+        type: 'cours',
+        label: module.titre,
+        moduleId,
+      });
+    }
+
+    // Rendre le contenu
+    renderModuleContent(module);
+    renderTOC(module);
+    initCollapsibleSections(moduleId);
+    initChecklistItems();
+
+    // Mettre à jour le titre de la page (print)
+    document.getElementById('cours-page').setAttribute('data-print-title', module.titre);
+    document.getElementById('cours-page').setAttribute(
+      'data-print-date',
+      new Date().toLocaleDateString('fr-FR')
+    );
+
+    // Scroll vers le haut
+    document.getElementById('cours-content').scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
+
+  // ── RENDU DU MODULE ──
+  function renderModuleContent(module) {
+    const content     = document.getElementById('cours-content');
+    const localMod    = (window.TSSR?.getModules() || []).find(m => m.id === module.id) || {};
+    const progress    = localMod.progress || 0;
+    const masteredCnt = countMastered(module);
+    const totalSec    = (module.sections || []).length;
+    const readTime    = estimateReadingTime(module);
+
+    // Calculer % depuis sections maîtrisées (si >0)
+    const computedProgress = totalSec > 0
+      ? Math.round((masteredCnt / totalSec) * 100)
+      : progress;
+
+    const sectionsHTML = (module.sections || []).map(s =>
+      renderSection(s, module.id)
+    ).join('');
+
+    const tagsHTML = (module.tags || []).map(tag =>
+      `<span class="badge badge--${module.domain} badge--sm">${tag}</span>`
+    ).join('');
+
+    content.innerHTML = `
+      <!-- Breadcrumb -->
+      <nav class="breadcrumb" aria-label="Fil d'Ariane">
+        <div class="breadcrumb__item">
+          <a href="../index.html" class="breadcrumb__link">🏠 Accueil</a>
+          <span class="breadcrumb__sep" aria-hidden="true">›</span>
+        </div>
+        <div class="breadcrumb__item">
+          <a href="cours.html" class="breadcrumb__link">Cours</a>
+          <span class="breadcrumb__sep" aria-hidden="true">›</span>
+        </div>
+        <div class="breadcrumb__item">
+          <span class="breadcrumb__current">${module.titre}</span>
+        </div>
+      </nav>
+
+      <!-- En-tête du module -->
+      <header class="module-header" id="module-top">
+        <div class="module-header__top">
+          <div class="module-header__identity">
+            <div class="module-header__emoji" aria-hidden="true">${module.emoji}</div>
+            <div>
+              <h1 class="module-header__title">${module.titre}</h1>
+              <p class="module-header__desc">${module.description}</p>
+            </div>
+          </div>
+          <div class="module-header__actions">
+            <button class="btn btn--secondary btn--sm"
+                    onclick="printModule()"
+                    title="Imprimer la fiche"
+                    aria-label="Imprimer la fiche ${module.titre}">
+              🖨️ Imprimer
+            </button>
+            <button class="btn btn--${masteredCnt === totalSec && totalSec > 0 ? 'success' : 'ghost'} btn--sm"
+                    onclick="markAllMastered('${module.id}')"
+                    id="btn-master-all"
+                    title="Marquer tout le module comme maîtrisé">
+              ${masteredCnt === totalSec && totalSec > 0 ? '✅ Maîtrisé' : '☑️ Tout maîtriser'}
+            </button>
+          </div>
+        </div>
+
+        <div class="module-header__meta">
+          <div class="module-header__tags" aria-label="Tags du module">
+            ${tagsHTML}
+          </div>
+          <span class="module-header__meta-item" title="Temps de lecture estimé">
+            ⏱ ${readTime} min de lecture
+          </span>
+          <span class="module-header__meta-item" title="Sections maîtrisées">
+            📌 ${masteredCnt}/${totalSec} sections maîtrisées
+          </span>
+        </div>
+
+        <!-- Barre de progression -->
+        <div class="module-progress-bar">
+          <div class="module-progress-bar__header">
+            <span>Progression du module</span>
+            <span id="module-progress-pct">${computedProgress}%</span>
+          </div>
+          <div class="progress" role="progressbar"
+               aria-valuenow="${computedProgress}" aria-valuemin="0" aria-valuemax="100"
+               aria-label="Progression ${module.titre}">
+            <div class="progress__bar ${computedProgress === 100 ? 'progress__bar--success' : ''}"
+                 id="module-progress-fill"
+                 style="width:${computedProgress}%"></div>
+          </div>
+        </div>
+      </header>
+
+      <!-- Contrôles sections -->
+      <div class="sections-controls">
+        <button class="btn btn--secondary btn--sm" onclick="toggleAllSections(true)">▼ Tout déplier</button>
+        <button class="btn btn--secondary btn--sm" onclick="toggleAllSections(false)">▶ Tout replier</button>
+      </div>
+
+      <!-- Sections -->
+      <div id="sections-container">
+        ${sectionsHTML}
+      </div>
+    `;
+  }
+
+  // ── RENDU D'UNE SECTION ──
+  function renderSection(section, moduleId) {
+    const masteredKey = `${moduleId}.${section.id}`;
+    const isMastered  = !!CoursState.masteredSections[masteredKey];
+    const typeIcons   = {
+      tableau:   '📊',
+      code:      '💻',
+      highlight: '⚡',
+      text:      '📝',
+      list:      '📋',
+      mixed:     '🔀',
+    };
+
+    return `
+    <article class="cours-section collapsed ${isMastered ? 'mastered' : ''}"
+             id="${moduleId}-${section.id}"
+             data-module="${moduleId}"
+             data-section="${section.id}">
+      <div class="cours-section__header">
+        <h2 class="cours-section__title">
+          <span class="section-chevron" aria-hidden="true">›</span>
+          <span class="cours-section__type-icon" aria-hidden="true">${typeIcons[section.type] || '📄'}</span>
+          ${section.titre}
+        </h2>
+        <div class="cours-section__actions">
+          ${isMastered
+            ? `<span class="badge badge--success" aria-label="Section maîtrisée">✓ Maîtrisé</span>`
+            : ''}
+          <button class="btn btn--sm ${isMastered ? 'btn--success' : 'btn--secondary'}"
+                  onclick="toggleMastered('${moduleId}', '${section.id}', this)"
+                  aria-pressed="${isMastered}"
+                  title="${isMastered ? 'Retirer le statut maîtrisé' : 'Marquer comme maîtrisé'}">
+            ${isMastered ? '✅ Maîtrisé' : '☐ Marquer maîtrisé'}
+          </button>
+          <button class="btn btn--icon btn--secondary"
+                  onclick="copySection('${moduleId}', '${section.id}')"
+                  title="Copier le contenu texte de cette section">
+            📋
+          </button>
+        </div>
+      </div>
+      <div class="cours-section__body">
+        ${renderSectionContent(section)}
+      </div>
+    </article>`;
+  }
+
+  // ── RENDU DU CONTENU PAR TYPE ──
+  function renderSectionContent(section) {
+    const { type, contenu } = section;
+
+    // Détection automatique checklist ([ ] ou [x]) dans list ou text
+    const checklistItems = parseChecklistContent(contenu);
+    if (checklistItems !== null) return renderChecklist(checklistItems, section.id);
+
+    switch (type) {
+      case 'text':      return renderText(contenu);
+      case 'tableau':   return renderTableau(contenu);
+      case 'code':      return renderCode(contenu);
+      case 'highlight': return renderHighlight(contenu);
+      case 'list':      return renderList(contenu);
+      case 'mixed':     return renderMixed(contenu);
+      default:          return `<pre style="font-size:var(--text-xs)">${JSON.stringify(contenu, null, 2)}</pre>`;
+    }
+  }
+
+  /** Détecte les items [ ] / [x] dans le contenu d'une section */
+  function parseChecklistContent(contenu) {
+    if (!contenu) return null;
+    const PATTERN = /^\[[ xX]\]/;
+    let lines = [];
+    if (Array.isArray(contenu.items))      lines = contenu.items;
+    else if (Array.isArray(contenu.paragraphs)) lines = contenu.paragraphs;
+    else return null;
+
+    const checklines = lines.filter(l => String(l).trim().match(PATTERN));
+    if (!checklines.length) return null;
+
+    return checklines.map((line, index) => {
+      const s = String(line).trim();
+      const checked = s.startsWith('[x]') || s.startsWith('[X]');
+      const text = s.replace(/^\[[ xX]\]\s*/, '');
+      return { index, checked, text };
+    });
+  }
+
+  function parseMarkdownInline(text) {
+    return text
+      .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
+      .replace(/\*(.+?)\*/g, '<em>$1</em>')
+      .replace(/`(.+?)`/g, '<code>$1</code>')
+      .replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2" target="_blank">$1</a>');
+  }
+
+  function renderText(contenu) {
+    const paras = contenu.paragraphs || [contenu];
+    return paras.map(p => `<p class="section-desc" style="margin-bottom:12px">${parseMarkdownInline(p)}</p>`).join('');
+  }
+
+  function renderTableau(contenu) {
+    const desc = contenu.description
+      ? `<p class="section-desc">${parseMarkdownInline(contenu.description)}</p>` : '';
+    const thead = `<tr>${(contenu.headers || []).map(h => `<th>${parseMarkdownInline(h)}</th>`).join('')}</tr>`;
+    const tbody = (contenu.rows || []).map(row =>
+      `<tr>${row.map(cell => `<td>${parseMarkdownInline(cell)}</td>`).join('')}</tr>`
+    ).join('');
+    return `${desc}
+    <div class="table-wrapper">
+      <table>
+        <thead>${thead}</thead>
+        <tbody>${tbody}</tbody>
+      </table>
+    </div>`;
+  }
+
+  function renderCode(contenu) {
+    const desc = contenu.description
+      ? `<p class="section-desc">${contenu.description}</p>` : '';
+    const code = escapeHtml(contenu.code || '');
+    const highlighted = highlightCode(contenu.code || '', contenu.langage || 'bash');
+    return `${desc}
+    <div class="code-block">
+      <div class="code-block__header">
+        <div class="code-block__dots" aria-hidden="true">
+          <div class="code-block__dot code-block__dot--red"></div>
+          <div class="code-block__dot code-block__dot--yellow"></div>
+          <div class="code-block__dot code-block__dot--green"></div>
+        </div>
+        <span class="code-block__lang">${contenu.langage || 'bash'}</span>
+        <button class="code-block__copy"
+                onclick="copyCode(this)"
+                aria-label="Copier le code">Copier</button>
+      </div>
+      <pre><code data-raw="${escapeAttr(contenu.code || '')}">${highlighted}</code></pre>
+    </div>`;
+  }
+
+  function renderHighlight(contenu) {
+    const items = contenu.items || [];
+    return `<div class="highlight-grid" role="list">
+      ${items.map(item =>
+        `<div class="highlight-item" role="listitem">${parseMarkdownInline(item)}</div>`
+      ).join('')}
+    </div>`;
+  }
+
+  function renderList(contenu) {
+    const desc  = contenu.description
+      ? `<p class="section-desc">${parseMarkdownInline(contenu.description)}</p>` : '';
+    const items = contenu.items || [];
+    return `${desc}
+    <ul class="section-list" role="list">
+      ${items.map(item => `<li>${parseMarkdownInline(item)}</li>`).join('')}
+    </ul>`;
+  }
+
+  function renderChecklist(items, sectionId) {
+    const n = items.length;
+    const itemsHtml = items.map(({ index, checked, text }) => {
+      const itemId = `${sectionId}-${index}`;
+      return `
+      <label class="checklist-item" data-item-id="${itemId}">
+        <input type="checkbox" class="checklist-checkbox"
+               ${checked ? 'checked' : ''}
+               data-item-id="${itemId}" />
+        <span class="checkmark"></span>
+        <span class="checklist-text">${parseMarkdownInline(text)}</span>
+      </label>`;
+    }).join('');
+
+    return `
+    <div class="section-checklist">
+      <div class="checklist-progress">
+        <span class="checklist-progress-label">0 / ${n} (0%)</span>
+        <div class="checklist-progress-bar">
+          <div class="checklist-progress-fill" style="width:0%"></div>
+        </div>
+      </div>
+      ${itemsHtml}
+    </div>`;
+  }
+
+  function renderMixed(contenu) {
+    return (contenu.blocks || []).map(block => {
+      let html = '';
+      switch (block.type) {
+        case 'text':    html = renderText(block);    break;
+        case 'tableau': html = renderTableau(block); break;
+        case 'code':    html = renderCode(block);    break;
+        case 'list':    html = renderList(block);    break;
+        default:        html = '';
+      }
+      return `<div class="mixed-block" data-type="${block.type}">${html}</div>`;
+    }).join('');
+  }
+
+  // ── TABLE DES MATIÈRES ──
+  function renderTOC(module) {
+    const toc = document.getElementById('cours-toc');
+    const sections = module.sections || [];
+    const totalSec = sections.length;
+    const masteredCnt = countMastered(module);
+    const pct = totalSec > 0 ? Math.round((masteredCnt / totalSec) * 100) : 0;
+
+    const items = sections.map(s => {
+      const key = `${module.id}.${s.id}`;
+      const done = !!CoursState.masteredSections[key];
+      return `<a href="#${module.id}-${s.id}"
+                 class="toc-item ${done ? 'mastered' : ''}"
+                 data-toc="${module.id}-${s.id}"
+                 onclick="openAndScrollTo('${module.id}', '${s.id}')">
+        ${s.titre}
+      </a>`;
+    }).join('');
+
+    toc.innerHTML = `
+    <div class="toc-card">
+      <div class="toc-card__header" aria-label="Table des matières">
+        📑 Table des matières
+      </div>
+      <nav class="toc-list" aria-label="Sections du module ${module.titre}">
+        <a href="#module-top" class="toc-item" onclick="smoothScrollTo('module-top')">
+          ${module.emoji} ${module.titre}
+        </a>
+        ${items}
+      </nav>
+      <div class="toc-progress">
+        <div class="toc-progress__label">
+          <span>Maîtrisé</span>
+          <span>${masteredCnt}/${totalSec}</span>
+        </div>
+        <div class="progress progress--sm">
+          <div class="progress__bar ${pct === 100 ? 'progress__bar--success' : ''}"
+               id="toc-progress-fill"
+               style="width:${pct}%"></div>
+        </div>
+      </div>
+    </div>`;
+
+    initTOCIntersection(module);
+  }
+
+  // Observer pour le surlignage de la TOC
+  function initTOCIntersection(module) {
+    if (!window.IntersectionObserver) return;
+
+    const observer = new IntersectionObserver(entries => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          const id = entry.target.id;
+          document.querySelectorAll('.toc-item').forEach(el => {
+            el.classList.toggle('active', el.dataset.toc === id);
+          });
+        }
+      });
+    }, {
+      rootMargin: `-${parseInt(getComputedStyle(document.documentElement)
+        .getPropertyValue('--nav-height')) + 16}px 0px -60% 0px`,
+    });
+
+    (module.sections || []).forEach(s => {
+      const el = document.getElementById(`${module.id}-${s.id}`);
+      if (el) observer.observe(el);
+    });
+  }
+
+  // ── ACTIONS SUR LES SECTIONS ──
+
+  /** Toggle maîtrisé sur une section */
+  function toggleMastered(moduleId, sectionId, btn) {
+    const key = `${moduleId}.${sectionId}`;
+    const wasMastered = !!CoursState.masteredSections[key];
+    CoursState.masteredSections[key] = !wasMastered;
+    window.TSSR?.Store?.set(getMasteredKey(), CoursState.masteredSections);
+
+    const section = document.querySelector(
+      `.cours-section[data-module="${moduleId}"][data-section="${sectionId}"]`
+    );
+    if (!section) return;
+
+    const newState = !wasMastered;
+    section.classList.toggle('mastered', newState);
+    btn.textContent = newState ? '✅ Maîtrisé' : '☐ Marquer maîtrisé';
+    btn.className   = `btn btn--sm ${newState ? 'btn--success' : 'btn--secondary'}`;
+    btn.setAttribute('aria-pressed', newState);
+
+    // MAJ badge inline
+    const actionsDiv = btn.closest('.cours-section__actions');
+    let badge = actionsDiv.querySelector('.badge--success');
+    if (newState && !badge) {
+      badge = document.createElement('span');
+      badge.className   = 'badge badge--success';
+      badge.textContent = '✓ Maîtrisé';
+      badge.setAttribute('aria-label', 'Section maîtrisée');
+      actionsDiv.insertBefore(badge, btn);
+    } else if (!newState && badge) {
+      badge.remove();
+    }
+
+    // MAJ TOC
+    const tocItem = document.querySelector(`.toc-item[data-toc="${moduleId}-${sectionId}"]`);
+    if (tocItem) tocItem.classList.toggle('mastered', newState);
+
+    // MAJ progression module
+    updateModuleProgress(moduleId);
+
+    const msg = newState
+      ? `Section "${sectionId}" marquée comme maîtrisée ✓`
+      : `Section "${sectionId}" retirée des sections maîtrisées`;
+    window.TSSR?.showToast(msg, newState ? 'success' : 'default');
+  }
+
+  /** Marquer toutes les sections comme maîtrisées */
+  function markAllMastered(moduleId) {
+    const module = findModuleById(moduleId);
+    if (!module) return;
+
+    const allDone = (module.sections || []).every(s =>
+      CoursState.masteredSections[`${moduleId}.${s.id}`]
+    );
+
+    (module.sections || []).forEach(s => {
+      CoursState.masteredSections[`${moduleId}.${s.id}`] = !allDone;
+    });
+    window.TSSR?.Store?.set(getMasteredKey(), CoursState.masteredSections);
+
+    // Re-render le module
+    renderModuleContent(module);
+    renderTOC(module);
+    initCollapsibleSections(moduleId);
+    initChecklistItems();
+    renderSidebarModules();
+    updateModuleProgress(moduleId);
+
+    const btn = document.getElementById('btn-master-all');
+    window.TSSR?.showToast(
+      allDone ? 'Toutes les sections retirées' : `Module ${module.titre} entièrement maîtrisé ! 🎉`,
+      allDone ? 'default' : 'success'
+    );
+  }
+
+  /** Met à jour la progression du module dans localStorage selon sections maîtrisées */
+  function updateModuleProgress(moduleId) {
+    const module = findModuleById(moduleId);
+    if (!module || !module.sections?.length) return;
+
+    const mastered = countMastered(module);
+    const pct      = Math.round((mastered / module.sections.length) * 100);
+    const status   = pct === 100 ? 'done' : pct > 0 ? 'wip' : 'todo';
+
+    window.TSSR?.Store?.updateModule(moduleId, { progress: pct, status });
+
+    // MAJ affichage inline
+    const fill    = document.getElementById('module-progress-fill');
+    const pctEl   = document.getElementById('module-progress-pct');
+    const tocFill = document.getElementById('toc-progress-fill');
+    if (fill)    { fill.style.width = pct + '%'; fill.setAttribute('aria-valuenow', pct); }
+    if (pctEl)   pctEl.textContent = pct + '%';
+    if (tocFill) tocFill.style.width = pct + '%';
+  }
+
+  /** Copie le texte d'une section */
+  function copySection(moduleId, sectionId) {
+    const section = document.querySelector(
+      `.cours-section[data-module="${moduleId}"][data-section="${sectionId}"] .cours-section__body`
+    );
+    if (!section) return;
+    const text = section.innerText;
+    navigator.clipboard.writeText(text).then(() => {
+      window.TSSR?.showToast('Section copiée dans le presse-papier', 'default');
+    }).catch(() => window.TSSR?.showToast('Copie impossible', 'danger'));
+  }
+
+  /** Copier le code d'un bloc */
+  function copyCode(btn) {
+    const code = btn.closest('.code-block')?.querySelector('code');
+    if (!code) return;
+    const raw = code.dataset.raw || code.textContent;
+    navigator.clipboard.writeText(raw).then(() => {
+      const orig = btn.textContent;
+      btn.textContent = '✓ Copié !';
+      btn.classList.add('copied');
+      setTimeout(() => { btn.textContent = orig; btn.classList.remove('copied'); }, 2000);
+    }).catch(() => window.TSSR?.showToast('Copie impossible', 'danger'));
+  }
+
+  // ── IMPRESSION ──
+  function printModule() {
+    window.print();
+  }
+
+  // ── TEMPS DE LECTURE ──
+  function estimateReadingTime(module) {
+    const AVG_WPM  = 200;
+    const CODE_LPM = 40; // lignes de code par minute
+    let words = 0;
+    let codeLines = 0;
+
+    (module.sections || []).forEach(s => {
+      words += countWordsInContent(s.contenu);
+      codeLines += countCodeLines(s.contenu);
+    });
+
+    const min = Math.ceil((words / AVG_WPM) + (codeLines / CODE_LPM));
+    return Math.max(1, min);
+  }
+
+  function countWordsInContent(contenu) {
+    if (!contenu) return 0;
+    let text = '';
+    if (typeof contenu === 'string') return contenu.split(/\s+/).length;
+    if (contenu.paragraphs) text += contenu.paragraphs.join(' ');
+    if (contenu.description) text += ' ' + contenu.description;
+    if (contenu.items) text += ' ' + contenu.items.join(' ');
+    if (contenu.headers) text += ' ' + contenu.headers.join(' ');
+    if (contenu.rows) contenu.rows.forEach(r => text += ' ' + r.join(' '));
+    if (contenu.blocks) contenu.blocks.forEach(b => text += ' ' + JSON.stringify(b));
+    return text.split(/\s+/).filter(w => w).length;
+  }
+
+  function countCodeLines(contenu) {
+    if (!contenu) return 0;
+    if (contenu.code) return contenu.code.split('\n').length;
+    if (contenu.blocks) {
+      return contenu.blocks.reduce((acc, b) =>
+        acc + (b.code ? b.code.split('\n').length : 0), 0);
+    }
+    return 0;
+  }
+
+  // ── SECTIONS MAÎTRISÉES — compteur ──
+  function countMastered(module) {
+    return (module.sections || []).filter(
+      s => !!CoursState.masteredSections[`${module.id}.${s.id}`]
+    ).length;
+  }
+
+  // ── RECHERCHE SIDEBAR ──
+  function initSidebarSearch() {
+    const input = document.getElementById('sidebar-search');
+    if (!input) return;
+    input.addEventListener('input', () => {
+      CoursState.searchQuery = input.value.trim();
+      renderSidebarModules();
+    });
+  }
+
+  // ── FILTRES DOMAINE ──
+  function initDomainFilters() {
+    document.querySelectorAll('.cours-sidebar__filters .filter-chip').forEach(chip => {
+      chip.addEventListener('click', () => {
+        document.querySelectorAll('.cours-sidebar__filters .filter-chip')
+          .forEach(c => { c.classList.remove('active'); c.setAttribute('aria-pressed', 'false'); });
+        chip.classList.add('active');
+        chip.setAttribute('aria-pressed', 'true');
+        CoursState.domainFilter = chip.dataset.domain;
+        renderSidebarModules();
+      });
+    });
+  }
+
+  // ── SIDEBAR MOBILE ──
+  function initSidebarMobileToggle() {
+    const btn = document.getElementById('btn-sidebar-toggle');
+    const overlay = document.getElementById('sidebar-overlay');
+    const sidebar = document.getElementById('cours-sidebar');
+
+    if (window.innerWidth <= 768 && btn) {
+      btn.style.display = '';
+    }
+
+    window.addEventListener('resize', () => {
+      if (btn) btn.style.display = window.innerWidth <= 768 ? '' : 'none';
+    });
+
+    if (btn) {
+      btn.addEventListener('click', () => {
+        sidebar.classList.toggle('mobile-open');
+        overlay.classList.toggle('active');
+        const isOpen = sidebar.classList.contains('mobile-open');
+        btn.setAttribute('aria-expanded', isOpen);
+        overlay.setAttribute('aria-hidden', !isOpen);
+      });
+    }
+
+    overlay.addEventListener('click', closeMobileSidebar);
+  }
+
+  function closeMobileSidebar() {
+    document.getElementById('cours-sidebar')?.classList.remove('mobile-open');
+    document.getElementById('sidebar-overlay')?.classList.remove('active');
+    document.getElementById('btn-sidebar-toggle')?.setAttribute('aria-expanded', 'false');
+  }
+
+  // ── NAVIGATION DOUCE ──
+  function smoothScrollTo(id) {
+    const el = document.getElementById(id);
+    if (el) {
+      el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+  }
+
+  /** Ouvre une section collapsée puis scroll vers elle (depuis TOC) */
+  function openAndScrollTo(moduleId, sectionId) {
+    const el = document.getElementById(`${moduleId}-${sectionId}`);
+    if (!el) return;
+    if (el.classList.contains('collapsed')) {
+      el.classList.remove('collapsed');
+      saveOpenState(moduleId);
+    }
+    setTimeout(() => el.scrollIntoView({ behavior: 'smooth', block: 'start' }), 50);
+  }
+
+  // ── UTILITAIRES ──
+  function escapeHtml(str) {
+    return str
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;');
+  }
+
+  function escapeAttr(str) {
+    return str.replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+  }
+
+  /**
+   * Coloration syntaxique légère basée sur des regex CSS
+   * Supporte : bash, powershell, cisco, json, sql
+   */
+  function highlightCode(code, lang) {
+    let escaped = escapeHtml(code);
+    const hl = (cls, ...patterns) => {
+      patterns.forEach(p => {
+        escaped = escaped.replace(p, match =>
+          `<span class="token-${cls}">${match}</span>`
+        );
+      });
+    };
+
+    switch (lang) {
+      case 'bash':
+        // Commentaires
+        escaped = escaped.replace(/(#[^\n]*)/g, '<span class="token-comment">$1</span>');
+        // Mots-clés
+        escaped = escaped.replace(/\b(if|then|else|elif|fi|for|do|done|while|until|case|esac|in|function|return|exit|local|readonly|export)\b/g,
+          '<span class="token-keyword">$1</span>');
+        // Variables $xxx et ${xxx}
+        escaped = escaped.replace(/(\$\{?[A-Za-z_][A-Za-z0-9_]*\}?|\$[0-9@#?])/g,
+          '<span class="token-variable">$1</span>');
+        // Chaînes
+        escaped = escaped.replace(/(&quot;[^&]*?&quot;)/g, '<span class="token-string">$1</span>');
+        // Commandes courantes
+        escaped = escaped.replace(/\b(echo|printf|read|cat|grep|sed|awk|find|ls|cd|mkdir|rm|cp|mv|chmod|chown|sudo|apt|yum|systemctl|journalctl|ip|ping|ssh|curl|wget)\b/g,
+          '<span class="token-command">$1</span>');
+        // Flags
+        escaped = escaped.replace(/(?<=\s)(-{1,2}[a-zA-Z][a-zA-Z0-9-]*)/g,
+          '<span class="token-flag">$1</span>');
+        break;
+
+      case 'powershell':
+        escaped = escaped.replace(/(#[^\n]*)/g, '<span class="token-comment">$1</span>');
+        escaped = escaped.replace(/\b(if|else|elseif|switch|for|foreach|while|do|until|try|catch|finally|function|return|param|begin|process|end|throw|break|continue|exit)\b/g,
+          '<span class="token-keyword">$1</span>');
+        escaped = escaped.replace(/\$[A-Za-z_][A-Za-z0-9_.]*/g,
+          '<span class="token-variable">$&</span>');
+        escaped = escaped.replace(/(&quot;[^&]*?&quot;)/g, '<span class="token-string">$1</span>');
+        escaped = escaped.replace(/\b([A-Z][a-z]+-[A-Z][A-Za-z]+)\b/g,
+          '<span class="token-function">$1</span>');
+        break;
+
+      case 'cisco':
+        escaped = escaped.replace(/(![^\n]*)/g, '<span class="token-comment">$1</span>');
+        escaped = escaped.replace(/\b(interface|router|network|ip|no|show|configure|enable|disable|exit|end|copy|write|vlan|switchport|spanning-tree|access-list|permit|deny|nat|route)\b/g,
+          '<span class="token-keyword">$1</span>');
+        escaped = escaped.replace(/\b(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}(?:\/\d{1,2})?)\b/g,
+          '<span class="token-ip">$1</span>');
+        break;
+
+      case 'json':
+        escaped = escaped.replace(/(&quot;[^&]*?&quot;)\s*:/g, '<span class="token-variable">$1</span>:');
+        escaped = escaped.replace(/:\s*(&quot;[^&]*?&quot;)/g, ': <span class="token-string">$1</span>');
+        escaped = escaped.replace(/\b(true|false|null)\b/g, '<span class="token-keyword">$1</span>');
+        escaped = escaped.replace(/\b(-?\d+\.?\d*)\b/g, '<span class="token-number">$1</span>');
+        break;
+    }
+
+    return escaped;
+  }
+
+  // ── CHECKLIST INTERACTIVES ──
+
+  function initChecklistItems() {
+    document.querySelectorAll('.checklist-checkbox').forEach(checkbox => {
+      const id = checkbox.dataset.itemId;
+
+      // Restaurer l'état sauvegardé (priorité sur l'état HTML)
+      const checkKey = typeof TSSRAuth !== 'undefined'
+        ? TSSRAuth.getUserKey('check_' + id) : 'tssr_check_' + id;
+      const saved = localStorage.getItem(checkKey);
+      if (saved === 'true')  checkbox.checked = true;
+      if (saved === 'false') checkbox.checked = false;
+
+      checkbox.addEventListener('change', () => {
+        localStorage.setItem(checkKey, checkbox.checked);
+        updateChecklistProgress(checkbox.closest('.section-checklist'));
+      });
+    });
+
+    // Initialiser toutes les barres de progression
+    document.querySelectorAll('.section-checklist').forEach(updateChecklistProgress);
+  }
+
+  function updateChecklistProgress(sectionEl) {
+    if (!sectionEl) return;
+    const all     = sectionEl.querySelectorAll('.checklist-checkbox');
+    if (!all.length) return;
+    const checked = sectionEl.querySelectorAll('.checklist-checkbox:checked').length;
+    const pct     = Math.round((checked / all.length) * 100);
+    const fill    = sectionEl.querySelector('.checklist-progress-fill');
+    const label   = sectionEl.querySelector('.checklist-progress-label');
+    if (fill)  fill.style.width = pct + '%';
+    if (label) label.textContent = `${checked} / ${all.length} (${pct}%)`;
+  }
+
+  // ── SECTIONS RÉTRACTABLES ──
+
+  function initCollapsibleSections(moduleId) {
+    const key = typeof TSSRAuth !== 'undefined'
+      ? TSSRAuth.getUserKey(`open_sections_${moduleId}`)
+      : `tssr_open_sections_${moduleId}`;
+    const saved = JSON.parse(localStorage.getItem(key) || 'null'); // null = première visite
+
+    document.querySelectorAll('.cours-section').forEach(section => {
+      const sectionId = section.dataset.section;
+      // Par défaut toutes fermées ; si état sauvegardé → restaurer
+      const isOpen = saved !== null && saved.includes(sectionId);
+      section.classList.toggle('collapsed', !isOpen);
+
+      const header = section.querySelector('.cours-section__header');
+      if (!header) return;
+      // Éviter les doublons de listener (inline onclick sur buttons suffit)
+      header.onclick = (e) => {
+        if (e.target.closest('button')) return;
+        section.classList.toggle('collapsed');
+        saveOpenState(moduleId);
+      };
+    });
+  }
+
+  function saveOpenState(moduleId) {
+    const key = typeof TSSRAuth !== 'undefined'
+      ? TSSRAuth.getUserKey(`open_sections_${moduleId}`)
+      : `tssr_open_sections_${moduleId}`;
+    const open = [...document.querySelectorAll('.cours-section:not(.collapsed)')]
+      .map(s => s.dataset.section);
+    localStorage.setItem(key, JSON.stringify(open));
+  }
+
+  function toggleAllSections(open) {
+    const moduleId = CoursState.currentId;
+    document.querySelectorAll('.cours-section').forEach(s => {
+      s.classList.toggle('collapsed', !open);
+    });
+    saveOpenState(moduleId);
+  }
+
+  // ── HASH CHANGE ──
+  window.addEventListener('hashchange', () => {
+    const id = location.hash.replace('#', '');
+    if (id && findModuleById(id)) {
+      loadModule(id);
+    }
+  });
+
+  // ── LANCEMENT ──
+  document.addEventListener('DOMContentLoaded', init);
+  </script>
+
+</body>
+</html>

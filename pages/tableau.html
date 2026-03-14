@@ -1,0 +1,1351 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <!--
+    pages/tableau.html — Tableau de bord de progression TSSR
+    Sections : Radar scores, Historique quiz, Heatmap activité, Top/Axes,
+               Temps passé, Badges achievements, Réinitialisation
+    Données : localStorage uniquement | Charts : Chart.js CDN
+  -->
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Tableau de bord — TSSR Notes</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../assets/css/style.css">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+  <style>
+    /* ── Layout ──────────────────────────────────────────────────── */
+    .tb-main {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 2rem 1.5rem 4rem;
+      margin-top: 64px;
+    }
+
+    .tb-page-header {
+      margin-bottom: 2.5rem;
+    }
+
+    .tb-page-header h1 {
+      font-size: 1.75rem;
+      font-weight: 700;
+      color: var(--text);
+      margin-bottom: 0.25rem;
+    }
+
+    .tb-page-header p {
+      color: var(--text-muted);
+      font-size: 0.9rem;
+    }
+
+    /* ── Grid system ─────────────────────────────────────────────── */
+    .tb-grid-2 {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1.5rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .tb-grid-3 {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1.5rem;
+    }
+
+    /* ── Cards ───────────────────────────────────────────────────── */
+    .tb-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 1.5rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .tb-card-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 1.25rem;
+    }
+
+    .tb-card-title {
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+    }
+
+    .tb-card-title .tc-icon {
+      font-size: 1.2rem;
+    }
+
+    .tb-card-title h2 {
+      font-size: 1rem;
+      font-weight: 700;
+      color: var(--text);
+    }
+
+    .tb-card-subtitle {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+    }
+
+    /* ── Stat bar (summary row) ──────────────────────────────────── */
+    .tb-stat-row {
+      display: flex;
+      gap: 1rem;
+      margin-bottom: 2rem;
+      flex-wrap: wrap;
+    }
+
+    .tb-stat {
+      flex: 1;
+      min-width: 160px;
+      background: var(--bg-secondary);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 1rem 1.25rem;
+    }
+
+    .tb-stat-value {
+      font-size: 1.75rem;
+      font-weight: 700;
+      color: var(--primary);
+      line-height: 1;
+      margin-bottom: 0.25rem;
+    }
+
+    .tb-stat-label {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+    }
+
+    /* ── Chart containers ────────────────────────────────────────── */
+    .chart-wrap {
+      position: relative;
+    }
+
+    .chart-wrap canvas {
+      max-height: 320px;
+    }
+
+    .chart-wrap-radar canvas {
+      max-height: 380px;
+    }
+
+    /* ── Heatmap ─────────────────────────────────────────────────── */
+    .heatmap-legend {
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      margin-bottom: 0.75rem;
+    }
+
+    .heatmap-legend .hl-swatch {
+      width: 12px;
+      height: 12px;
+      border-radius: 2px;
+    }
+
+    .heatmap-months {
+      display: flex;
+      gap: 3px;
+      margin-bottom: 4px;
+      padding-left: 20px;
+    }
+
+    .heatmap-month-label {
+      font-size: 0.68rem;
+      color: var(--text-muted);
+      flex: 1;
+      text-align: left;
+    }
+
+    .heatmap-grid {
+      display: flex;
+      gap: 3px;
+    }
+
+    .heatmap-days {
+      display: flex;
+      flex-direction: column;
+      gap: 3px;
+      margin-right: 4px;
+    }
+
+    .heatmap-day-label {
+      font-size: 0.65rem;
+      color: var(--text-muted);
+      height: 11px;
+      line-height: 11px;
+      width: 16px;
+      text-align: right;
+    }
+
+    .heatmap-col {
+      display: flex;
+      flex-direction: column;
+      gap: 3px;
+    }
+
+    .heatmap-cell {
+      width: 11px;
+      height: 11px;
+      border-radius: 2px;
+      background: var(--border);
+      cursor: default;
+      transition: transform 0.1s;
+    }
+
+    .heatmap-cell:hover { transform: scale(1.3); }
+
+    .heatmap-cell[data-level="1"] { background: #BAE6FD; }
+    .heatmap-cell[data-level="2"] { background: #38BDF8; }
+    .heatmap-cell[data-level="3"] { background: #0EA5E9; }
+    .heatmap-cell[data-level="4"] { background: #0369A1; }
+
+    .heatmap-tooltip {
+      position: fixed;
+      background: #1F2937;
+      color: white;
+      font-size: 0.75rem;
+      padding: 0.35rem 0.65rem;
+      border-radius: 6px;
+      pointer-events: none;
+      z-index: 500;
+      white-space: nowrap;
+      opacity: 0;
+      transition: opacity 0.15s;
+    }
+
+    /* ── Module rank cards ───────────────────────────────────────── */
+    .rank-list {
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+    }
+
+    .rank-item {
+      display: flex;
+      align-items: center;
+      gap: 0.85rem;
+      padding: 0.75rem 1rem;
+      background: var(--bg-secondary);
+      border-radius: var(--radius);
+      border: 1px solid var(--border);
+      text-decoration: none;
+      color: var(--text);
+      transition: background 0.15s, box-shadow 0.15s;
+    }
+
+    .rank-item:hover { background: var(--surface); box-shadow: var(--shadow-md); }
+
+    .rank-badge {
+      width: 1.75rem;
+      height: 1.75rem;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.8rem;
+      font-weight: 700;
+      flex-shrink: 0;
+    }
+
+    .rank-badge.gold   { background: #FEF3C7; color: #D97706; }
+    .rank-badge.silver { background: #F1F5F9; color: #64748B; }
+    .rank-badge.bronze { background: #FEF9EE; color: #B45309; }
+    .rank-badge.weak1  { background: #FEE2E2; color: #B91C1C; }
+    .rank-badge.weak2  { background: #FEE2E2; color: #B91C1C; }
+    .rank-badge.weak3  { background: #FEE2E2; color: #B91C1C; }
+
+    .rank-emoji { font-size: 1.2rem; }
+
+    .rank-info { flex: 1; }
+
+    .rank-name {
+      font-size: 0.875rem;
+      font-weight: 600;
+      margin-bottom: 0.2rem;
+    }
+
+    .rank-bar-wrap {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .rank-bar {
+      flex: 1;
+      height: 4px;
+      background: var(--border);
+      border-radius: 99px;
+      overflow: hidden;
+    }
+
+    .rank-bar-fill { height: 100%; border-radius: 99px; }
+    .rank-bar-fill.strong { background: var(--success); }
+    .rank-bar-fill.weak   { background: var(--danger); }
+
+    .rank-pct {
+      font-size: 0.75rem;
+      font-weight: 700;
+      min-width: 30px;
+      text-align: right;
+    }
+
+    .rank-pct.strong { color: var(--success); }
+    .rank-pct.weak   { color: var(--danger); }
+
+    .rank-link-icon {
+      font-size: 0.75rem;
+      color: var(--primary);
+      flex-shrink: 0;
+    }
+
+    /* ── Temps passé ─────────────────────────────────────────────── */
+    .time-grid {
+      display: flex;
+      flex-direction: column;
+      gap: 0.6rem;
+    }
+
+    .time-row {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+
+    .time-label {
+      width: 120px;
+      font-size: 0.82rem;
+      color: var(--text);
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+      flex-shrink: 0;
+    }
+
+    .time-bar {
+      flex: 1;
+      height: 8px;
+      background: var(--border);
+      border-radius: 99px;
+      overflow: hidden;
+    }
+
+    .time-bar-fill {
+      height: 100%;
+      background: linear-gradient(90deg, #7C3AED, #A78BFA);
+      border-radius: 99px;
+      transition: width 0.4s ease;
+    }
+
+    .time-value {
+      font-size: 0.78rem;
+      color: var(--text-muted);
+      min-width: 50px;
+      text-align: right;
+      font-family: var(--font-mono);
+    }
+
+    /* ── Badges ──────────────────────────────────────────────────── */
+    .badges-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+      gap: 1rem;
+    }
+
+    .badge-card {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      padding: 1.25rem 0.75rem;
+      border: 2px solid var(--border);
+      border-radius: var(--radius-lg);
+      transition: border-color 0.2s, box-shadow 0.2s;
+      position: relative;
+    }
+
+    .badge-card.unlocked {
+      border-color: #F59E0B;
+      background: linear-gradient(135deg, #FFFBEB, white);
+      box-shadow: 0 2px 8px rgba(245, 158, 11, 0.15);
+    }
+
+    .badge-card.locked {
+      opacity: 0.45;
+      filter: grayscale(1);
+    }
+
+    .badge-icon {
+      font-size: 2rem;
+      margin-bottom: 0.5rem;
+      line-height: 1;
+    }
+
+    .badge-name {
+      font-size: 0.78rem;
+      font-weight: 700;
+      color: var(--text);
+      margin-bottom: 0.2rem;
+    }
+
+    .badge-desc {
+      font-size: 0.68rem;
+      color: var(--text-muted);
+      line-height: 1.4;
+    }
+
+    .badge-new {
+      position: absolute;
+      top: -6px;
+      right: -6px;
+      background: var(--danger);
+      color: white;
+      font-size: 0.6rem;
+      font-weight: 700;
+      padding: 0.1rem 0.4rem;
+      border-radius: 99px;
+      text-transform: uppercase;
+    }
+
+    .badge-unlocked-at {
+      font-size: 0.65rem;
+      color: #D97706;
+      margin-top: 0.25rem;
+    }
+
+    .badges-summary {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      margin-bottom: 1rem;
+    }
+
+    .badges-summary .bs-pct {
+      font-size: 1.1rem;
+      font-weight: 700;
+      color: #F59E0B;
+    }
+
+    .badges-summary .bs-label {
+      font-size: 0.82rem;
+      color: var(--text-muted);
+    }
+
+    /* ── Reset section ───────────────────────────────────────────── */
+    .tb-reset-zone {
+      margin-top: 3rem;
+      padding: 1.5rem;
+      border: 2px dashed #FCA5A5;
+      border-radius: var(--radius-lg);
+      background: #FFF5F5;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+      flex-wrap: wrap;
+    }
+
+    .tb-reset-info h3 {
+      font-size: 0.9rem;
+      font-weight: 700;
+      color: #B91C1C;
+      margin-bottom: 0.25rem;
+    }
+
+    .tb-reset-info p {
+      font-size: 0.8rem;
+      color: #EF4444;
+    }
+
+    /* ── No-data placeholder ─────────────────────────────────────── */
+    .no-data {
+      text-align: center;
+      padding: 2rem 1rem;
+      color: var(--text-muted);
+      font-size: 0.875rem;
+    }
+
+    .no-data .nd-icon { font-size: 2rem; margin-bottom: 0.5rem; }
+
+    /* ── Responsive ──────────────────────────────────────────────── */
+    @media (max-width: 900px) {
+      .tb-grid-2 { grid-template-columns: 1fr; }
+      .tb-grid-3 { grid-template-columns: 1fr 1fr; }
+    }
+
+    @media (max-width: 600px) {
+      .tb-grid-3 { grid-template-columns: 1fr; }
+      .tb-stat-row { flex-direction: column; }
+      .heatmap-cell { width: 9px; height: 9px; }
+      .badges-grid { grid-template-columns: repeat(3, 1fr); }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <nav class="navbar" aria-label="Navigation principale">
+      <div class="navbar__inner">
+        <a href="../index.html" class="navbar__logo" aria-label="TSSR Notes — Accueil">
+          <div class="navbar__logo-icon" aria-hidden="true">T</div>
+          <span class="navbar__logo-text">TSSR<span>Notes</span></span>
+        </a>
+
+        <ul class="navbar__nav" role="list">
+          <li><a href="../index.html" class="navbar__link">🏠 Accueil</a></li>
+          <li><a href="cours.html" class="navbar__link">📖 Cours</a></li>
+          <li><a href="quiz.html" class="navbar__link">📝 Quiz</a></li>
+          <li><a href="checklist.html" class="navbar__link">✅ Checklist</a></li>
+          <li><a href="tableau.html" class="navbar__link active" aria-current="page">📊 Tableaux</a></li>
+          <li><a href="glossaire.html" class="navbar__link">📚 Glossaire</a></li>
+          <li><a href="ressources.html" class="navbar__link">🔗 Ressources</a></li>
+        </ul>
+
+        <div class="navbar__actions">
+          <div class="navbar__auth-slot"></div>
+          <button class="navbar__burger" aria-label="Menu" aria-expanded="false">
+            <span></span><span></span><span></span>
+          </button>
+        </div>
+      </div>
+    </nav>
+    <div class="navbar__mobile-menu" role="navigation" aria-label="Menu mobile">
+      <a href="../index.html" class="navbar__mobile-link">🏠 Accueil</a>
+      <a href="cours.html" class="navbar__mobile-link">📖 Cours</a>
+      <a href="quiz.html" class="navbar__mobile-link">📝 Quiz</a>
+      <a href="checklist.html" class="navbar__mobile-link">✅ Checklist</a>
+      <a href="tableau.html" class="navbar__mobile-link active">📊 Tableaux</a>
+      <a href="glossaire.html" class="navbar__mobile-link">📚 Glossaire</a>
+      <a href="ressources.html" class="navbar__mobile-link">🔗 Ressources</a>
+    </div>
+  </header>
+
+  <!-- ── Main ──────────────────────────────────────────────────── -->
+  <main class="tb-main">
+
+    <div class="tb-page-header">
+      <h1>📊 Tableau de bord</h1>
+      <p>Visualisez votre progression, vos points forts et vos axes d'amélioration.</p>
+    </div>
+
+    <!-- ── Stat row (résumé global) ──────────────────────────────── -->
+    <div class="tb-stat-row" id="tb-stat-row">
+      <div class="tb-stat">
+        <div class="tb-stat-value" id="stat-questions">–</div>
+        <div class="tb-stat-label">Questions répondues</div>
+      </div>
+      <div class="tb-stat">
+        <div class="tb-stat-value" id="stat-score">– %</div>
+        <div class="tb-stat-label">Score moyen global</div>
+      </div>
+      <div class="tb-stat">
+        <div class="tb-stat-value" id="stat-sessions">–</div>
+        <div class="tb-stat-label">Sessions de quiz</div>
+      </div>
+      <div class="tb-stat">
+        <div class="tb-stat-value" id="stat-checklist">– %</div>
+        <div class="tb-stat-label">Compétences maîtrisées</div>
+      </div>
+      <div class="tb-stat">
+        <div class="tb-stat-value" id="stat-streak">–</div>
+        <div class="tb-stat-label">Jours d'activité</div>
+      </div>
+    </div>
+
+    <!-- ── Section 1+2 : Radar + Historique ──────────────────────── -->
+    <div class="tb-grid-2">
+
+      <!-- Radar -->
+      <div class="tb-card">
+        <div class="tb-card-header">
+          <div class="tb-card-title">
+            <span class="tc-icon">🕸️</span>
+            <h2>Vue globale par module</h2>
+          </div>
+          <span class="tb-card-subtitle">Score quiz (%)</span>
+        </div>
+        <div class="chart-wrap chart-wrap-radar" id="radar-wrap">
+          <canvas id="chart-radar"></canvas>
+        </div>
+        <div class="no-data" id="radar-nodata" style="display:none">
+          <div class="nd-icon">📝</div>
+          <p>Faites des quiz pour voir votre radar de compétences.</p>
+        </div>
+      </div>
+
+      <!-- Historique quiz -->
+      <div class="tb-card">
+        <div class="tb-card-header">
+          <div class="tb-card-title">
+            <span class="tc-icon">📈</span>
+            <h2>Évolution du score</h2>
+          </div>
+          <span class="tb-card-subtitle" id="history-subtitle">30 dernières sessions</span>
+        </div>
+        <div class="chart-wrap" id="history-wrap">
+          <canvas id="chart-history"></canvas>
+        </div>
+        <div class="no-data" id="history-nodata" style="display:none">
+          <div class="nd-icon">🎯</div>
+          <p>Complétez au moins 2 sessions de quiz pour voir l'évolution.</p>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- ── Section 3 : Heatmap ────────────────────────────────────── -->
+    <div class="tb-card">
+      <div class="tb-card-header">
+        <div class="tb-card-title">
+          <span class="tc-icon">🔥</span>
+          <h2>Activité des 12 dernières semaines</h2>
+        </div>
+        <div class="heatmap-legend">
+          <span>Moins</span>
+          <span class="hl-swatch" style="background:var(--border)"></span>
+          <span class="hl-swatch" data-level="1" style="background:#BAE6FD"></span>
+          <span class="hl-swatch" data-level="2" style="background:#38BDF8"></span>
+          <span class="hl-swatch" data-level="3" style="background:#0EA5E9"></span>
+          <span class="hl-swatch" data-level="4" style="background:#0369A1"></span>
+          <span>Plus</span>
+        </div>
+      </div>
+      <div style="overflow-x:auto;padding-bottom:4px">
+        <div id="heatmap-months" class="heatmap-months"></div>
+        <div class="heatmap-grid">
+          <div class="heatmap-days" id="heatmap-days"></div>
+          <div id="heatmap-cols" style="display:flex;gap:3px"></div>
+        </div>
+      </div>
+      <div id="heatmap-nodata" class="no-data" style="display:none">
+        <div class="nd-icon">📅</div>
+        <p>Aucune activité enregistrée pour l'instant.</p>
+      </div>
+    </div>
+
+    <!-- ── Section 4+5 : Points forts + Axes de progression ─────── -->
+    <div class="tb-grid-2">
+
+      <!-- Top points forts -->
+      <div class="tb-card">
+        <div class="tb-card-header">
+          <div class="tb-card-title">
+            <span class="tc-icon">🏆</span>
+            <h2>Points forts</h2>
+          </div>
+          <span class="tb-card-subtitle">3 meilleurs scores</span>
+        </div>
+        <div class="rank-list" id="top-strong">
+          <div class="no-data"><div class="nd-icon">🎓</div><p>Répondez à des quiz pour voir vos points forts.</p></div>
+        </div>
+      </div>
+
+      <!-- Axes de progression -->
+      <div class="tb-card">
+        <div class="tb-card-header">
+          <div class="tb-card-title">
+            <span class="tc-icon">🎯</span>
+            <h2>Axes de progression</h2>
+          </div>
+          <span class="tb-card-subtitle">3 scores les plus faibles</span>
+        </div>
+        <div class="rank-list" id="top-weak">
+          <div class="no-data"><div class="nd-icon">💪</div><p>Répondez à des quiz pour voir vos axes de progression.</p></div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- ── Section 6 : Temps passé ───────────────────────────────── -->
+    <div class="tb-card">
+      <div class="tb-card-header">
+        <div class="tb-card-title">
+          <span class="tc-icon">⏱️</span>
+          <h2>Temps de révision estimé</h2>
+        </div>
+        <span class="tb-card-subtitle" id="total-time-label">Total : 0 min</span>
+      </div>
+      <div class="time-grid" id="time-grid">
+        <div class="no-data"><div class="nd-icon">📚</div><p>Visitez des fiches de cours pour estimer votre temps de révision.</p></div>
+      </div>
+    </div>
+
+    <!-- ── Section 7 : Badges ─────────────────────────────────────── -->
+    <div class="tb-card">
+      <div class="tb-card-header">
+        <div class="tb-card-title">
+          <span class="tc-icon">🏅</span>
+          <h2>Achievements</h2>
+        </div>
+        <span class="tb-card-subtitle" id="badges-subtitle">0 / 0 débloqués</span>
+      </div>
+      <div class="badges-summary">
+        <span class="bs-pct" id="badges-pct">0 %</span>
+        <span class="bs-label" id="badges-label">badges débloqués — continuez à réviser !</span>
+      </div>
+      <div class="badges-grid" id="badges-grid">
+        <!-- injected -->
+      </div>
+    </div>
+
+    <!-- ── Réinitialisation ───────────────────────────────────────── -->
+    <div class="tb-reset-zone">
+      <div class="tb-reset-info">
+        <h3>⚠️ Réinitialiser mes statistiques</h3>
+        <p>Supprime l'historique des quiz, les scores, les badges et l'activité. Les cours et la checklist ne sont pas affectés.</p>
+      </div>
+      <button class="btn btn-danger btn-sm" id="btn-reset">🗑️ Réinitialiser</button>
+    </div>
+
+  </main>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="footer-inner">
+      <span>TSSR Notes © <span id="footer-year"></span></span>
+      <span>100% local — aucune donnée envoyée</span>
+    </div>
+  </footer>
+
+  <div id="toast-container" aria-live="polite"></div>
+  <div class="heatmap-tooltip" id="heatmap-tooltip"></div>
+
+  <script src="../assets/js/auth.js"></script>
+  <script src="../assets/js/main.js"></script>
+  <script>
+  /*!
+   * TableauApp — Tableau de bord de progression TSSR
+   *
+   * Lit les clés localStorage :
+   *   tssr_modules         → { id, label, emoji, domain, progress, quizScores, lastVisit }
+   *   tssr_quiz_stats      → { moduleId: { answered, correct } }
+   *   tssr_quiz_history    → [{ date, score, total, mode, moduleIds, duration }]
+   *   tssr_activity        → [{ type, moduleId, date, label }]
+   *   tssr_checklist       → { total, done, pct }
+   *   tssr_checklist_data  → { compId: { status, updatedAt } }
+   *   tssr_mastered_sections → { "moduleId.sectionId": true }
+   *   tssr_time_spent      → { moduleId: minutes }
+   *   tssr_badges          → { badgeId: { unlockedAt: ISO } }
+   */
+
+  // ── Module definitions (fallback if localStorage is empty) ────
+  const MODULES = [
+    { id: 'reseau',        label: 'Réseaux',          emoji: '🌐', domain: 'reseau'        },
+    { id: 'linux',         label: 'Linux',             emoji: '🐧', domain: 'linux'         },
+    { id: 'windows',       label: 'Windows Server',   emoji: '🪟', domain: 'windows'       },
+    { id: 'securite',      label: 'Sécurité',          emoji: '🔒', domain: 'securite'      },
+    { id: 'virtualisation',label: 'Virtualisation',    emoji: '☁️', domain: 'virtualisation'},
+    { id: 'bash',          label: 'Bash',              emoji: '⚙️', domain: 'scripting'     },
+    { id: 'powershell',    label: 'PowerShell',        emoji: '💠', domain: 'scripting'     },
+    { id: 'ad',            label: 'Active Directory',  emoji: '🏢', domain: 'windows'       },
+    { id: 'cisco',         label: 'Cisco',             emoji: '🔧', domain: 'reseau'        },
+    { id: 'itil',          label: 'ITIL / GLPI',       emoji: '📋', domain: 'stockage'      }
+  ];
+
+  // ── Badge definitions ─────────────────────────────────────────
+  const BADGE_DEFS = [
+    { id: 'first_quiz',     icon: '🎉', name: 'Premier quiz',       desc: 'Répondre à une 1ère question',         check: d => d.totalAnswered >= 1            },
+    { id: 'q10',            icon: '🔟', name: '10 questions',        desc: '10 questions répondues',               check: d => d.totalAnswered >= 10           },
+    { id: 'q50',            icon: '5️⃣0️⃣', name: '50 questions',      desc: '50 questions répondues',               check: d => d.totalAnswered >= 50           },
+    { id: 'q100',           icon: '💯', name: '100 questions',       desc: '100 questions répondues',              check: d => d.totalAnswered >= 100          },
+    { id: 'q500',           icon: '🚀', name: '500 questions',       desc: '500 questions répondues',              check: d => d.totalAnswered >= 500          },
+    { id: 'perfect_quiz',   icon: '⭐', name: 'Score parfait',       desc: '100 % sur une session de quiz',        check: d => d.hasPerfect                   },
+    { id: 'above80',        icon: '🥇', name: 'Excellent',           desc: 'Score moyen ≥ 80 %',                   check: d => d.avgScore >= 80               },
+    { id: 'session3',       icon: '🔁', name: 'Assidu',              desc: '3 sessions de quiz complétées',        check: d => d.sessionCount >= 3            },
+    { id: 'session10',      icon: '📅', name: 'Régulier',            desc: '10 sessions de quiz',                  check: d => d.sessionCount >= 10           },
+    { id: 'all_modules',    icon: '🗺️', name: 'Tour complet',        desc: 'Au moins 1 question par module',       check: d => d.modulesWithQuiz >= 10        },
+    { id: 'module_master',  icon: '🏆', name: 'Expert module',       desc: '100 % sur un module (≥5 questions)',   check: d => d.hasModuleMaster              },
+    { id: 'explorer',       icon: '🔭', name: 'Explorateur',         desc: '5 modules de cours visités',           check: d => d.modulesVisited >= 5          },
+    { id: 'reader',         icon: '📚', name: 'Lecteur assidu',      desc: 'Tous les modules visités',             check: d => d.modulesVisited >= 10         },
+    { id: 'checklist25',    icon: '✅', name: 'En route',            desc: '25 % de la checklist maîtrisée',       check: d => d.checklistPct >= 25           },
+    { id: 'checklist50',    icon: '🎯', name: 'À mi-chemin',         desc: '50 % de la checklist maîtrisée',       check: d => d.checklistPct >= 50           },
+    { id: 'checklist100',   icon: '🎓', name: 'TSSR Certifié',       desc: '100 % de la checklist maîtrisée',      check: d => d.checklistPct >= 100          },
+    { id: 'streak3',        icon: '🔥', name: 'Flamme',              desc: '3 jours d\'activité',                  check: d => d.activeDays >= 3              },
+    { id: 'streak7',        icon: '💪', name: 'Semaine complète',    desc: '7 jours d\'activité distincts',        check: d => d.activeDays >= 7              },
+    { id: 'night_owl',      icon: '🦉', name: 'Hibou',               desc: 'Quiz complété après 22h',              check: d => d.hasNightSession              },
+    { id: 'speed_runner',   icon: '⚡', name: 'Speed runner',        desc: 'Quiz rapide en moins de 3 min',        check: d => d.hasFastSession               },
+    { id: 'exam_passed',    icon: '🎖️', name: 'Examen réussi',       desc: 'Examen blanc ≥ 70 %',                  check: d => d.hasPassed exam              },
+    { id: 'revision_done',  icon: '🔄', name: 'Réviseur',            desc: 'Mode révision utilisé au moins 1 fois',check: d => d.hasRevisionSession           },
+  ];
+
+  // Fix syntax error in BADGE_DEFS (exam_passed uses multiword key)
+  BADGE_DEFS[20].check = d => d.hasPassedExam;
+
+  // ── Storage helpers ───────────────────────────────────────────
+  function lsGet(key, fallback = null) {
+    try { return JSON.parse(localStorage.getItem(key) ?? 'null') ?? fallback; }
+    catch { return fallback; }
+  }
+
+  function lsSet(key, val) {
+    localStorage.setItem(key, JSON.stringify(val));
+  }
+
+  // ── Gather all data ───────────────────────────────────────────
+  function gatherData() {
+    const modules     = lsGet('tssr_modules', []);
+    const quizStats   = lsGet('tssr_quiz_stats', {});
+    const quizHistory = lsGet('tssr_quiz_history', []);
+    const activity    = lsGet('tssr_activity', []);
+    const checklist   = lsGet('tssr_checklist', { total: 71, done: 0, pct: 0 });
+    const clData      = lsGet('tssr_checklist_data', {});
+    const mastered    = lsGet('tssr_mastered_sections', {});
+    const timeSpent   = lsGet('tssr_time_spent', {});
+    const badges      = lsGet('tssr_badges', {});
+
+    // Merge module list with stored data
+    const modMap = {};
+    modules.forEach(m => { modMap[m.id] = m; });
+
+    const allModules = MODULES.map(def => ({
+      ...def,
+      ...(modMap[def.id] || {}),
+      id: def.id,
+      label: def.label,
+      emoji: def.emoji
+    }));
+
+    // Quiz score per module (from tssr_quiz_stats)
+    const moduleScores = {};
+    for (const mod of allModules) {
+      const s = quizStats[mod.id];
+      if (s && s.answered > 0) {
+        moduleScores[mod.id] = Math.round(s.correct / s.answered * 100);
+      } else {
+        moduleScores[mod.id] = null; // no data
+      }
+    }
+
+    // Global totals
+    let totalAnswered = 0, totalCorrect = 0;
+    for (const s of Object.values(quizStats)) {
+      totalAnswered += s.answered || 0;
+      totalCorrect  += s.correct  || 0;
+    }
+    const avgScore = totalAnswered > 0 ? Math.round(totalCorrect / totalAnswered * 100) : null;
+
+    // Quiz history sorted
+    const sortedHistory = [...quizHistory].sort((a, b) => new Date(a.date) - new Date(b.date));
+
+    // Perfect / exam / speed / night / revision
+    let hasPerfect = false, hasPassedExam = false, hasFastSession = false,
+        hasNightSession = false, hasRevisionSession = false;
+
+    for (const s of quizHistory) {
+      const pct = s.total > 0 ? s.score / s.total * 100 : 0;
+      if (pct === 100) hasPerfect = true;
+      if (s.mode === 'exam' && pct >= 70) hasPassedExam = true;
+      if (s.mode === 'quick' && s.duration !== undefined && s.duration < 180) hasFastSession = true;
+      if (s.date) {
+        const h = new Date(s.date).getHours();
+        if (h >= 22 || h < 4) hasNightSession = true;
+      }
+      if (s.mode === 'revision') hasRevisionSession = true;
+    }
+
+    // Module master (100% with ≥5 answered)
+    let hasModuleMaster = false;
+    for (const mod of MODULES) {
+      const s = quizStats[mod.id];
+      if (s && s.answered >= 5 && s.correct === s.answered) hasModuleMaster = true;
+    }
+
+    // Modules visited (have lastVisit or quizStats)
+    const modulesVisited = allModules.filter(m =>
+      m.lastVisit || (quizStats[m.id] && quizStats[m.id].answered > 0)
+    ).length;
+
+    const modulesWithQuiz = Object.values(quizStats).filter(s => s.answered > 0).length;
+
+    // Active days (from activity + quiz history)
+    const activeDates = new Set();
+    for (const a of activity) {
+      if (a.date) activeDates.add(a.date.slice(0, 10));
+    }
+    for (const s of quizHistory) {
+      if (s.date) activeDates.add(s.date.slice(0, 10));
+    }
+    const activeDays = activeDates.size;
+
+    // Checklist pct
+    const checklistPct = checklist.pct || 0;
+
+    // Time spent: from tssr_time_spent + estimate from mastered sections
+    const timeData = {};
+    for (const mod of MODULES) {
+      let minutes = timeSpent[mod.id] || 0;
+      // Estimate from mastered sections: 10min/section
+      const masteredCount = Object.keys(mastered)
+        .filter(k => k.startsWith(mod.id + '.')).length;
+      const estimated = masteredCount * 10;
+      timeData[mod.id] = Math.max(minutes, estimated);
+    }
+
+    return {
+      allModules, moduleScores, totalAnswered, totalCorrect, avgScore,
+      sortedHistory, quizHistory, quizStats,
+      checklist, checklistPct, clData,
+      activeDates: [...activeDates], activeDays,
+      modulesVisited, modulesWithQuiz,
+      hasPerfect, hasPassedExam, hasFastSession, hasNightSession, hasRevisionSession,
+      hasModuleMaster, sessionCount: quizHistory.length,
+      timeData, badges
+    };
+  }
+
+  // ── Chart.js shared defaults ──────────────────────────────────
+  Chart.defaults.font.family = "'Inter', sans-serif";
+  Chart.defaults.color = '#6B7280';
+
+  let radarChart = null, historyChart = null;
+
+  // ── Section: summary stats ────────────────────────────────────
+  function renderStats(d) {
+    document.getElementById('stat-questions').textContent = d.totalAnswered.toLocaleString('fr-FR');
+    document.getElementById('stat-score').textContent     = d.avgScore !== null ? `${d.avgScore} %` : '– %';
+    document.getElementById('stat-sessions').textContent  = d.quizHistory.length;
+    document.getElementById('stat-checklist').textContent = `${d.checklistPct} %`;
+    document.getElementById('stat-streak').textContent    = d.activeDays;
+  }
+
+  // ── Section 1: Radar chart ────────────────────────────────────
+  function renderRadar(d) {
+    const labels = d.allModules.map(m => m.label);
+    const values = d.allModules.map(m => d.moduleScores[m.id] ?? 0);
+    const hasData = values.some(v => v > 0);
+
+    if (!hasData) {
+      document.getElementById('radar-wrap').style.display = 'none';
+      document.getElementById('radar-nodata').style.display = 'block';
+      return;
+    }
+
+    const ctx = document.getElementById('chart-radar').getContext('2d');
+    if (radarChart) radarChart.destroy();
+
+    radarChart = new Chart(ctx, {
+      type: 'radar',
+      data: {
+        labels,
+        datasets: [{
+          label: 'Score (%)',
+          data: values,
+          backgroundColor: 'rgba(37, 99, 235, 0.15)',
+          borderColor: '#2563EB',
+          borderWidth: 2,
+          pointBackgroundColor: '#2563EB',
+          pointBorderColor: '#fff',
+          pointHoverBackgroundColor: '#fff',
+          pointHoverBorderColor: '#2563EB',
+          pointRadius: 4,
+          pointHoverRadius: 6
+        }]
+      },
+      options: {
+        responsive: true,
+        scales: {
+          r: {
+            min: 0, max: 100,
+            ticks: { stepSize: 25, backdropColor: 'transparent', font: { size: 10 } },
+            grid: { color: '#E5E7EB' },
+            angleLines: { color: '#E5E7EB' },
+            pointLabels: { font: { size: 11, weight: '500' }, color: '#374151' }
+          }
+        },
+        plugins: {
+          legend: { display: false },
+          tooltip: {
+            callbacks: {
+              label: ctx => {
+                const s = d.quizStats[d.allModules[ctx.dataIndex].id];
+                const answered = s?.answered || 0;
+                return ` ${ctx.raw} % (${answered} question${answered > 1 ? 's' : ''})`;
+              }
+            }
+          }
+        }
+      }
+    });
+  }
+
+  // ── Section 2: Line chart historique ─────────────────────────
+  function renderHistory(d) {
+    if (d.sortedHistory.length < 2) {
+      document.getElementById('history-wrap').style.display = 'none';
+      document.getElementById('history-nodata').style.display = 'block';
+      return;
+    }
+
+    // Take last 30 sessions
+    const sessions = d.sortedHistory.slice(-30);
+    document.getElementById('history-subtitle').textContent =
+      `${sessions.length} session${sessions.length > 1 ? 's' : ''}`;
+
+    const labels = sessions.map((s, i) => {
+      const dt = new Date(s.date);
+      return dt.toLocaleDateString('fr-FR', { day: '2-digit', month: 'short' });
+    });
+    const scores = sessions.map(s => s.total > 0 ? Math.round(s.score / s.total * 100) : 0);
+
+    const modeColors = { quick: '#2563EB', module: '#10B981', revision: '#F59E0B', exam: '#EF4444' };
+    const pointColors = sessions.map(s => modeColors[s.mode] || '#2563EB');
+
+    const ctx = document.getElementById('chart-history').getContext('2d');
+    if (historyChart) historyChart.destroy();
+
+    historyChart = new Chart(ctx, {
+      type: 'line',
+      data: {
+        labels,
+        datasets: [{
+          label: 'Score (%)',
+          data: scores,
+          borderColor: '#2563EB',
+          backgroundColor: 'rgba(37, 99, 235, 0.07)',
+          borderWidth: 2,
+          pointBackgroundColor: pointColors,
+          pointBorderColor: '#fff',
+          pointBorderWidth: 2,
+          pointRadius: 5,
+          pointHoverRadius: 7,
+          fill: true,
+          tension: 0.35
+        }]
+      },
+      options: {
+        responsive: true,
+        scales: {
+          y: {
+            min: 0, max: 100,
+            ticks: { callback: v => `${v} %`, stepSize: 25 },
+            grid: { color: '#F3F4F6' }
+          },
+          x: {
+            grid: { display: false },
+            ticks: { maxTicksLimit: 10, maxRotation: 0 }
+          }
+        },
+        plugins: {
+          legend: { display: false },
+          tooltip: {
+            callbacks: {
+              title: (items) => {
+                const s = sessions[items[0].dataIndex];
+                const mode = { quick: 'Rapide', module: 'Par module', revision: 'Révision', exam: 'Examen' };
+                return `${items[0].label} — ${mode[s.mode] || s.mode}`;
+              },
+              label: (item) => {
+                const s = sessions[item.dataIndex];
+                return ` ${item.raw} % (${s.score}/${s.total})`;
+              }
+            }
+          }
+        }
+      }
+    });
+  }
+
+  // ── Section 3: Heatmap ────────────────────────────────────────
+  function renderHeatmap(d) {
+    const WEEKS = 12;
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+
+    // Build activity count per date string
+    const activityCount = {};
+    for (const dateStr of d.activeDates) {
+      activityCount[dateStr] = (activityCount[dateStr] || 0) + 1;
+    }
+    // Also count quiz sessions per day
+    for (const s of d.quizHistory) {
+      if (s.date) {
+        const key = s.date.slice(0, 10);
+        activityCount[key] = (activityCount[key] || 0) + 1;
+      }
+    }
+
+    const hasActivity = Object.keys(activityCount).length > 0;
+    if (!hasActivity) {
+      document.getElementById('heatmap-nodata').style.display = 'block';
+      document.getElementById('heatmap-months').style.display = 'none';
+      document.querySelector('.heatmap-grid').style.display = 'none';
+      return;
+    }
+
+    // Start = Monday of the week 12 weeks ago
+    const startDate = new Date(today);
+    const dayOfWeek = (today.getDay() + 6) % 7; // Monday = 0
+    startDate.setDate(today.getDate() - dayOfWeek - (WEEKS - 1) * 7);
+
+    // Day labels (Mon/Wed/Fri)
+    const daysEl = document.getElementById('heatmap-days');
+    daysEl.innerHTML = '';
+    const dayNames = ['Lun', '', 'Mer', '', 'Ven', '', ''];
+    for (const name of dayNames) {
+      const el = document.createElement('div');
+      el.className = 'heatmap-day-label';
+      el.textContent = name;
+      daysEl.appendChild(el);
+    }
+
+    // Month labels
+    const monthsEl = document.getElementById('heatmap-months');
+    monthsEl.innerHTML = '';
+    const monthNames = ['Jan','Fév','Mar','Avr','Mai','Jun','Jul','Aoû','Sep','Oct','Nov','Déc'];
+
+    // Cells
+    const colsEl = document.getElementById('heatmap-cols');
+    colsEl.innerHTML = '';
+    const tooltip = document.getElementById('heatmap-tooltip');
+
+    let lastMonth = -1;
+
+    for (let w = 0; w < WEEKS; w++) {
+      const col = document.createElement('div');
+      col.className = 'heatmap-col';
+
+      for (let day = 0; day < 7; day++) {
+        const cellDate = new Date(startDate);
+        cellDate.setDate(startDate.getDate() + w * 7 + day);
+
+        const cell = document.createElement('div');
+        cell.className = 'heatmap-cell';
+
+        if (cellDate <= today) {
+          const key = cellDate.toISOString().slice(0, 10);
+          const count = activityCount[key] || 0;
+          const level = count === 0 ? 0 : count === 1 ? 1 : count <= 3 ? 2 : count <= 6 ? 3 : 4;
+          if (level > 0) cell.dataset.level = level;
+
+          const dateLabel = cellDate.toLocaleDateString('fr-FR', { weekday: 'short', day: '2-digit', month: 'short' });
+          cell.addEventListener('mousemove', e => {
+            tooltip.style.opacity = '1';
+            tooltip.style.left = `${e.clientX + 12}px`;
+            tooltip.style.top  = `${e.clientY - 30}px`;
+            tooltip.textContent = count > 0
+              ? `${dateLabel} — ${count} action${count > 1 ? 's' : ''}`
+              : `${dateLabel} — aucune activité`;
+          });
+          cell.addEventListener('mouseleave', () => { tooltip.style.opacity = '0'; });
+        } else {
+          cell.style.opacity = '0.2';
+        }
+
+        // Month label at first week of month
+        if (day === 0 && cellDate.getMonth() !== lastMonth) {
+          const span = document.createElement('div');
+          span.className = 'heatmap-month-label';
+          span.textContent = monthNames[cellDate.getMonth()];
+          monthsEl.appendChild(span);
+          lastMonth = cellDate.getMonth();
+        } else if (day === 0 && w === 0) {
+          const span = document.createElement('div');
+          span.className = 'heatmap-month-label';
+          monthsEl.appendChild(span);
+        }
+
+        col.appendChild(cell);
+      }
+      colsEl.appendChild(col);
+    }
+  }
+
+  // ── Section 4+5: Points forts / Axes progression ─────────────
+  function renderRanks(d) {
+    const scored = d.allModules
+      .filter(m => d.moduleScores[m.id] !== null)
+      .map(m => ({ ...m, score: d.moduleScores[m.id] }))
+      .sort((a, b) => b.score - a.score);
+
+    const strongEl = document.getElementById('top-strong');
+    const weakEl   = document.getElementById('top-weak');
+
+    if (scored.length === 0) return;
+
+    // Top 3 strong
+    const top3 = scored.slice(0, 3);
+    strongEl.innerHTML = top3.map((m, i) => `
+      <div class="rank-item">
+        <div class="rank-badge ${['gold','silver','bronze'][i]}">${['🥇','🥈','🥉'][i]}</div>
+        <span class="rank-emoji">${m.emoji}</span>
+        <div class="rank-info">
+          <div class="rank-name">${m.label}</div>
+          <div class="rank-bar-wrap">
+            <div class="rank-bar"><div class="rank-bar-fill strong" style="width:${m.score}%"></div></div>
+            <span class="rank-pct strong">${m.score} %</span>
+          </div>
+        </div>
+      </div>`).join('');
+
+    // Bottom 3 weak (only if scored)
+    const bot3 = scored.slice(-3).reverse();
+    weakEl.innerHTML = bot3.map((m, i) => `
+      <a class="rank-item" href="cours.html#${m.id}" title="Aller à la fiche ${m.label}">
+        <div class="rank-badge weak${i+1}">${i + 1}</div>
+        <span class="rank-emoji">${m.emoji}</span>
+        <div class="rank-info">
+          <div class="rank-name">${m.label}</div>
+          <div class="rank-bar-wrap">
+            <div class="rank-bar"><div class="rank-bar-fill weak" style="width:${m.score}%"></div></div>
+            <span class="rank-pct weak">${m.score} %</span>
+          </div>
+        </div>
+        <span class="rank-link-icon">→</span>
+      </a>`).join('');
+  }
+
+  // ── Section 6: Temps passé ────────────────────────────────────
+  function renderTime(d) {
+    const entries = MODULES
+      .map(m => ({ ...m, minutes: d.timeData[m.id] || 0 }))
+      .sort((a, b) => b.minutes - a.minutes);
+
+    const totalMin = entries.reduce((s, e) => s + e.minutes, 0);
+    const maxMin   = Math.max(...entries.map(e => e.minutes), 1);
+
+    document.getElementById('total-time-label').textContent =
+      `Total estimé : ${formatDuration(totalMin)}`;
+
+    if (totalMin === 0) return;
+
+    const grid = document.getElementById('time-grid');
+    grid.innerHTML = entries.map(e => `
+      <div class="time-row">
+        <div class="time-label">
+          <span>${e.emoji}</span>
+          <span>${e.label}</span>
+        </div>
+        <div class="time-bar">
+          <div class="time-bar-fill" style="width:${Math.round(e.minutes / maxMin * 100)}%"></div>
+        </div>
+        <span class="time-value">${formatDuration(e.minutes)}</span>
+      </div>`).join('');
+  }
+
+  function formatDuration(min) {
+    if (min === 0) return '0 min';
+    if (min < 60) return `${min} min`;
+    const h = Math.floor(min / 60);
+    const m = min % 60;
+    return m > 0 ? `${h} h ${m} min` : `${h} h`;
+  }
+
+  // ── Section 7: Badges ─────────────────────────────────────────
+  function renderBadges(d) {
+    const checkData = {
+      totalAnswered: d.totalAnswered,
+      avgScore: d.avgScore ?? 0,
+      sessionCount: d.sessionCount,
+      hasPerfect: d.hasPerfect,
+      hasPassedExam: d.hasPassedExam,
+      hasFastSession: d.hasFastSession,
+      hasNightSession: d.hasNightSession,
+      hasRevisionSession: d.hasRevisionSession,
+      hasModuleMaster: d.hasModuleMaster,
+      modulesVisited: d.modulesVisited,
+      modulesWithQuiz: d.modulesWithQuiz,
+      checklistPct: d.checklistPct,
+      activeDays: d.activeDays
+    };
+
+    // Check + persist badges
+    const savedBadges = { ...d.badges };
+    let newlyUnlocked = 0;
+
+    for (const def of BADGE_DEFS) {
+      const isUnlocked = def.check(checkData);
+      if (isUnlocked && !savedBadges[def.id]) {
+        savedBadges[def.id] = { unlockedAt: new Date().toISOString() };
+        newlyUnlocked++;
+      }
+    }
+
+    if (newlyUnlocked > 0) {
+      lsSet('tssr_badges', savedBadges);
+      if (window.TSSR?.showToast) {
+        window.TSSR.showToast(`🏅 ${newlyUnlocked} badge${newlyUnlocked > 1 ? 's' : ''} débloqué${newlyUnlocked > 1 ? 's' : ''} !`, 'success');
+      }
+    }
+
+    const total    = BADGE_DEFS.length;
+    const unlocked = Object.keys(savedBadges).length;
+    const pct      = Math.round(unlocked / total * 100);
+
+    document.getElementById('badges-subtitle').textContent = `${unlocked} / ${total} débloqués`;
+    document.getElementById('badges-pct').textContent      = `${pct} %`;
+    document.getElementById('badges-label').textContent    =
+      unlocked === total ? 'Tous les badges débloqués — félicitations !' :
+      pct >= 50 ? 'badges débloqués — excellent travail !' :
+      'badges débloqués — continuez à réviser !';
+
+    const grid = document.getElementById('badges-grid');
+    grid.innerHTML = BADGE_DEFS.map(def => {
+      const badgeData = savedBadges[def.id];
+      const isNew = badgeData && (Date.now() - new Date(badgeData.unlockedAt).getTime()) < 86400000;
+      const dateStr = badgeData ? new Date(badgeData.unlockedAt).toLocaleDateString('fr-FR') : '';
+
+      return `
+        <div class="badge-card ${badgeData ? 'unlocked' : 'locked'}">
+          ${isNew ? '<span class="badge-new">Nouveau</span>' : ''}
+          <div class="badge-icon">${def.icon}</div>
+          <div class="badge-name">${def.name}</div>
+          <div class="badge-desc">${def.desc}</div>
+          ${badgeData ? `<div class="badge-unlocked-at">🗓 ${dateStr}</div>` : ''}
+        </div>`;
+    }).join('');
+  }
+
+  // ── Reset ─────────────────────────────────────────────────────
+  function bindReset() {
+    document.getElementById('btn-reset').addEventListener('click', () => {
+      const confirmed = confirm(
+        '⚠️ Réinitialiser les statistiques ?\n\n' +
+        'Seront supprimés :\n' +
+        '• Historique des quiz\n' +
+        '• Scores par module (tssr_quiz_stats)\n' +
+        '• Badges\n' +
+        '• Activité récente\n\n' +
+        'Non affectés : cours, checklist, sections maîtrisées.\n\n' +
+        'Cette action est irréversible.'
+      );
+      if (!confirmed) return;
+
+      ['tssr_quiz_history', 'tssr_quiz_stats', 'tssr_quiz_failed',
+       'tssr_activity', 'tssr_badges', 'tssr_time_spent'].forEach(k => {
+        localStorage.removeItem(k);
+      });
+
+      if (window.TSSR?.showToast) {
+        window.TSSR.showToast('✅ Statistiques réinitialisées', 'success');
+      }
+
+      setTimeout(() => window.location.reload(), 800);
+    });
+  }
+
+  // ── Boot ──────────────────────────────────────────────────────
+  document.addEventListener('DOMContentLoaded', () => {
+    document.getElementById('footer-year').textContent = new Date().getFullYear();
+    // Navbar mobile menu géré par main.js (initNavigation)
+
+    const d = gatherData();
+
+    renderStats(d);
+    renderRadar(d);
+    renderHistory(d);
+    renderHeatmap(d);
+    renderRanks(d);
+    renderTime(d);
+    renderBadges(d);
+    bindReset();
+  });
+  </script>
+</body>
+</html>

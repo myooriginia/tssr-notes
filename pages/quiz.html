@@ -1,0 +1,1643 @@
+<!DOCTYPE html>
+<!--
+  pages/quiz.html — Système de quiz TSSR
+  Modes : Quiz rapide | Par module | Révision | Examen blanc
+  Données : ../data/quiz.json + localStorage
+-->
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Quiz TSSR — Révision interactive par module" />
+  <title>Quiz — TSSR Notes</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="../assets/css/style.css" />
+
+  <style>
+    /* ══════════════════════════════════════════
+       LAYOUT & TRANSITIONS
+       ══════════════════════════════════════════ */
+    body { background: var(--bg-secondary); }
+
+    .quiz-page {
+      min-height: 100vh;
+      padding-top: var(--nav-height);
+      display: flex;
+      flex-direction: column;
+    }
+
+    .quiz-wrap {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 32px var(--content-pad) 48px;
+    }
+
+    /* Écrans — affichés/masqués */
+    .quiz-screen { display: none; width: 100%; max-width: 820px; animation: fadeInUp 250ms ease; }
+    .quiz-screen.active { display: block; }
+
+    /* ══════════════════════════════════════════
+       ÉCRAN 1 — ACCUEIL / SÉLECTION DU MODE
+       ══════════════════════════════════════════ */
+    .home-header {
+      text-align: center;
+      margin-bottom: 32px;
+    }
+    .home-header__icon { font-size: 52px; margin-bottom: 12px; }
+    .home-header__title {
+      font-size: var(--text-3xl);
+      font-weight: var(--weight-bold);
+      color: var(--text);
+      margin-bottom: 8px;
+    }
+    .home-header__sub { color: var(--text-muted); font-size: var(--text-base); }
+
+    /* Mini stats bar */
+    .home-stats {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 12px;
+      margin-bottom: 28px;
+    }
+    .home-stat {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 14px 16px;
+      text-align: center;
+      box-shadow: var(--shadow-sm);
+    }
+    .home-stat__value {
+      font-size: var(--text-2xl);
+      font-weight: var(--weight-bold);
+      color: var(--primary);
+      font-variant-numeric: tabular-nums;
+    }
+    .home-stat__label { font-size: var(--text-xs); color: var(--text-muted); margin-top: 2px; }
+
+    /* Mode cards */
+    .mode-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 16px;
+      margin-bottom: 32px;
+    }
+    .mode-card {
+      background: var(--surface);
+      border: 2px solid var(--border);
+      border-radius: var(--radius-xl);
+      padding: 24px;
+      cursor: pointer;
+      transition: border-color var(--transition), box-shadow var(--transition), transform var(--transition);
+      text-align: left;
+      position: relative;
+      overflow: hidden;
+    }
+    .mode-card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 4px;
+    }
+    .mode-card--quick::before   { background: var(--primary); }
+    .mode-card--module::before  { background: var(--success); }
+    .mode-card--revision::before{ background: var(--warning); }
+    .mode-card--exam::before    { background: var(--danger); }
+
+    .mode-card:hover {
+      box-shadow: var(--shadow-lg);
+      transform: translateY(-2px);
+    }
+    .mode-card--quick:hover   { border-color: var(--primary); }
+    .mode-card--module:hover  { border-color: var(--success); }
+    .mode-card--revision:hover{ border-color: var(--warning); }
+    .mode-card--exam:hover    { border-color: var(--danger); }
+
+    .mode-card__icon { font-size: 32px; margin-bottom: 12px; }
+    .mode-card__title { font-size: var(--text-lg); font-weight: var(--weight-bold); color: var(--text); margin-bottom: 4px; }
+    .mode-card__desc { font-size: var(--text-sm); color: var(--text-muted); line-height: var(--leading-relaxed); }
+    .mode-card__meta {
+      margin-top: 12px;
+      font-size: var(--text-xs);
+      font-weight: var(--weight-semibold);
+      padding: 4px 10px;
+      border-radius: var(--radius-full);
+      display: inline-block;
+    }
+    .mode-card--quick .mode-card__meta   { background: var(--primary-light); color: var(--primary-dark); }
+    .mode-card--module .mode-card__meta  { background: var(--success-light); color: #065F46; }
+    .mode-card--revision .mode-card__meta{ background: var(--warning-light); color: #92400E; }
+    .mode-card--exam .mode-card__meta    { background: var(--danger-light);  color: #991B1B; }
+
+    /* Historique des sessions */
+    .history-section { margin-top: 8px; }
+    .history-title {
+      font-size: var(--text-sm);
+      font-weight: var(--weight-semibold);
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.07em;
+      margin-bottom: 10px;
+    }
+    .history-list { display: flex; flex-direction: column; gap: 6px; }
+    .history-item {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 10px 14px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      font-size: var(--text-sm);
+    }
+    .history-item__score {
+      font-weight: var(--weight-bold);
+      font-size: var(--text-base);
+      min-width: 42px;
+      text-align: center;
+    }
+    .score--good   { color: var(--success); }
+    .score--medium { color: var(--warning); }
+    .score--bad    { color: var(--danger); }
+    .history-item__info { flex: 1; min-width: 0; }
+    .history-item__mode { color: var(--text); font-weight: var(--weight-medium); }
+    .history-item__date { color: var(--text-muted); font-size: var(--text-xs); }
+    .history-empty { text-align: center; color: var(--text-muted); font-size: var(--text-sm); padding: 16px; }
+
+    /* ══════════════════════════════════════════
+       ÉCRAN 2 — CONFIGURATION (mode module)
+       ══════════════════════════════════════════ */
+    .config-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-xl);
+      padding: 28px;
+      box-shadow: var(--shadow);
+      margin-bottom: 16px;
+    }
+    .config-card__title {
+      font-size: var(--text-lg);
+      font-weight: var(--weight-semibold);
+      color: var(--text);
+      margin-bottom: 16px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .module-checkboxes {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+      gap: 8px;
+    }
+    .module-checkbox {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 10px 12px;
+      border: 1.5px solid var(--border);
+      border-radius: var(--radius);
+      cursor: pointer;
+      transition: border-color var(--transition), background var(--transition);
+      user-select: none;
+    }
+    .module-checkbox:hover { background: var(--bg-secondary); }
+    .module-checkbox.selected { border-color: var(--primary); background: var(--primary-light); }
+    .module-checkbox input { display: none; }
+    .module-checkbox__check {
+      width: 18px; height: 18px;
+      border: 2px solid var(--border-strong);
+      border-radius: var(--radius-sm);
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0;
+      transition: background var(--transition), border-color var(--transition);
+    }
+    .module-checkbox.selected .module-checkbox__check {
+      background: var(--primary);
+      border-color: var(--primary);
+    }
+    .module-checkbox.selected .module-checkbox__check::after {
+      content: '✓';
+      color: #fff;
+      font-size: 11px;
+      font-weight: var(--weight-bold);
+    }
+    .module-checkbox__label { font-size: var(--text-sm); font-weight: var(--weight-medium); color: var(--text); }
+
+    /* Slider de nombre de questions */
+    .range-wrap { display: flex; align-items: center; gap: 16px; }
+    input[type="range"] {
+      flex: 1;
+      height: 6px;
+      -webkit-appearance: none;
+      background: var(--bg-tertiary);
+      border-radius: var(--radius-full);
+      outline: none;
+    }
+    input[type="range"]::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      width: 20px; height: 20px;
+      background: var(--primary);
+      border-radius: 50%;
+      cursor: pointer;
+      box-shadow: var(--shadow-sm);
+    }
+    .range-value {
+      font-size: var(--text-xl);
+      font-weight: var(--weight-bold);
+      color: var(--primary);
+      min-width: 32px;
+      text-align: center;
+    }
+
+    /* Difficulté */
+    .diff-chips { display: flex; gap: 8px; flex-wrap: wrap; }
+    .diff-chip {
+      padding: 5px 14px;
+      border-radius: var(--radius-full);
+      font-size: var(--text-xs);
+      font-weight: var(--weight-semibold);
+      border: 1.5px solid var(--border);
+      cursor: pointer;
+      transition: all var(--transition);
+    }
+    .diff-chip.active-facile    { background: var(--success-light); border-color: var(--success); color: #065F46; }
+    .diff-chip.active-moyen     { background: var(--warning-light); border-color: var(--warning); color: #92400E; }
+    .diff-chip.active-difficile { background: var(--danger-light);  border-color: var(--danger);  color: #991B1B; }
+
+    /* ══════════════════════════════════════════
+       ÉCRAN 3 — QUIZ ACTIF
+       ══════════════════════════════════════════ */
+    /* Barre de statut en haut */
+    .quiz-topbar {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 12px 20px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      margin-bottom: 16px;
+      box-shadow: var(--shadow-sm);
+      flex-wrap: wrap;
+    }
+    .quiz-topbar__left  { display: flex; align-items: center; gap: 12px; }
+    .quiz-topbar__right { display: flex; align-items: center; gap: 12px; }
+
+    /* Compteur de questions */
+    .quiz-counter {
+      font-size: var(--text-sm);
+      font-weight: var(--weight-medium);
+      color: var(--text-secondary);
+    }
+    .quiz-counter strong { color: var(--text); font-size: var(--text-base); }
+
+    /* Timer affiché */
+    .quiz-timer {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-family: var(--font-mono);
+      font-size: var(--text-base);
+      font-weight: var(--weight-bold);
+      color: var(--text);
+      padding: 4px 12px;
+      background: var(--bg-secondary);
+      border-radius: var(--radius);
+    }
+    .quiz-timer.warning { color: var(--warning); background: var(--warning-light); }
+    .quiz-timer.danger  { color: var(--danger);  background: var(--danger-light); animation: pulse 1s infinite; }
+
+    /* Barre de progression des questions */
+    .quiz-progress-wrap { margin-bottom: 16px; }
+    .quiz-progress-label {
+      display: flex;
+      justify-content: space-between;
+      font-size: var(--text-xs);
+      color: var(--text-muted);
+      margin-bottom: 6px;
+    }
+    .quiz-progress-track {
+      height: 6px;
+      background: var(--bg-tertiary);
+      border-radius: var(--radius-full);
+      overflow: hidden;
+    }
+    .quiz-progress-fill {
+      height: 100%;
+      background: var(--primary);
+      border-radius: var(--radius-full);
+      transition: width 400ms cubic-bezier(.4, 0, .2, 1);
+    }
+
+    /* Timer barre (exam mode) */
+    .exam-timer-bar-wrap {
+      margin-bottom: 16px;
+      display: none;
+    }
+    .exam-timer-bar-wrap.visible { display: block; }
+    .exam-timer-label {
+      display: flex;
+      justify-content: space-between;
+      font-size: var(--text-xs);
+      color: var(--text-muted);
+      margin-bottom: 5px;
+    }
+    .exam-timer-track {
+      height: 8px;
+      background: var(--bg-tertiary);
+      border-radius: var(--radius-full);
+      overflow: hidden;
+    }
+    .exam-timer-fill {
+      height: 100%;
+      background: var(--primary);
+      border-radius: var(--radius-full);
+      transition: width 1s linear, background 0.5s ease;
+    }
+    .exam-timer-fill.warn   { background: var(--warning); }
+    .exam-timer-fill.danger { background: var(--danger); box-shadow: 0 0 8px rgba(239,68,68,.4); }
+
+    /* Carte de question */
+    .question-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-xl);
+      padding: 28px;
+      box-shadow: var(--shadow-md);
+      margin-bottom: 16px;
+    }
+    .question-card__meta {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 16px;
+      flex-wrap: wrap;
+    }
+    .diff-badge {
+      font-size: var(--text-xs);
+      font-weight: var(--weight-semibold);
+      padding: 3px 10px;
+      border-radius: var(--radius-full);
+    }
+    .diff-badge--facile    { background: var(--success-light); color: #065F46; }
+    .diff-badge--moyen     { background: var(--warning-light); color: #92400E; }
+    .diff-badge--difficile { background: var(--danger-light);  color: #991B1B; }
+
+    .question-text {
+      font-size: var(--text-xl);
+      font-weight: var(--weight-semibold);
+      color: var(--text);
+      line-height: var(--leading-snug);
+      margin-bottom: 24px;
+    }
+
+    /* Choix */
+    .choices-grid { display: flex; flex-direction: column; gap: 10px; }
+    .choice-btn {
+      display: flex;
+      align-items: flex-start;
+      gap: 14px;
+      padding: 14px 18px;
+      border: 2px solid var(--border);
+      border-radius: var(--radius-lg);
+      background: var(--surface);
+      cursor: pointer;
+      transition: border-color 120ms, background 120ms, transform 80ms;
+      text-align: left;
+      font-size: var(--text-base);
+      color: var(--text-secondary);
+      line-height: var(--leading-snug);
+    }
+    .choice-btn:hover:not(:disabled) {
+      border-color: var(--primary);
+      background: var(--primary-light);
+      color: var(--text);
+      transform: translateX(4px);
+    }
+    .choice-btn:disabled { cursor: default; transform: none; }
+
+    .choice-btn__letter {
+      width: 28px; height: 28px;
+      border-radius: 50%;
+      background: var(--bg-secondary);
+      border: 1.5px solid var(--border);
+      display: flex; align-items: center; justify-content: center;
+      font-size: var(--text-xs);
+      font-weight: var(--weight-bold);
+      flex-shrink: 0;
+      transition: background var(--transition), border-color var(--transition), color var(--transition);
+      color: var(--text-muted);
+    }
+
+    /* États après réponse */
+    .choice-btn--correct {
+      border-color: var(--success) !important;
+      background: var(--success-light) !important;
+      color: #065F46 !important;
+    }
+    .choice-btn--correct .choice-btn__letter {
+      background: var(--success); border-color: var(--success); color: #fff;
+    }
+    .choice-btn--incorrect {
+      border-color: var(--danger) !important;
+      background: var(--danger-light) !important;
+      color: #991B1B !important;
+    }
+    .choice-btn--incorrect .choice-btn__letter {
+      background: var(--danger); border-color: var(--danger); color: #fff;
+    }
+    .choice-btn--reveal {
+      border-color: var(--success) !important;
+      background: linear-gradient(135deg, var(--success-light), #F0FDF4) !important;
+      color: #065F46 !important;
+    }
+    .choice-btn--reveal .choice-btn__letter {
+      background: var(--success); border-color: var(--success); color: #fff;
+    }
+
+    /* Feedback après réponse */
+    .feedback-box {
+      display: none;
+      margin-top: 16px;
+      padding: 16px 20px;
+      border-radius: var(--radius-lg);
+      border-left: 4px solid;
+      animation: fadeInUp 200ms ease;
+    }
+    .feedback-box.visible { display: flex; flex-direction: column; gap: 8px; }
+    .feedback-box--correct { background: var(--success-light); border-color: var(--success); }
+    .feedback-box--incorrect { background: var(--danger-light); border-color: var(--danger); }
+    .feedback-box__header {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-weight: var(--weight-bold);
+      font-size: var(--text-base);
+    }
+    .feedback-box--correct .feedback-box__header { color: #065F46; }
+    .feedback-box--incorrect .feedback-box__header { color: #991B1B; }
+    .feedback-box__icon { font-size: 20px; }
+    .feedback-box__expl {
+      font-size: var(--text-sm);
+      line-height: var(--leading-relaxed);
+      color: var(--text-secondary);
+    }
+
+    /* Bouton "Suivante" */
+    .quiz-nav {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-top: 16px;
+      gap: 12px;
+    }
+    .btn-next {
+      margin-left: auto;
+      min-width: 160px;
+    }
+
+    /* ══════════════════════════════════════════
+       ÉCRAN 4 — RÉSULTATS
+       ══════════════════════════════════════════ */
+    .results-header {
+      text-align: center;
+      margin-bottom: 28px;
+    }
+
+    /* Cercle de score */
+    .score-circle-wrap { display: flex; justify-content: center; margin-bottom: 24px; }
+    .score-circle {
+      width: 160px; height: 160px;
+      border-radius: 50%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      border: 8px solid;
+      position: relative;
+    }
+    .score-circle--excellent { border-color: var(--success); background: var(--success-light); }
+    .score-circle--good      { border-color: var(--primary); background: var(--primary-light); }
+    .score-circle--medium    { border-color: var(--warning); background: var(--warning-light); }
+    .score-circle--bad       { border-color: var(--danger);  background: var(--danger-light); }
+    .score-circle__pct {
+      font-size: 42px;
+      font-weight: var(--weight-bold);
+      line-height: 1;
+      font-variant-numeric: tabular-nums;
+    }
+    .score-circle--excellent .score-circle__pct { color: #059669; }
+    .score-circle--good      .score-circle__pct { color: var(--primary-dark); }
+    .score-circle--medium    .score-circle__pct { color: #D97706; }
+    .score-circle--bad       .score-circle__pct { color: #DC2626; }
+    .score-circle__label { font-size: var(--text-xs); color: var(--text-muted); margin-top: 2px; }
+
+    .score-emoji { font-size: 36px; margin-bottom: 8px; }
+
+    /* Stats de session */
+    .result-stats {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 12px;
+      margin-bottom: 24px;
+    }
+    .result-stat {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 14px;
+      text-align: center;
+      box-shadow: var(--shadow-sm);
+    }
+    .result-stat__value {
+      font-size: var(--text-2xl);
+      font-weight: var(--weight-bold);
+      color: var(--text);
+      font-variant-numeric: tabular-nums;
+    }
+    .result-stat__label { font-size: var(--text-xs); color: var(--text-muted); margin-top: 2px; }
+
+    /* Questions ratées */
+    .failed-section {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-xl);
+      overflow: hidden;
+      box-shadow: var(--shadow);
+      margin-bottom: 24px;
+    }
+    .failed-section__header {
+      padding: 14px 20px;
+      background: var(--bg-secondary);
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      cursor: pointer;
+    }
+    .failed-section__title {
+      font-weight: var(--weight-semibold);
+      color: var(--text);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .failed-list { padding: 0; }
+    .failed-item {
+      padding: 16px 20px;
+      border-bottom: 1px solid var(--border);
+    }
+    .failed-item:last-child { border-bottom: none; }
+    .failed-item__question {
+      font-size: var(--text-sm);
+      font-weight: var(--weight-medium);
+      color: var(--text);
+      margin-bottom: 8px;
+    }
+    .failed-item__your-answer {
+      font-size: var(--text-xs);
+      color: var(--danger);
+      margin-bottom: 4px;
+    }
+    .failed-item__correct-answer {
+      font-size: var(--text-xs);
+      color: var(--success);
+      font-weight: var(--weight-semibold);
+      margin-bottom: 6px;
+    }
+    .failed-item__expl {
+      font-size: var(--text-xs);
+      color: var(--text-muted);
+      line-height: var(--leading-relaxed);
+      background: var(--bg-secondary);
+      padding: 8px 10px;
+      border-radius: var(--radius-sm);
+      border-left: 3px solid var(--primary);
+    }
+
+    /* Stats par module */
+    .module-stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+      gap: 10px;
+      margin-bottom: 24px;
+    }
+    .module-stat-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 14px 16px;
+      box-shadow: var(--shadow-sm);
+    }
+    .module-stat-card__name {
+      font-size: var(--text-sm);
+      font-weight: var(--weight-semibold);
+      color: var(--text);
+      margin-bottom: 8px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .module-stat-card__bar {
+      height: 5px;
+      background: var(--bg-tertiary);
+      border-radius: var(--radius-full);
+      overflow: hidden;
+      margin-bottom: 4px;
+    }
+    .module-stat-card__fill {
+      height: 100%;
+      border-radius: var(--radius-full);
+    }
+    .module-stat-card__rate { font-size: var(--text-xs); color: var(--text-muted); }
+
+    /* Boutons d'action résultats */
+    .result-actions {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+
+    /* ══════════════════════════════════════════
+       RESPONSIVE
+       ══════════════════════════════════════════ */
+    @media (max-width: 640px) {
+      .mode-grid { grid-template-columns: 1fr; }
+      .home-stats { grid-template-columns: repeat(2, 1fr); }
+      .result-stats { grid-template-columns: repeat(2, 1fr); }
+      .question-text { font-size: var(--text-lg); }
+      .quiz-wrap { padding: 16px var(--content-pad) 32px; }
+      .score-circle { width: 130px; height: 130px; }
+      .score-circle__pct { font-size: 32px; }
+      .module-stats-grid { grid-template-columns: repeat(2, 1fr); }
+    }
+  </style>
+</head>
+
+<body class="quiz-page">
+  <div class="page-progress" aria-hidden="true"></div>
+
+  <!-- ═══════════════════════════════
+       NAVIGATION
+       ═══════════════════════════════ -->
+  <header>
+    <nav class="navbar" aria-label="Navigation principale">
+      <div class="navbar__inner">
+        <a href="../index.html" class="navbar__logo">
+          <div class="navbar__logo-icon" aria-hidden="true">T</div>
+          <span class="navbar__logo-text">TSSR<span>Notes</span></span>
+        </a>
+        <ul class="navbar__nav" role="list">
+          <li><a href="../index.html" class="navbar__link">🏠 Accueil</a></li>
+          <li><a href="cours.html" class="navbar__link">📖 Cours</a></li>
+          <li><a href="quiz.html" class="navbar__link active" aria-current="page">📝 Quiz</a></li>
+          <li><a href="checklist.html" class="navbar__link">✅ Checklist</a></li>
+          <li><a href="tableau.html" class="navbar__link">📊 Tableaux</a></li>
+          <li><a href="glossaire.html" class="navbar__link">📚 Glossaire</a></li>
+          <li><a href="ressources.html" class="navbar__link">🔗 Ressources</a></li>
+        </ul>
+        <div class="navbar__actions">
+          <div class="navbar__auth-slot"></div>
+
+          <button class="navbar__burger" aria-label="Menu" aria-expanded="false">
+            <span></span><span></span><span></span>
+          </button>
+        </div>
+      </div>
+    </nav>
+    <div class="navbar__mobile-menu" role="navigation">
+      <a href="../index.html" class="navbar__mobile-link">🏠 Accueil</a>
+      <a href="cours.html" class="navbar__mobile-link">📖 Cours</a>
+      <a href="quiz.html" class="navbar__mobile-link active">📝 Quiz</a>
+      <a href="checklist.html" class="navbar__mobile-link">✅ Checklist</a>
+      <a href="tableau.html" class="navbar__mobile-link">📊 Tableaux</a>
+      <a href="glossaire.html" class="navbar__mobile-link">📚 Glossaire</a>
+      <a href="ressources.html" class="navbar__mobile-link">🔗 Ressources</a>
+    </div>
+  </header>
+
+  <div class="quiz-wrap">
+
+    <!-- ═══════════════════════════════
+         ÉCRAN 1 — ACCUEIL
+         ═══════════════════════════════ -->
+    <div class="quiz-screen active" id="screen-home">
+
+      <div class="home-header">
+        <div class="home-header__icon" aria-hidden="true">📝</div>
+        <h1 class="home-header__title">Quiz TSSR</h1>
+        <p class="home-header__sub">Testez vos connaissances et suivez votre progression</p>
+      </div>
+
+      <!-- Statistiques globales -->
+      <div class="home-stats" role="region" aria-label="Statistiques globales">
+        <div class="home-stat">
+          <div class="home-stat__value" id="hs-total-answered">0</div>
+          <div class="home-stat__label">Questions répondues</div>
+        </div>
+        <div class="home-stat">
+          <div class="home-stat__value" id="hs-avg-score">—</div>
+          <div class="home-stat__label">Score moyen</div>
+        </div>
+        <div class="home-stat">
+          <div class="home-stat__value" id="hs-sessions">0</div>
+          <div class="home-stat__label">Sessions</div>
+        </div>
+        <div class="home-stat">
+          <div class="home-stat__value" id="hs-failed">0</div>
+          <div class="home-stat__label">À réviser</div>
+        </div>
+      </div>
+
+      <!-- Sélection du mode -->
+      <div class="mode-grid" role="list">
+        <button class="mode-card mode-card--quick" onclick="QuizApp.startMode('quick')" role="listitem">
+          <div class="mode-card__icon" aria-hidden="true">⚡</div>
+          <div class="mode-card__title">Quiz rapide</div>
+          <div class="mode-card__desc">10 questions aléatoires piochées dans tous les modules. Idéal pour une révision express.</div>
+          <span class="mode-card__meta">10 questions · Tous modules</span>
+        </button>
+
+        <button class="mode-card mode-card--module" onclick="QuizApp.startMode('module')" role="listitem">
+          <div class="mode-card__icon" aria-hidden="true">📖</div>
+          <div class="mode-card__title">Quiz par module</div>
+          <div class="mode-card__desc">Choisissez un ou plusieurs modules et filtrez par difficulté. Ciblé et efficace.</div>
+          <span class="mode-card__meta">Personnalisable</span>
+        </button>
+
+        <button class="mode-card mode-card--revision" onclick="QuizApp.startMode('revision')" role="listitem">
+          <div class="mode-card__icon" aria-hidden="true">🔄</div>
+          <div class="mode-card__title">Mode révision</div>
+          <div class="mode-card__desc">Uniquement les questions que vous avez ratées lors de sessions précédentes.</div>
+          <span class="mode-card__meta" id="revision-count-label">0 question à réviser</span>
+        </button>
+
+        <button class="mode-card mode-card--exam" onclick="QuizApp.startMode('exam')" role="listitem">
+          <div class="mode-card__icon" aria-hidden="true">🎓</div>
+          <div class="mode-card__title">Examen blanc</div>
+          <div class="mode-card__desc">30 questions, 45 minutes chrono. Conditions d'examen réelles. Pas de feedback immédiat.</div>
+          <span class="mode-card__meta">30 questions · 45 min</span>
+        </button>
+      </div>
+
+      <!-- Historique des sessions -->
+      <div class="history-section">
+        <div class="history-title">Dernières sessions</div>
+        <div class="history-list" id="history-list" aria-live="polite">
+          <div class="history-empty">Aucune session enregistrée — lancez votre premier quiz !</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══════════════════════════════
+         ÉCRAN 2 — CONFIGURATION MODULE
+         ═══════════════════════════════ -->
+    <div class="quiz-screen" id="screen-config">
+
+      <div class="breadcrumb" style="margin-bottom:20px;">
+        <div class="breadcrumb__item">
+          <button class="breadcrumb__link" style="background:none;border:none;cursor:pointer;font:inherit;"
+                  onclick="QuizApp.showScreen('home')">📝 Quiz</button>
+          <span class="breadcrumb__sep">›</span>
+        </div>
+        <span class="breadcrumb__current">Configuration</span>
+      </div>
+
+      <!-- Sélection des modules -->
+      <div class="config-card">
+        <div class="config-card__title">📚 Modules à inclure</div>
+        <div class="module-checkboxes" id="config-module-checkboxes" role="group" aria-label="Sélection des modules">
+          <!-- Rendu par JS -->
+        </div>
+        <div style="margin-top:10px;display:flex;gap:8px;">
+          <button class="btn btn--ghost btn--sm" onclick="QuizApp.selectAllModules()">Tout sélectionner</button>
+          <button class="btn btn--ghost btn--sm" onclick="QuizApp.deselectAllModules()">Tout désélectionner</button>
+        </div>
+      </div>
+
+      <!-- Difficulté -->
+      <div class="config-card">
+        <div class="config-card__title">🎯 Difficultés incluses</div>
+        <div class="diff-chips" role="group" aria-label="Filtres de difficulté">
+          <button class="diff-chip active-facile" data-diff="facile" aria-pressed="true"
+                  onclick="QuizApp.toggleDiff('facile', this)">⭐ Facile</button>
+          <button class="diff-chip active-moyen" data-diff="moyen" aria-pressed="true"
+                  onclick="QuizApp.toggleDiff('moyen', this)">⭐⭐ Moyen</button>
+          <button class="diff-chip active-difficile" data-diff="difficile" aria-pressed="true"
+                  onclick="QuizApp.toggleDiff('difficile', this)">⭐⭐⭐ Difficile</button>
+        </div>
+      </div>
+
+      <!-- Nombre de questions -->
+      <div class="config-card">
+        <div class="config-card__title">🔢 Nombre de questions</div>
+        <div class="range-wrap">
+          <span style="font-size:var(--text-sm);color:var(--text-muted)">5</span>
+          <input type="range" id="config-nb-questions" min="5" max="30" step="5" value="10"
+                 oninput="document.getElementById('config-nb-value').textContent=this.value"
+                 aria-label="Nombre de questions" />
+          <span style="font-size:var(--text-sm);color:var(--text-muted)">30</span>
+          <span class="range-value" id="config-nb-value">10</span>
+        </div>
+      </div>
+
+      <div class="btn-group" style="justify-content:flex-end;">
+        <button class="btn btn--secondary" onclick="QuizApp.showScreen('home')">← Retour</button>
+        <button class="btn btn--primary" onclick="QuizApp.launchFromConfig()" id="btn-launch-config">
+          Démarrer le quiz →
+        </button>
+      </div>
+    </div>
+
+    <!-- ═══════════════════════════════
+         ÉCRAN 3 — QUIZ ACTIF
+         ═══════════════════════════════ -->
+    <div class="quiz-screen" id="screen-quiz">
+
+      <!-- Barre de statut -->
+      <div class="quiz-topbar" role="status" aria-live="polite">
+        <div class="quiz-topbar__left">
+          <span class="badge" id="quiz-mode-badge">Mode</span>
+          <span class="quiz-counter">
+            Question <strong id="q-current">1</strong> / <strong id="q-total">10</strong>
+          </span>
+        </div>
+        <div class="quiz-topbar__right">
+          <div class="quiz-timer" id="quiz-timer" aria-label="Temps écoulé">
+            <span>⏱</span>
+            <span id="timer-display">00:00</span>
+          </div>
+          <button class="btn btn--secondary btn--sm" onclick="QuizApp.confirmAbort()">✕ Arrêter</button>
+        </div>
+      </div>
+
+      <!-- Timer barre examen -->
+      <div class="exam-timer-bar-wrap" id="exam-timer-bar" aria-hidden="true">
+        <div class="exam-timer-label">
+          <span>⏳ Temps restant</span>
+          <span id="exam-timer-text">45:00</span>
+        </div>
+        <div class="exam-timer-track">
+          <div class="exam-timer-fill" id="exam-timer-fill" style="width:100%"></div>
+        </div>
+      </div>
+
+      <!-- Barre de progression des questions -->
+      <div class="quiz-progress-wrap" aria-label="Progression">
+        <div class="quiz-progress-label">
+          <span id="progress-correct-label">0 correcte(s)</span>
+          <span id="progress-pct">0%</span>
+        </div>
+        <div class="quiz-progress-track" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">
+          <div class="quiz-progress-fill" id="quiz-progress-fill" style="width:0%"></div>
+        </div>
+      </div>
+
+      <!-- Carte de question -->
+      <div class="question-card">
+        <div class="question-card__meta">
+          <span class="diff-badge" id="q-diff-badge">facile</span>
+          <span class="badge badge--neutral" id="q-module-badge">Module</span>
+        </div>
+        <p class="question-text" id="question-text">Chargement…</p>
+        <div class="choices-grid" id="choices-container" role="radiogroup" aria-label="Choix de réponse">
+          <!-- Rendu par JS -->
+        </div>
+        <div class="feedback-box" id="feedback-box" role="alert">
+          <div class="feedback-box__header">
+            <span class="feedback-box__icon" id="feedback-icon"></span>
+            <span id="feedback-title"></span>
+          </div>
+          <p class="feedback-box__expl" id="feedback-expl"></p>
+        </div>
+      </div>
+
+      <!-- Navigation -->
+      <div class="quiz-nav">
+        <span class="text-muted text-sm" id="quiz-nav-hint"></span>
+        <button class="btn btn--primary btn-next" id="btn-next" onclick="QuizApp.next()"
+                style="display:none;" aria-label="Question suivante">
+          Suivante →
+        </button>
+      </div>
+    </div>
+
+    <!-- ═══════════════════════════════
+         ÉCRAN 4 — RÉSULTATS
+         ═══════════════════════════════ -->
+    <div class="quiz-screen" id="screen-results">
+
+      <div class="results-header">
+        <div class="score-emoji" id="result-emoji" aria-hidden="true">🎉</div>
+        <h2 style="font-size:var(--text-2xl);font-weight:var(--weight-bold);color:var(--text);margin-bottom:4px;"
+            id="result-title">Résultats</h2>
+        <p style="color:var(--text-muted);font-size:var(--text-sm);" id="result-subtitle"></p>
+      </div>
+
+      <!-- Cercle score -->
+      <div class="score-circle-wrap">
+        <div class="score-circle" id="score-circle" aria-label="Score">
+          <div class="score-circle__pct" id="score-pct">0%</div>
+          <div class="score-circle__label" id="score-label">Score</div>
+        </div>
+      </div>
+
+      <!-- Stats 4 colonnes -->
+      <div class="result-stats" role="list">
+        <div class="result-stat" role="listitem">
+          <div class="result-stat__value" style="color:var(--success);" id="rs-correct">0</div>
+          <div class="result-stat__label">✅ Correctes</div>
+        </div>
+        <div class="result-stat" role="listitem">
+          <div class="result-stat__value" style="color:var(--danger);" id="rs-wrong">0</div>
+          <div class="result-stat__label">❌ Incorrectes</div>
+        </div>
+        <div class="result-stat" role="listitem">
+          <div class="result-stat__value" id="rs-time">0:00</div>
+          <div class="result-stat__label">⏱ Durée</div>
+        </div>
+        <div class="result-stat" role="listitem">
+          <div class="result-stat__value" id="rs-accuracy">0%</div>
+          <div class="result-stat__label">🎯 Précision</div>
+        </div>
+      </div>
+
+      <!-- Stats par module -->
+      <div style="margin-bottom:12px;">
+        <div class="history-title">Résultats par module</div>
+        <div class="module-stats-grid" id="result-module-stats"></div>
+      </div>
+
+      <!-- Questions ratées (accordéon) -->
+      <div class="failed-section" id="failed-section">
+        <div class="failed-section__header" onclick="toggleFailed()" aria-expanded="true">
+          <span class="failed-section__title">
+            ❌ Questions ratées
+            <span class="badge badge--danger" id="failed-count-badge">0</span>
+          </span>
+          <span class="accordion__chevron" id="failed-chevron">▲</span>
+        </div>
+        <div class="failed-list" id="failed-list"></div>
+      </div>
+
+      <!-- Actions -->
+      <div class="result-actions">
+        <button class="btn btn--primary" onclick="QuizApp.retry()">🔄 Refaire ce quiz</button>
+        <button class="btn btn--secondary" onclick="QuizApp.startMode('revision')">📚 Réviser les erreurs</button>
+        <button class="btn btn--secondary" onclick="QuizApp.showScreen('home')">🏠 Accueil quiz</button>
+        <a href="cours.html" class="btn btn--ghost">📖 Voir les cours</a>
+      </div>
+    </div>
+
+  </div><!-- /quiz-wrap -->
+
+  <div class="toast-container" role="status" aria-live="polite"></div>
+
+  <script src="../data/quiz.js"></script>
+  <script src="../assets/js/auth.js"></script>
+  <script src="../assets/js/main.js"></script>
+  <script>
+  /* ════════════════════════════════════════════════════════════
+     QUIZ APP — Logique complète
+     ════════════════════════════════════════════════════════════ */
+  'use strict';
+
+  // ── Clés localStorage ──
+  const QK = {
+    history:  'tssr_quiz_history',   // Array<SessionResult>
+    failed:   'tssr_quiz_failed',    // { questionId: failCount }
+    stats:    'tssr_quiz_stats',     // { moduleId: { answered, correct } }
+  };
+
+  // ── Métadonnées des modules ──
+  const MODULE_META = {
+    reseau:         { label: 'Réseaux',           emoji: '🌐' },
+    linux:          { label: 'Linux',              emoji: '🐧' },
+    windows:        { label: 'Windows Server',     emoji: '🪟' },
+    securite:       { label: 'Sécurité',           emoji: '🔒' },
+    virtualisation: { label: 'Virtualisation',     emoji: '☁️' },
+    bash:           { label: 'Scripting Bash',     emoji: '⚙️' },
+    powershell:     { label: 'PowerShell',         emoji: '💠' },
+    ad:             { label: 'Active Directory',   emoji: '🏢' },
+    cisco:          { label: 'Cisco avancé',       emoji: '🔧' },
+    itil:           { label: 'ITIL / GLPI',        emoji: '📋' },
+  };
+
+  const MODE_LABELS = {
+    quick:    '⚡ Quiz rapide',
+    module:   '📖 Par module',
+    revision: '🔄 Révision',
+    exam:     '🎓 Examen blanc',
+  };
+
+  const EXAM_DURATION = 45 * 60; // secondes
+
+  // ── État de l'application ──
+  const QuizApp = {
+    allQuestions:    [],    // Toutes les questions du JSON
+    questions:       [],    // Questions de la session en cours
+    currentIndex:    0,
+    answers:         [],    // { id, correct, selected, timeMs }
+    mode:            null,
+    startTime:       null,
+    qStartTime:      null,  // Début de la question actuelle
+    timerInterval:   null,
+    examInterval:    null,
+    examRemaining:   EXAM_DURATION,
+    selectedModules: [],
+    selectedDiffs:   ['facile', 'moyen', 'difficile'],
+    nbQuestions:     10,
+    answered:        false, // Question courante répondue ?
+    lastSession:     null,  // Pour le "refaire"
+
+    /* ── Initialisation ── */
+    init() {
+      this.allQuestions = QUIZ_DATA.questions || [];
+      this.renderHome();
+    },
+
+    /* ── Navigation entre écrans ── */
+    showScreen(id) {
+      document.querySelectorAll('.quiz-screen').forEach(s => s.classList.remove('active'));
+      document.getElementById(`screen-${id}`).classList.add('active');
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    },
+
+    /* ── Rendu écran d'accueil ── */
+    renderHome() {
+      const history  = Store.get(QK.history, []);
+      const failed   = Store.get(QK.failed, {});
+      const failedCt = Object.keys(failed).length;
+
+      // Calculer stats globales
+      const totalAnswered = history.reduce((a, s) => a + s.total, 0);
+      const totalCorrect  = history.reduce((a, s) => a + s.correct, 0);
+      const avgScore = totalAnswered > 0
+        ? Math.round((totalCorrect / totalAnswered) * 100) + '%' : '—';
+
+      document.getElementById('hs-total-answered').textContent = totalAnswered;
+      document.getElementById('hs-avg-score').textContent      = avgScore;
+      document.getElementById('hs-sessions').textContent       = history.length;
+      document.getElementById('hs-failed').textContent         = failedCt;
+      document.getElementById('revision-count-label').textContent =
+        failedCt + ' question' + (failedCt > 1 ? 's' : '') + ' à réviser';
+
+      // Historique
+      const histEl = document.getElementById('history-list');
+      if (!history.length) {
+        histEl.innerHTML = '<div class="history-empty">Aucune session — lancez votre premier quiz !</div>';
+        return;
+      }
+      histEl.innerHTML = history.slice(0, 6).map(s => {
+        const pct   = Math.round((s.correct / s.total) * 100);
+        const cls   = pct >= 80 ? 'score--good' : pct >= 60 ? 'score--medium' : 'score--bad';
+        const mods  = s.modules?.map(m => MODULE_META[m]?.emoji || m).join(' ') || 'Tous';
+        return `
+        <div class="history-item">
+          <span class="history-item__score ${cls}">${pct}%</span>
+          <div class="history-item__info">
+            <div class="history-item__mode">${MODE_LABELS[s.mode] || s.mode} · ${mods}</div>
+            <div class="history-item__date">${formatDate(s.date)} — ${s.correct}/${s.total} en ${formatTime(s.timeSeconds)}</div>
+          </div>
+          <span class="badge ${pct >= 80 ? 'badge--success' : pct >= 60 ? 'badge--warning' : 'badge--danger'}">${pct >= 80 ? '✓ Réussi' : pct >= 60 ? '~ Passable' : '✗ À revoir'}</span>
+        </div>`;
+      }).join('');
+    },
+
+    /* ── Démarrer un mode ── */
+    startMode(mode) {
+      this.mode = mode;
+
+      if (mode === 'module') {
+        this.buildConfigScreen();
+        this.showScreen('config');
+        return;
+      }
+
+      if (mode === 'revision') {
+        const failed  = Store.get(QK.failed, {});
+        const failIds = Object.keys(failed);
+        if (!failIds.length) {
+          window.TSSR?.showToast('Aucune question ratée ! Commencez par faire un quiz.', 'default');
+          return;
+        }
+        this.questions = shuffle(
+          this.allQuestions.filter(q => failIds.includes(q.id))
+        );
+        if (!this.questions.length) {
+          window.TSSR?.showToast('Aucune question à réviser trouvée.', 'default');
+          return;
+        }
+        this.launchQuiz();
+        return;
+      }
+
+      if (mode === 'quick') {
+        this.questions = shuffle([...this.allQuestions]).slice(0, 10);
+        this.launchQuiz();
+        return;
+      }
+
+      if (mode === 'exam') {
+        if (!confirm('⚠️ Mode Examen — 30 questions, 45 minutes.\nPas de feedback immédiat.\n\nPrêt à commencer ?')) return;
+        this.questions = shuffle([...this.allQuestions]).slice(0, 30);
+        this.launchQuiz();
+      }
+    },
+
+    /* ── Config screen ── */
+    buildConfigScreen() {
+      const container = document.getElementById('config-module-checkboxes');
+      const modules   = [...new Set(this.allQuestions.map(q => q.module))];
+      this.selectedModules = [...modules]; // Tous sélectionnés par défaut
+
+      container.innerHTML = modules.map(m => {
+        const meta = MODULE_META[m] || { emoji: '📌', label: m };
+        return `
+        <label class="module-checkbox selected" data-mod="${m}">
+          <input type="checkbox" checked value="${m}" />
+          <div class="module-checkbox__check"></div>
+          <span class="module-checkbox__label">${meta.emoji} ${meta.label}</span>
+        </label>`;
+      }).join('');
+
+      // Events
+      container.querySelectorAll('.module-checkbox').forEach(el => {
+        el.addEventListener('click', () => {
+          el.classList.toggle('selected');
+          const cb = el.querySelector('input');
+          cb.checked = !cb.checked;
+          this.selectedModules = [...container.querySelectorAll('input:checked')]
+            .map(i => i.value);
+        });
+      });
+
+      // Reset diff chips
+      document.querySelectorAll('.diff-chip').forEach(c => {
+        c.classList.add(`active-${c.dataset.diff}`);
+        c.setAttribute('aria-pressed', 'true');
+      });
+      this.selectedDiffs = ['facile', 'moyen', 'difficile'];
+    },
+
+    selectAllModules() {
+      document.querySelectorAll('#config-module-checkboxes .module-checkbox').forEach(el => {
+        el.classList.add('selected');
+        el.querySelector('input').checked = true;
+      });
+      this.selectedModules = [...document.querySelectorAll('#config-module-checkboxes input')]
+        .map(i => i.value);
+    },
+
+    deselectAllModules() {
+      document.querySelectorAll('#config-module-checkboxes .module-checkbox').forEach(el => {
+        el.classList.remove('selected');
+        el.querySelector('input').checked = false;
+      });
+      this.selectedModules = [];
+    },
+
+    toggleDiff(diff, btn) {
+      const active  = btn.classList.contains(`active-${diff}`);
+      if (active) {
+        btn.classList.remove(`active-${diff}`);
+        btn.setAttribute('aria-pressed', 'false');
+        this.selectedDiffs = this.selectedDiffs.filter(d => d !== diff);
+      } else {
+        btn.classList.add(`active-${diff}`);
+        btn.setAttribute('aria-pressed', 'true');
+        this.selectedDiffs.push(diff);
+      }
+    },
+
+    launchFromConfig() {
+      if (!this.selectedModules.length) {
+        window.TSSR?.showToast('Sélectionnez au moins un module', 'danger'); return;
+      }
+      if (!this.selectedDiffs.length) {
+        window.TSSR?.showToast('Sélectionnez au moins une difficulté', 'danger'); return;
+      }
+      const nb = parseInt(document.getElementById('config-nb-questions').value) || 10;
+      const pool = this.allQuestions.filter(q =>
+        this.selectedModules.includes(q.module) &&
+        this.selectedDiffs.includes(q.difficulte)
+      );
+      if (!pool.length) {
+        window.TSSR?.showToast('Aucune question pour ces critères', 'danger'); return;
+      }
+      this.questions = shuffle(pool).slice(0, nb);
+      this.launchQuiz();
+    },
+
+    /* ── Lancer le quiz ── */
+    launchQuiz() {
+      this.currentIndex = 0;
+      this.answers      = [];
+      this.answered     = false;
+      this.startTime    = Date.now();
+      this.lastSession  = { mode: this.mode, questions: [...this.questions] };
+
+      // Mode exam : préparer timer
+      if (this.mode === 'exam') {
+        this.examRemaining = EXAM_DURATION;
+        document.getElementById('exam-timer-bar').classList.add('visible');
+        this.startExamTimer();
+      } else {
+        document.getElementById('exam-timer-bar').classList.remove('visible');
+        this.stopExamTimer();
+      }
+
+      this.startStopwatch();
+      this.showScreen('quiz');
+      this.renderQuestion();
+    },
+
+    /* ── Afficher la question courante ── */
+    renderQuestion() {
+      const q    = this.questions[this.currentIndex];
+      const meta = MODULE_META[q.module] || { emoji: '📌', label: q.module };
+      this.answered   = false;
+      this.qStartTime = Date.now();
+
+      // Topbar
+      document.getElementById('q-current').textContent = this.currentIndex + 1;
+      document.getElementById('q-total').textContent   = this.questions.length;
+      document.getElementById('quiz-mode-badge').textContent = MODE_LABELS[this.mode] || this.mode;
+      document.getElementById('quiz-mode-badge').className =
+        `badge badge--${this.mode === 'exam' ? 'danger' : this.mode === 'revision' ? 'warning' : 'info'}`;
+
+      // Badges
+      const diffBadge = document.getElementById('q-diff-badge');
+      diffBadge.textContent = { facile: '⭐ Facile', moyen: '⭐⭐ Moyen', difficile: '⭐⭐⭐ Difficile' }[q.difficulte] || q.difficulte;
+      diffBadge.className   = `diff-badge diff-badge--${q.difficulte}`;
+      document.getElementById('q-module-badge').textContent = `${meta.emoji} ${meta.label}`;
+
+      // Texte de la question
+      document.getElementById('question-text').textContent = q.question;
+
+      // Choix
+      const letters   = ['A', 'B', 'C', 'D'];
+      const container = document.getElementById('choices-container');
+      container.innerHTML = q.choix.map((c, i) => `
+        <button class="choice-btn" data-index="${i}"
+                onclick="QuizApp.selectAnswer(${i})"
+                aria-label="Choix ${letters[i]} : ${c}">
+          <span class="choice-btn__letter">${letters[i]}</span>
+          <span>${c}</span>
+        </button>`
+      ).join('');
+
+      // Feedback caché
+      const fb = document.getElementById('feedback-box');
+      fb.classList.remove('visible', 'feedback-box--correct', 'feedback-box--incorrect');
+
+      // Bouton next
+      document.getElementById('btn-next').style.display = 'none';
+      document.getElementById('quiz-nav-hint').textContent =
+        this.mode === 'exam' ? 'Cliquez sur une réponse pour continuer' : '';
+
+      // Barre de progression
+      const pct = this.currentIndex > 0
+        ? Math.round((this.currentIndex / this.questions.length) * 100) : 0;
+      const correct = this.answers.filter(a => a.correct).length;
+      document.getElementById('quiz-progress-fill').style.width = pct + '%';
+      document.getElementById('progress-correct-label').textContent = `${correct} correcte(s)`;
+      document.getElementById('progress-pct').textContent = pct + '%';
+    },
+
+    /* ── Sélection d'une réponse ── */
+    selectAnswer(selectedIndex) {
+      if (this.answered) return;
+      this.answered = true;
+
+      const q       = this.questions[this.currentIndex];
+      const correct = selectedIndex === q.reponse;
+      const timeMs  = Date.now() - this.qStartTime;
+
+      this.answers.push({ id: q.id, correct, selected: selectedIndex, timeMs });
+
+      // Mettre à jour le registre des échecs
+      const failed = Store.get(QK.failed, {});
+      if (correct) {
+        delete failed[q.id];
+      } else {
+        failed[q.id] = (failed[q.id] || 0) + 1;
+      }
+      Store.set(QK.failed, failed);
+
+      // Mise à jour stats par module
+      const stats = Store.get(QK.stats, {});
+      const ms    = stats[q.module] || { answered: 0, correct: 0 };
+      ms.answered++;
+      if (correct) ms.correct++;
+      stats[q.module] = ms;
+      Store.set(QK.stats, stats);
+
+      // Coloriser les boutons
+      document.querySelectorAll('.choice-btn').forEach(btn => {
+        btn.disabled = true;
+        const idx = parseInt(btn.dataset.index);
+        if (idx === q.reponse && correct)     btn.classList.add('choice-btn--correct');
+        if (idx === q.reponse && !correct)    btn.classList.add('choice-btn--reveal');
+        if (idx === selectedIndex && !correct)btn.classList.add('choice-btn--incorrect');
+      });
+
+      // Feedback (sauf examen blanc)
+      if (this.mode !== 'exam') {
+        const fb = document.getElementById('feedback-box');
+        fb.classList.add('visible', correct ? 'feedback-box--correct' : 'feedback-box--incorrect');
+        document.getElementById('feedback-icon').textContent  = correct ? '✅' : '❌';
+        document.getElementById('feedback-title').textContent = correct ? 'Bonne réponse !' : `Incorrect — La bonne réponse était : ${q.choix[q.reponse]}`;
+        document.getElementById('feedback-expl').textContent  = q.explication;
+      }
+
+      // Afficher bouton Suivante / Résultats
+      const btnNext = document.getElementById('btn-next');
+      btnNext.style.display = '';
+      const isLast = this.currentIndex === this.questions.length - 1;
+      btnNext.textContent = isLast ? '📊 Voir les résultats' : 'Suivante →';
+      btnNext.setAttribute('aria-label', isLast ? 'Voir les résultats' : 'Question suivante');
+
+      // Vibration (mobile)
+      if (navigator.vibrate) navigator.vibrate(correct ? [50] : [100, 50, 100]);
+    },
+
+    /* ── Question suivante ── */
+    next() {
+      if (!this.answered) return;
+
+      if (this.currentIndex < this.questions.length - 1) {
+        this.currentIndex++;
+        this.renderQuestion();
+      } else {
+        this.endQuiz();
+      }
+    },
+
+    /* ── Fin du quiz ── */
+    endQuiz() {
+      this.stopStopwatch();
+      this.stopExamTimer();
+
+      const totalSec = Math.round((Date.now() - this.startTime) / 1000);
+      const correct  = this.answers.filter(a => a.correct).length;
+      const total    = this.questions.length;
+      const modules  = [...new Set(this.questions.map(q => q.module))];
+
+      const session = {
+        date:        new Date().toISOString(),
+        mode:        this.mode,
+        modules,
+        total,
+        correct,
+        timeSeconds: totalSec,
+        answers:     this.answers,
+      };
+
+      this.saveSession(session);
+      this.renderResults(session);
+      this.showScreen('results');
+
+      // MAJ stats globales dans main.js Store
+      const qs = window.TSSR?.Store?.get('tssr_quiz', { totalAnswered: 0, totalCorrect: 0, sessions: 0 })
+        || { totalAnswered: 0, totalCorrect: 0, sessions: 0 };
+      qs.totalAnswered += total;
+      qs.totalCorrect  += correct;
+      qs.sessions++;
+      window.TSSR?.Store?.set('tssr_quiz', qs);
+      window.TSSR?.Store?.addActivity({ type: 'quiz', label: `Quiz ${MODE_LABELS[this.mode]} — ${correct}/${total}`, moduleId: null });
+    },
+
+    /* ── Rendu écran de résultats ── */
+    renderResults(session) {
+      const pct = Math.round((session.correct / session.total) * 100);
+
+      // Cercle de score
+      const circle = document.getElementById('score-circle');
+      circle.className = 'score-circle score-circle--' +
+        (pct >= 85 ? 'excellent' : pct >= 65 ? 'good' : pct >= 45 ? 'medium' : 'bad');
+      document.getElementById('score-pct').textContent = pct + '%';
+      document.getElementById('score-label').textContent = `${session.correct} / ${session.total}`;
+
+      // Emoji + titre
+      const [emoji, title, sub] = pct >= 85
+        ? ['🎉', 'Excellent !', 'Vous maîtrisez ce contenu.']
+        : pct >= 65
+        ? ['👍', 'Bien !', 'Quelques points à revoir.']
+        : pct >= 45
+        ? ['📚', 'Passable', 'Retournez consulter les cours.']
+        : ['💪', 'À travailler', 'Ne vous découragez pas !'];
+      document.getElementById('result-emoji').textContent    = emoji;
+      document.getElementById('result-title').textContent    = title;
+      document.getElementById('result-subtitle').textContent = `${sub} Mode : ${MODE_LABELS[session.mode]}`;
+
+      // Stats
+      document.getElementById('rs-correct').textContent  = session.correct;
+      document.getElementById('rs-wrong').textContent    = session.total - session.correct;
+      document.getElementById('rs-time').textContent     = formatTime(session.timeSeconds);
+      document.getElementById('rs-accuracy').textContent = pct + '%';
+
+      // Stats par module
+      const moduleStats = {};
+      this.questions.forEach((q, i) => {
+        if (!moduleStats[q.module]) moduleStats[q.module] = { correct: 0, total: 0 };
+        moduleStats[q.module].total++;
+        if (session.answers[i]?.correct) moduleStats[q.module].correct++;
+      });
+
+      const modGrid = document.getElementById('result-module-stats');
+      modGrid.innerHTML = Object.entries(moduleStats).map(([mod, s]) => {
+        const p   = Math.round((s.correct / s.total) * 100);
+        const col = p >= 80 ? 'var(--success)' : p >= 60 ? 'var(--warning)' : 'var(--danger)';
+        const m   = MODULE_META[mod] || { emoji: '📌', label: mod };
+        return `
+        <div class="module-stat-card">
+          <div class="module-stat-card__name">${m.emoji} ${m.label}</div>
+          <div class="module-stat-card__bar">
+            <div class="module-stat-card__fill" style="width:${p}%;background:${col};height:100%"></div>
+          </div>
+          <div class="module-stat-card__rate">${s.correct}/${s.total} — ${p}%</div>
+        </div>`;
+      }).join('');
+
+      // Questions ratées
+      const wrong = this.questions
+        .map((q, i) => ({ q, a: session.answers[i] }))
+        .filter(({ a }) => !a?.correct);
+
+      document.getElementById('failed-count-badge').textContent = wrong.length;
+      const failedList = document.getElementById('failed-list');
+
+      if (!wrong.length) {
+        document.getElementById('failed-section').style.display = 'none';
+      } else {
+        document.getElementById('failed-section').style.display = '';
+        failedList.innerHTML = wrong.map(({ q, a }) => {
+          const letters = ['A', 'B', 'C', 'D'];
+          const selected = a?.selected ?? -1;
+          return `
+          <div class="failed-item">
+            <div class="failed-item__question">❓ ${q.question}</div>
+            ${selected >= 0
+              ? `<div class="failed-item__your-answer">❌ Votre réponse : ${letters[selected]}. ${q.choix[selected]}</div>`
+              : '<div class="failed-item__your-answer">⏩ Sans réponse</div>'}
+            <div class="failed-item__correct-answer">✅ Bonne réponse : ${letters[q.reponse]}. ${q.choix[q.reponse]}</div>
+            <div class="failed-item__expl">💡 ${q.explication}</div>
+          </div>`;
+        }).join('');
+      }
+    },
+
+    /* ── Sauvegarder une session ── */
+    saveSession(session) {
+      const history = Store.get(QK.history, []);
+      // Stocker seulement les infos essentielles (pas les questions complètes)
+      history.unshift({
+        date:        session.date,
+        mode:        session.mode,
+        modules:     session.modules,
+        total:       session.total,
+        correct:     session.correct,
+        timeSeconds: session.timeSeconds,
+      });
+      Store.set(QK.history, history.slice(0, 50)); // Max 50 sessions
+    },
+
+    /* ── Refaire le même quiz ── */
+    retry() {
+      if (!this.lastSession) { this.showScreen('home'); return; }
+      this.questions = shuffle([...this.lastSession.questions]);
+      this.launchQuiz();
+    },
+
+    /* ── Arrêter (avec confirmation) ── */
+    confirmAbort() {
+      if (confirm('Arrêter le quiz en cours ? La progression sera perdue.')) {
+        this.stopStopwatch();
+        this.stopExamTimer();
+        this.showScreen('home');
+        this.renderHome();
+      }
+    },
+
+    /* ── Timer stopwatch (modes non-exam) ── */
+    startStopwatch() {
+      this.stopStopwatch();
+      const start = Date.now();
+      this.timerInterval = setInterval(() => {
+        const elapsed = Math.floor((Date.now() - start) / 1000);
+        document.getElementById('timer-display').textContent = formatTime(elapsed);
+      }, 1000);
+    },
+
+    stopStopwatch() {
+      if (this.timerInterval) { clearInterval(this.timerInterval); this.timerInterval = null; }
+    },
+
+    /* ── Timer examen (countdown) ── */
+    startExamTimer() {
+      this.stopExamTimer();
+      const fill  = document.getElementById('exam-timer-fill');
+      const text  = document.getElementById('exam-timer-text');
+      const timer = document.getElementById('quiz-timer');
+
+      this.examRemaining = EXAM_DURATION;
+
+      this.examInterval = setInterval(() => {
+        this.examRemaining--;
+        const pct = (this.examRemaining / EXAM_DURATION) * 100;
+
+        fill.style.width = pct + '%';
+        text.textContent = formatTime(this.examRemaining);
+        document.getElementById('timer-display').textContent = formatTime(this.examRemaining);
+
+        // Couleurs d'alerte
+        fill.className = 'exam-timer-fill' +
+          (this.examRemaining < 120 ? ' danger' : this.examRemaining < 600 ? ' warn' : '');
+        timer.className = 'quiz-timer' +
+          (this.examRemaining < 120 ? ' danger' : this.examRemaining < 600 ? ' warning' : '');
+
+        if (this.examRemaining <= 0) {
+          this.stopExamTimer();
+          window.TSSR?.showToast('⏰ Temps écoulé ! Fin de l\'examen.', 'danger');
+          this.endQuiz();
+        }
+      }, 1000);
+    },
+
+    stopExamTimer() {
+      if (this.examInterval) { clearInterval(this.examInterval); this.examInterval = null; }
+    },
+  };
+
+  /* ── Utilitaires ── */
+  const Store = window.TSSR?.Store || {
+    get:  (k, d) => { try { const v = localStorage.getItem(k); return v ? JSON.parse(v) : d; } catch { return d; } },
+    set:  (k, v) => { try { localStorage.setItem(k, JSON.stringify(v)); } catch {} },
+  };
+
+  function shuffle(arr) {
+    const a = [...arr];
+    for (let i = a.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [a[i], a[j]] = [a[j], a[i]];
+    }
+    return a;
+  }
+
+  function formatTime(sec) {
+    const m = String(Math.floor(sec / 60)).padStart(2, '0');
+    const s = String(Math.max(0, sec % 60)).padStart(2, '0');
+    return `${m}:${s}`;
+  }
+
+  function formatDate(iso) {
+    if (!iso) return '';
+    return new Date(iso).toLocaleDateString('fr-FR', { day:'2-digit', month:'short', year:'numeric' });
+  }
+
+  function toggleFailed() {
+    const list    = document.getElementById('failed-list');
+    const chevron = document.getElementById('failed-chevron');
+    const header  = list.closest('.failed-section')?.querySelector('.failed-section__header');
+    const open    = list.style.display !== 'none';
+    list.style.display    = open ? 'none' : '';
+    chevron.textContent   = open ? '▼' : '▲';
+    header?.setAttribute('aria-expanded', !open);
+  }
+
+  /* ── URL params : module présélectionné depuis cours.html ── */
+  function applyURLParams() {
+    const params = new URLSearchParams(location.search);
+    const mod    = params.get('module');
+    if (mod) {
+      QuizApp.mode = 'module';
+      QuizApp.selectedModules = [mod];
+      QuizApp.selectedDiffs   = ['facile', 'moyen', 'difficile'];
+      QuizApp.nbQuestions     = 10;
+    }
+  }
+
+  /* ── Lancement ── */
+  document.addEventListener('DOMContentLoaded', async () => {
+    await QuizApp.init();
+    applyURLParams();
+    if (QuizApp.selectedModules?.length) {
+      const pool = QuizApp.allQuestions.filter(q => QuizApp.selectedModules.includes(q.module));
+      if (pool.length) {
+        QuizApp.questions = shuffle(pool).slice(0, 10);
+        QuizApp.launchQuiz();
+      }
+    }
+  });
+  </script>
+
+</body>
+</html>

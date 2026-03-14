@@ -1,0 +1,1192 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <!--
+    pages/checklist.html — Checklist interactive des compétences TSSR
+    Statuts cycliques (⬜→🔄→✅), barres de progression, filtres, notes, export PDF
+    Données : ../data/checklist.json | Persistance : localStorage tssr_checklist_data
+  -->
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Checklist Compétences — TSSR Notes</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../assets/css/style.css">
+
+  <style>
+    /* ── Layout ──────────────────────────────────────────────────── */
+    .checklist-layout {
+      display: grid;
+      grid-template-columns: 240px 1fr;
+      gap: 0;
+      min-height: calc(100vh - 64px);
+      margin-top: 64px;
+    }
+
+    /* ── Sidebar ─────────────────────────────────────────────────── */
+    .cl-sidebar {
+      background: var(--bg-secondary);
+      border-right: 1px solid var(--border);
+      padding: 1.5rem 1rem;
+      position: sticky;
+      top: 64px;
+      height: calc(100vh - 64px);
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 1.5rem;
+    }
+
+    .cl-sidebar h3 {
+      font-size: 0.7rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--text-muted);
+      margin-bottom: 0.5rem;
+    }
+
+    .cl-global-progress {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 1rem;
+    }
+
+    .cl-global-progress .gp-label {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 0.5rem;
+    }
+
+    .cl-global-progress .gp-title {
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: var(--text);
+    }
+
+    .cl-global-progress .gp-pct {
+      font-size: 1.25rem;
+      font-weight: 700;
+      color: var(--primary);
+    }
+
+    .cl-global-progress .gp-bar {
+      height: 8px;
+      background: var(--border);
+      border-radius: 99px;
+      overflow: hidden;
+    }
+
+    .cl-global-progress .gp-fill {
+      height: 100%;
+      background: linear-gradient(90deg, var(--primary), var(--success));
+      border-radius: 99px;
+      transition: width 0.4s ease;
+    }
+
+    .cl-global-progress .gp-counts {
+      display: flex;
+      gap: 0.75rem;
+      margin-top: 0.75rem;
+      flex-wrap: wrap;
+    }
+
+    .cl-global-progress .gp-count {
+      display: flex;
+      align-items: center;
+      gap: 0.3rem;
+      font-size: 0.75rem;
+      color: var(--text-muted);
+    }
+
+    .gp-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      flex-shrink: 0;
+    }
+
+    .gp-dot.done  { background: var(--success); }
+    .gp-dot.wip   { background: #F59E0B; }
+    .gp-dot.none  { background: var(--border); }
+
+    /* ── Sidebar filters ─────────────────────────────────────────── */
+    .cl-filter-group {
+      display: flex;
+      flex-direction: column;
+      gap: 0.35rem;
+    }
+
+    .cl-filter-btn {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.55rem 0.75rem;
+      border: none;
+      border-radius: var(--radius-sm);
+      background: transparent;
+      cursor: pointer;
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      transition: background 0.15s, color 0.15s;
+      text-align: left;
+      width: 100%;
+    }
+
+    .cl-filter-btn:hover { background: var(--surface); color: var(--text); }
+
+    .cl-filter-btn.active {
+      background: var(--primary);
+      color: white;
+      font-weight: 600;
+    }
+
+    .cl-filter-btn .filter-count {
+      margin-left: auto;
+      font-size: 0.75rem;
+      opacity: 0.75;
+    }
+
+    /* ── Sidebar module nav ──────────────────────────────────────── */
+    .cl-module-nav {
+      display: flex;
+      flex-direction: column;
+      gap: 0.2rem;
+    }
+
+    .cl-module-nav-item {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.4rem 0.6rem;
+      border-radius: var(--radius-sm);
+      cursor: pointer;
+      transition: background 0.15s;
+      text-decoration: none;
+      color: var(--text-muted);
+      font-size: 0.82rem;
+    }
+
+    .cl-module-nav-item:hover { background: var(--surface); color: var(--text); }
+    .cl-module-nav-item.active { background: #EFF6FF; color: var(--primary); font-weight: 600; }
+
+    .cl-module-nav-item .mnav-emoji { font-size: 0.9rem; }
+
+    .cl-module-nav-item .mnav-bar {
+      margin-left: auto;
+      width: 40px;
+      height: 4px;
+      background: var(--border);
+      border-radius: 99px;
+      overflow: hidden;
+      flex-shrink: 0;
+    }
+
+    .cl-module-nav-item .mnav-fill {
+      height: 100%;
+      background: var(--primary);
+      border-radius: 99px;
+      transition: width 0.3s ease;
+    }
+
+    /* ── Main content ────────────────────────────────────────────── */
+    .cl-main {
+      padding: 2rem;
+      max-width: 900px;
+    }
+
+    .cl-page-header {
+      margin-bottom: 2rem;
+    }
+
+    .cl-page-header h1 {
+      font-size: 1.75rem;
+      font-weight: 700;
+      color: var(--text);
+      margin-bottom: 0.25rem;
+    }
+
+    .cl-page-header p {
+      color: var(--text-muted);
+      font-size: 0.9rem;
+    }
+
+    .cl-toolbar {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      margin-bottom: 2rem;
+      flex-wrap: wrap;
+    }
+
+    .cl-toolbar .cl-search {
+      flex: 1;
+      min-width: 200px;
+      max-width: 320px;
+      padding: 0.55rem 0.9rem;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      font-size: 0.875rem;
+      color: var(--text);
+      background: var(--surface);
+      outline: none;
+      transition: border-color 0.15s;
+    }
+
+    .cl-toolbar .cl-search:focus { border-color: var(--primary); }
+
+    .cl-toolbar-actions {
+      display: flex;
+      gap: 0.5rem;
+      margin-left: auto;
+    }
+
+    /* ── Module blocks ───────────────────────────────────────────── */
+    .cl-module-block {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      margin-bottom: 1.5rem;
+      overflow: hidden;
+      transition: box-shadow 0.2s;
+    }
+
+    .cl-module-block:hover { box-shadow: var(--shadow-md); }
+
+    .cl-module-header {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      padding: 1.25rem 1.5rem;
+      cursor: pointer;
+      user-select: none;
+      border-bottom: 1px solid var(--border);
+      background: var(--bg-secondary);
+    }
+
+    .cl-module-emoji {
+      font-size: 1.5rem;
+      width: 2.5rem;
+      height: 2.5rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: var(--surface);
+      border-radius: var(--radius-sm);
+      border: 1px solid var(--border);
+      flex-shrink: 0;
+    }
+
+    .cl-module-info {
+      flex: 1;
+    }
+
+    .cl-module-info h2 {
+      font-size: 1rem;
+      font-weight: 700;
+      color: var(--text);
+      margin-bottom: 0.35rem;
+    }
+
+    .cl-module-bar-wrap {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+
+    .cl-module-bar {
+      flex: 1;
+      height: 6px;
+      background: var(--border);
+      border-radius: 99px;
+      overflow: hidden;
+    }
+
+    .cl-module-bar-fill {
+      height: 100%;
+      background: linear-gradient(90deg, var(--primary), var(--success));
+      border-radius: 99px;
+      transition: width 0.4s ease;
+    }
+
+    .cl-module-pct {
+      font-size: 0.8rem;
+      font-weight: 700;
+      color: var(--primary);
+      min-width: 35px;
+      text-align: right;
+    }
+
+    .cl-module-stats {
+      display: flex;
+      gap: 0.5rem;
+      flex-shrink: 0;
+    }
+
+    .cl-stat-pill {
+      display: flex;
+      align-items: center;
+      gap: 0.25rem;
+      padding: 0.2rem 0.5rem;
+      border-radius: 99px;
+      font-size: 0.7rem;
+      font-weight: 600;
+    }
+
+    .cl-stat-pill.done { background: #D1FAE5; color: #065F46; }
+    .cl-stat-pill.wip  { background: #FEF3C7; color: #92400E; }
+    .cl-stat-pill.none { background: var(--bg-secondary); color: var(--text-muted); }
+
+    .cl-module-chevron {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      transition: transform 0.25s;
+      flex-shrink: 0;
+    }
+
+    .cl-module-block.collapsed .cl-module-chevron { transform: rotate(-90deg); }
+
+    .cl-module-body {
+      padding: 0.75rem 0;
+    }
+
+    .cl-module-block.collapsed .cl-module-body { display: none; }
+
+    /* ── Competency rows ─────────────────────────────────────────── */
+    .cl-comp-row {
+      display: flex;
+      align-items: flex-start;
+      gap: 1rem;
+      padding: 0.75rem 1.5rem;
+      border-bottom: 1px solid var(--bg-secondary);
+      transition: background 0.15s;
+    }
+
+    .cl-comp-row:last-child { border-bottom: none; }
+    .cl-comp-row:hover { background: #FAFBFF; }
+
+    .cl-comp-row.hidden { display: none; }
+
+    .cl-status-btn {
+      width: 2rem;
+      height: 2rem;
+      border-radius: 50%;
+      border: 2px solid var(--border);
+      background: var(--surface);
+      cursor: pointer;
+      font-size: 1rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      transition: border-color 0.2s, background 0.2s, transform 0.15s;
+      user-select: none;
+    }
+
+    .cl-status-btn:hover { transform: scale(1.1); }
+
+    .cl-status-btn[data-status="none"]  { border-color: var(--border);  background: var(--surface); }
+    .cl-status-btn[data-status="wip"]   { border-color: #F59E0B; background: #FFFBEB; }
+    .cl-status-btn[data-status="done"]  { border-color: var(--success); background: #ECFDF5; }
+
+    .cl-comp-content {
+      flex: 1;
+    }
+
+    .cl-comp-text {
+      font-size: 0.875rem;
+      color: var(--text);
+      line-height: 1.55;
+      margin-bottom: 0.35rem;
+    }
+
+    .cl-comp-row[data-status="done"] .cl-comp-text {
+      color: var(--text-muted);
+      text-decoration: line-through;
+      text-decoration-color: var(--success);
+    }
+
+    .cl-comp-meta {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      flex-wrap: wrap;
+    }
+
+    .cl-comp-date {
+      font-size: 0.72rem;
+      color: var(--text-muted);
+    }
+
+    .cl-note-area {
+      display: flex;
+      align-items: center;
+      gap: 0.35rem;
+    }
+
+    .cl-note-placeholder {
+      font-size: 0.72rem;
+      color: var(--text-muted);
+      cursor: pointer;
+      font-style: italic;
+      transition: color 0.15s;
+      border: none;
+      background: none;
+      padding: 0;
+    }
+
+    .cl-note-placeholder:hover { color: var(--primary); }
+
+    .cl-note-value {
+      font-size: 0.72rem;
+      color: var(--primary);
+      cursor: pointer;
+      background: #EFF6FF;
+      padding: 0.15rem 0.5rem;
+      border-radius: 4px;
+      max-width: 280px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      display: inline-block;
+    }
+
+    .cl-note-input {
+      font-size: 0.8rem;
+      padding: 0.3rem 0.5rem;
+      border: 1px solid var(--primary);
+      border-radius: 4px;
+      outline: none;
+      width: 240px;
+      font-family: var(--font-sans);
+      color: var(--text);
+    }
+
+    /* ── Empty state ─────────────────────────────────────────────── */
+    .cl-empty {
+      text-align: center;
+      padding: 3rem 1rem;
+      color: var(--text-muted);
+      display: none;
+    }
+
+    .cl-empty.visible { display: block; }
+    .cl-empty-icon { font-size: 2.5rem; margin-bottom: 0.75rem; }
+
+    /* ── Loading/Error ───────────────────────────────────────────── */
+    #cl-loading {
+      text-align: center;
+      padding: 4rem;
+      color: var(--text-muted);
+    }
+
+    .spinner {
+      display: inline-block;
+      width: 2rem;
+      height: 2rem;
+      border: 3px solid var(--border);
+      border-top-color: var(--primary);
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+      margin-bottom: 1rem;
+    }
+
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* ── Mobile sidebar toggle ───────────────────────────────────── */
+    .cl-sidebar-toggle {
+      display: none;
+      position: fixed;
+      bottom: 1.5rem;
+      left: 1.5rem;
+      z-index: 200;
+      background: var(--primary);
+      color: white;
+      border: none;
+      border-radius: 50%;
+      width: 3rem;
+      height: 3rem;
+      font-size: 1.25rem;
+      cursor: pointer;
+      box-shadow: var(--shadow-lg);
+    }
+
+    /* ── Print / PDF export ──────────────────────────────────────── */
+    @media print {
+      .navbar, .cl-sidebar, .cl-toolbar, .cl-module-chevron,
+      .cl-status-btn, .cl-note-placeholder, .cl-note-input,
+      .cl-sidebar-toggle, footer, #toast-container { display: none !important; }
+
+      .checklist-layout { display: block; margin-top: 0; }
+      .cl-main { padding: 0; max-width: 100%; }
+
+      .cl-module-block { break-inside: avoid; box-shadow: none; border: 1px solid #ccc; margin-bottom: 1rem; }
+      .cl-module-block.collapsed .cl-module-body { display: block !important; }
+      .cl-module-header { background: #F4F6F9 !important; }
+
+      .cl-comp-row { border-bottom: 1px solid #E5E7EB; }
+      .cl-comp-row.hidden { display: flex !important; }
+
+      .cl-status-symbol {
+        display: inline-block !important;
+        font-weight: 700;
+        margin-right: 0.35rem;
+        font-family: monospace;
+      }
+
+      body::before {
+        content: "Bilan de Compétences TSSR — " attr(data-print-date);
+        display: block;
+        font-size: 1.1rem;
+        font-weight: 700;
+        text-align: center;
+        padding: 0.75rem 0;
+        border-bottom: 2px solid #2563EB;
+        margin-bottom: 1.5rem;
+        color: #1F2937;
+      }
+
+      body::after {
+        content: "Généré depuis TSSR Notes";
+        display: block;
+        text-align: center;
+        font-size: 0.75rem;
+        color: #6B7280;
+        margin-top: 1.5rem;
+        padding-top: 0.5rem;
+        border-top: 1px solid #E5E7EB;
+      }
+    }
+
+    /* ── Responsive ──────────────────────────────────────────────── */
+    @media (max-width: 768px) {
+      .checklist-layout { grid-template-columns: 1fr; }
+
+      .cl-sidebar {
+        position: fixed;
+        top: 64px;
+        left: -260px;
+        width: 240px;
+        height: calc(100vh - 64px);
+        z-index: 150;
+        box-shadow: var(--shadow-lg);
+        transition: left 0.3s ease;
+      }
+
+      .cl-sidebar.open { left: 0; }
+      .cl-sidebar-toggle { display: flex; align-items: center; justify-content: center; }
+
+      .cl-sidebar-overlay {
+        display: none;
+        position: fixed;
+        inset: 0;
+        background: rgba(0,0,0,0.35);
+        z-index: 140;
+      }
+
+      .cl-sidebar-overlay.open { display: block; }
+
+      .cl-main { padding: 1rem; }
+      .cl-module-stats { display: none; }
+      .cl-toolbar-actions .btn-secondary { display: none; }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <nav class="navbar" aria-label="Navigation principale">
+      <div class="navbar__inner">
+        <a href="../index.html" class="navbar__logo" aria-label="TSSR Notes — Accueil">
+          <div class="navbar__logo-icon" aria-hidden="true">T</div>
+          <span class="navbar__logo-text">TSSR<span>Notes</span></span>
+        </a>
+
+        <ul class="navbar__nav" role="list">
+          <li><a href="../index.html" class="navbar__link">🏠 Accueil</a></li>
+          <li><a href="cours.html" class="navbar__link">📖 Cours</a></li>
+          <li><a href="quiz.html" class="navbar__link">📝 Quiz</a></li>
+          <li><a href="checklist.html" class="navbar__link active" aria-current="page">✅ Checklist</a></li>
+          <li><a href="tableau.html" class="navbar__link">📊 Tableaux</a></li>
+          <li><a href="glossaire.html" class="navbar__link">📚 Glossaire</a></li>
+          <li><a href="ressources.html" class="navbar__link">🔗 Ressources</a></li>
+        </ul>
+
+        <div class="navbar__actions">
+          <div class="navbar__auth-slot"></div>
+          <button class="navbar__burger" aria-label="Menu" aria-expanded="false">
+            <span></span><span></span><span></span>
+          </button>
+        </div>
+      </div>
+    </nav>
+    <div class="navbar__mobile-menu" role="navigation" aria-label="Menu mobile">
+      <a href="../index.html" class="navbar__mobile-link">🏠 Accueil</a>
+      <a href="cours.html" class="navbar__mobile-link">📖 Cours</a>
+      <a href="quiz.html" class="navbar__mobile-link">📝 Quiz</a>
+      <a href="checklist.html" class="navbar__mobile-link active">✅ Checklist</a>
+      <a href="tableau.html" class="navbar__mobile-link">📊 Tableaux</a>
+      <a href="glossaire.html" class="navbar__mobile-link">📚 Glossaire</a>
+      <a href="ressources.html" class="navbar__mobile-link">🔗 Ressources</a>
+    </div>
+  </header>
+
+  <!-- ── Layout ────────────────────────────────────────────────── -->
+  <div class="checklist-layout">
+
+    <!-- Sidebar -->
+    <aside class="cl-sidebar" id="cl-sidebar">
+
+      <!-- Global progress -->
+      <div class="cl-global-progress">
+        <div class="gp-label">
+          <span class="gp-title">Progression globale</span>
+          <span class="gp-pct" id="gp-pct">0 %</span>
+        </div>
+        <div class="gp-bar">
+          <div class="gp-fill" id="gp-fill" style="width:0%"></div>
+        </div>
+        <div class="gp-counts">
+          <span class="gp-count"><span class="gp-dot done"></span><span id="gp-done">0</span> maîtrisé</span>
+          <span class="gp-count"><span class="gp-dot wip"></span><span id="gp-wip">0</span> en cours</span>
+          <span class="gp-count"><span class="gp-dot none"></span><span id="gp-none">0</span> non acquis</span>
+        </div>
+      </div>
+
+      <!-- Status filters -->
+      <div>
+        <h3>Filtrer par statut</h3>
+        <div class="cl-filter-group">
+          <button class="cl-filter-btn active" data-filter="all">
+            📋 Tout afficher
+            <span class="filter-count" id="fc-all">0</span>
+          </button>
+          <button class="cl-filter-btn" data-filter="none">
+            ⬜ Non acquis
+            <span class="filter-count" id="fc-none">0</span>
+          </button>
+          <button class="cl-filter-btn" data-filter="wip">
+            🔄 En cours
+            <span class="filter-count" id="fc-wip">0</span>
+          </button>
+          <button class="cl-filter-btn" data-filter="done">
+            ✅ Maîtrisé
+            <span class="filter-count" id="fc-done">0</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Module nav -->
+      <div>
+        <h3>Modules</h3>
+        <nav class="cl-module-nav" id="cl-module-nav">
+          <!-- injected by JS -->
+        </nav>
+      </div>
+
+    </aside>
+
+    <!-- Sidebar overlay (mobile) -->
+    <div class="cl-sidebar-overlay" id="cl-sidebar-overlay"></div>
+
+    <!-- Main content -->
+    <main class="cl-main">
+
+      <div class="cl-page-header">
+        <h1>✅ Checklist de Compétences</h1>
+        <p>Évaluez votre niveau sur chaque compétence TSSR. Cliquez sur le cercle pour changer le statut.</p>
+      </div>
+
+      <!-- Toolbar -->
+      <div class="cl-toolbar">
+        <input type="search" class="cl-search" id="cl-search"
+               placeholder="🔍 Rechercher une compétence…" autocomplete="off">
+        <div class="cl-toolbar-actions">
+          <button class="btn btn-secondary btn-sm" id="btn-expand-all">⊞ Tout déplier</button>
+          <button class="btn btn-secondary btn-sm" id="btn-collapse-all">⊟ Tout replier</button>
+          <button class="btn btn-primary btn-sm" id="btn-print">📄 Exporter PDF</button>
+        </div>
+      </div>
+
+      <!-- Loading state -->
+      <div id="cl-loading">
+        <div class="spinner"></div>
+        <p>Chargement des compétences…</p>
+      </div>
+
+      <!-- Module blocks (injected by JS) -->
+      <div id="cl-content"></div>
+
+      <!-- Empty state (shown when filter yields nothing) -->
+      <div class="cl-empty" id="cl-empty">
+        <div class="cl-empty-icon">🔍</div>
+        <p>Aucune compétence ne correspond à ce filtre.</p>
+      </div>
+
+    </main>
+  </div>
+
+  <!-- Mobile sidebar toggle -->
+  <button class="cl-sidebar-toggle" id="cl-sidebar-toggle" aria-label="Ouvrir la navigation">☰</button>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="footer-inner">
+      <span>TSSR Notes © <span id="footer-year"></span></span>
+      <span>100% local — aucune donnée envoyée</span>
+    </div>
+  </footer>
+
+  <div id="toast-container" aria-live="polite"></div>
+
+  <script src="../data/checklist.js"></script>
+  <script src="../assets/js/auth.js"></script>
+  <script src="../assets/js/main.js"></script>
+  <script>
+  /*!
+   * ChecklistApp — Checklist interactive des compétences TSSR
+   *
+   * localStorage key : tssr_checklist_data
+   * Format : { [compId]: { status: "none"|"wip"|"done", note: "", updatedAt: ISO } }
+   *
+   * Synchronise aussi tssr_checklist (pour le dashboard index.html) :
+   * { total, done, pct }
+   */
+
+  const CL_KEY = 'tssr_checklist_data';
+
+  const STATUS_CYCLE = ['none', 'wip', 'done'];
+  const STATUS_LABEL = { none: 'Non acquis', wip: 'En cours', done: 'Maîtrisé' };
+  const STATUS_EMOJI = { none: '⬜', wip: '🔄', done: '✅' };
+  const STATUS_PRINT = { none: '☐', wip: '◑', done: '☑' }; // print only
+
+  const ChecklistApp = {
+    modules: [],
+    data: {},
+    currentFilter: 'all',
+    currentSearch: '',
+
+    // ── Init ──────────────────────────────────────────────────────
+    init() {
+      document.getElementById('footer-year').textContent = new Date().getFullYear();
+      this.data = this.loadData();
+      this.modules = CHECKLIST_DATA.modules || [];
+
+      document.getElementById('cl-loading').style.display = 'none';
+
+      this.renderAll();
+      this.renderSidebarNav();
+      this.bindEvents();
+      this.updateAllProgress();
+    },
+
+    // ── Persistence ───────────────────────────────────────────────
+    loadData() {
+      try { return JSON.parse(localStorage.getItem(CL_KEY) || '{}'); }
+      catch { return {}; }
+    },
+
+    saveData() {
+      localStorage.setItem(CL_KEY, JSON.stringify(this.data));
+      // Sync dashboard key
+      const total = this.totalComps();
+      const done  = this.countStatus('done');
+      const pct   = total ? Math.round(done / total * 100) : 0;
+      if (window.TSSR) {
+        window.TSSR.Store.set('tssr_checklist', { total, done, pct });
+      }
+    },
+
+    getComp(id) {
+      return this.data[id] || { status: 'none', note: '', updatedAt: null };
+    },
+
+    setComp(id, patch) {
+      this.data[id] = { ...this.getComp(id), ...patch, updatedAt: new Date().toISOString() };
+      this.saveData();
+    },
+
+    // ── Stats ─────────────────────────────────────────────────────
+    totalComps() {
+      return this.modules.reduce((s, m) => s + m.competences.length, 0);
+    },
+
+    countStatus(status) {
+      return Object.values(this.data).filter(d => d.status === status).length;
+    },
+
+    moduleStats(module) {
+      let done = 0, wip = 0;
+      for (const c of module.competences) {
+        const s = this.getComp(c.id).status;
+        if (s === 'done') done++;
+        else if (s === 'wip') wip++;
+      }
+      const total = module.competences.length;
+      return { total, done, wip, none: total - done - wip };
+    },
+
+    // ── Render: module blocks ─────────────────────────────────────
+    renderAll() {
+      const container = document.getElementById('cl-content');
+      container.innerHTML = '';
+      for (const mod of this.modules) {
+        container.appendChild(this.buildModuleBlock(mod));
+      }
+    },
+
+    buildModuleBlock(mod) {
+      const stats = this.moduleStats(mod);
+      const pct   = Math.round(stats.done / stats.total * 100);
+
+      const wrap = document.createElement('div');
+      wrap.className = 'cl-module-block';
+      wrap.id = `block-${mod.id}`;
+
+      wrap.innerHTML = `
+        <div class="cl-module-header" data-module="${mod.id}">
+          <div class="cl-module-emoji">${mod.emoji}</div>
+          <div class="cl-module-info">
+            <h2>${mod.titre}</h2>
+            <div class="cl-module-bar-wrap">
+              <div class="cl-module-bar">
+                <div class="cl-module-bar-fill" id="mbar-${mod.id}" style="width:${pct}%"></div>
+              </div>
+              <span class="cl-module-pct" id="mpct-${mod.id}">${pct} %</span>
+            </div>
+          </div>
+          <div class="cl-module-stats" id="mstats-${mod.id}">
+            ${this.statsHTML(stats)}
+          </div>
+          <span class="cl-module-chevron">▼</span>
+        </div>
+        <div class="cl-module-body" id="mbody-${mod.id}">
+          ${mod.competences.map(c => this.buildCompRow(c)).join('')}
+        </div>`;
+
+      return wrap;
+    },
+
+    statsHTML(stats) {
+      return [
+        stats.done ? `<span class="cl-stat-pill done">✅ ${stats.done}</span>` : '',
+        stats.wip  ? `<span class="cl-stat-pill wip">🔄 ${stats.wip}</span>`   : '',
+        stats.none ? `<span class="cl-stat-pill none">⬜ ${stats.none}</span>` : ''
+      ].join('');
+    },
+
+    buildCompRow(comp) {
+      const { status, note, updatedAt } = this.getComp(comp.id);
+      const dateStr = updatedAt ? `Modifié ${this.relDate(updatedAt)}` : '';
+
+      return `
+        <div class="cl-comp-row" id="row-${comp.id}" data-comp="${comp.id}" data-status="${status}">
+          <button class="cl-status-btn" data-status="${status}" data-comp="${comp.id}"
+                  title="${STATUS_LABEL[status]} — cliquer pour changer"
+                  onclick="ChecklistApp.cycleStatus('${comp.id}')">
+            <span>${STATUS_EMOJI[status]}</span>
+          </button>
+          <div class="cl-comp-content">
+            <p class="cl-comp-text">${this.esc(comp.texte)}</p>
+            <div class="cl-comp-meta">
+              <span class="cl-comp-date" id="date-${comp.id}">${dateStr}</span>
+              <div class="cl-note-area" id="note-${comp.id}">${this.noteHTML(comp.id, note)}</div>
+            </div>
+          </div>
+        </div>`;
+    },
+
+    noteHTML(compId, note) {
+      if (note) {
+        return `<span class="cl-note-value" title="${this.escAttr(note)}"
+                      onclick="ChecklistApp.editNote('${compId}')">${this.esc(note)}</span>`;
+      }
+      return `<button class="cl-note-placeholder"
+                      onclick="ChecklistApp.editNote('${compId}')">+ Ajouter une note…</button>`;
+    },
+
+    // ── Cycle status ──────────────────────────────────────────────
+    cycleStatus(compId) {
+      const cur  = this.getComp(compId).status;
+      const next = STATUS_CYCLE[(STATUS_CYCLE.indexOf(cur) + 1) % STATUS_CYCLE.length];
+
+      this.setComp(compId, { status: next });
+
+      // Update row
+      const row = document.getElementById(`row-${compId}`);
+      if (!row) return;
+      row.dataset.status = next;
+
+      const btn = row.querySelector('.cl-status-btn');
+      btn.dataset.status = next;
+      btn.title = `${STATUS_LABEL[next]} — cliquer pour changer`;
+      btn.querySelector('span').textContent = STATUS_EMOJI[next];
+
+      const dateEl = document.getElementById(`date-${compId}`);
+      if (dateEl) dateEl.textContent = "Modifié à l'instant";
+
+      // Apply filter visibility
+      this.filterRow(row, next);
+
+      // Refresh progress
+      const modId = this.findModule(compId);
+      if (modId) this.refreshModuleProgress(modId);
+      this.refreshGlobalProgress();
+      this.refreshFilterCounts();
+      this.refreshSidebarBars();
+
+      if (window.TSSR?.showToast) {
+        window.TSSR.showToast(`${STATUS_EMOJI[next]} ${STATUS_LABEL[next]}`, 'success');
+      }
+    },
+
+    // ── Inline note ───────────────────────────────────────────────
+    editNote(compId) {
+      const area = document.getElementById(`note-${compId}`);
+      if (!area) return;
+      const current = this.getComp(compId).note || '';
+
+      area.innerHTML = `<input type="text" class="cl-note-input" id="ni-${compId}"
+                               value="${this.escAttr(current)}" placeholder="Note personnelle…" maxlength="200">`;
+
+      const input = document.getElementById(`ni-${compId}`);
+      input.focus();
+      input.select();
+
+      const save = () => {
+        const val = input.value.trim();
+        this.setComp(compId, { note: val });
+        area.innerHTML = this.noteHTML(compId, val);
+      };
+
+      input.addEventListener('blur', save);
+      input.addEventListener('keydown', e => {
+        if (e.key === 'Enter') { e.preventDefault(); input.blur(); }
+        if (e.key === 'Escape') { area.innerHTML = this.noteHTML(compId, current); }
+      });
+    },
+
+    // ── Progress updates ──────────────────────────────────────────
+    refreshModuleProgress(modId) {
+      const mod   = this.modules.find(m => m.id === modId);
+      if (!mod) return;
+      const stats = this.moduleStats(mod);
+      const pct   = Math.round(stats.done / stats.total * 100);
+
+      const barEl   = document.getElementById(`mbar-${modId}`);
+      const pctEl   = document.getElementById(`mpct-${modId}`);
+      const statsEl = document.getElementById(`mstats-${modId}`);
+
+      if (barEl)   barEl.style.width      = `${pct}%`;
+      if (pctEl)   pctEl.textContent      = `${pct} %`;
+      if (statsEl) statsEl.innerHTML      = this.statsHTML(stats);
+    },
+
+    refreshGlobalProgress() {
+      const total = this.totalComps();
+      const done  = this.countStatus('done');
+      const wip   = this.countStatus('wip');
+      const pct   = total ? Math.round(done / total * 100) : 0;
+
+      document.getElementById('gp-pct').textContent  = `${pct} %`;
+      document.getElementById('gp-fill').style.width = `${pct}%`;
+      document.getElementById('gp-done').textContent = done;
+      document.getElementById('gp-wip').textContent  = wip;
+      document.getElementById('gp-none').textContent = total - done - wip;
+    },
+
+    updateAllProgress() {
+      for (const mod of this.modules) this.refreshModuleProgress(mod.id);
+      this.refreshGlobalProgress();
+      this.refreshFilterCounts();
+      this.refreshSidebarBars();
+    },
+
+    // ── Filters ───────────────────────────────────────────────────
+    applyFilter(filter) {
+      this.currentFilter = filter;
+
+      document.querySelectorAll('.cl-filter-btn').forEach(btn => {
+        btn.classList.toggle('active', btn.dataset.filter === filter);
+      });
+
+      let anyVisible = false;
+      document.querySelectorAll('.cl-comp-row').forEach(row => {
+        if (this.filterRow(row, row.dataset.status)) anyVisible = true;
+      });
+
+      document.getElementById('cl-empty').classList.toggle('visible', !anyVisible);
+
+      // Hide module blocks with no visible rows
+      for (const mod of this.modules) {
+        const body = document.getElementById(`mbody-${mod.id}`);
+        const block = document.getElementById(`block-${mod.id}`);
+        if (!body || !block) continue;
+        const hasVisible = [...body.querySelectorAll('.cl-comp-row')].some(r => !r.classList.contains('hidden'));
+        block.style.display = hasVisible ? '' : 'none';
+      }
+    },
+
+    filterRow(row, status) {
+      const matchFilter = this.currentFilter === 'all' || status === this.currentFilter;
+      const q = this.currentSearch.toLowerCase();
+      const matchSearch = !q || row.querySelector('.cl-comp-text')?.textContent.toLowerCase().includes(q);
+      const visible = matchFilter && matchSearch;
+      row.classList.toggle('hidden', !visible);
+      return visible;
+    },
+
+    refreshFilterCounts() {
+      const total = this.totalComps();
+      const done  = this.countStatus('done');
+      const wip   = this.countStatus('wip');
+      document.getElementById('fc-all').textContent  = total;
+      document.getElementById('fc-done').textContent = done;
+      document.getElementById('fc-wip').textContent  = wip;
+      document.getElementById('fc-none').textContent = total - done - wip;
+    },
+
+    // ── Sidebar module nav ────────────────────────────────────────
+    renderSidebarNav() {
+      const nav = document.getElementById('cl-module-nav');
+      nav.innerHTML = '';
+
+      for (const mod of this.modules) {
+        const stats = this.moduleStats(mod);
+        const pct   = Math.round(stats.done / stats.total * 100);
+
+        const a = document.createElement('a');
+        a.href = `#block-${mod.id}`;
+        a.className = 'cl-module-nav-item';
+        a.dataset.module = mod.id;
+        a.innerHTML = `
+          <span class="mnav-emoji">${mod.emoji}</span>
+          <span>${mod.titre}</span>
+          <div class="mnav-bar"><div class="mnav-fill" id="mnav-${mod.id}" style="width:${pct}%"></div></div>`;
+
+        a.addEventListener('click', e => {
+          e.preventDefault();
+          document.getElementById(`block-${mod.id}`)?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+          const block = document.getElementById(`block-${mod.id}`);
+          if (block?.classList.contains('collapsed')) block.classList.remove('collapsed');
+          document.querySelectorAll('.cl-module-nav-item').forEach(el => el.classList.remove('active'));
+          a.classList.add('active');
+          if (window.innerWidth <= 768) this.closeSidebar();
+        });
+
+        nav.appendChild(a);
+      }
+    },
+
+    refreshSidebarBars() {
+      for (const mod of this.modules) {
+        const stats = this.moduleStats(mod);
+        const pct   = Math.round(stats.done / stats.total * 100);
+        const el    = document.getElementById(`mnav-${mod.id}`);
+        if (el) el.style.width = `${pct}%`;
+      }
+    },
+
+    // ── Events ────────────────────────────────────────────────────
+    bindEvents() {
+      // Status filters
+      document.querySelectorAll('.cl-filter-btn').forEach(btn => {
+        btn.addEventListener('click', () => this.applyFilter(btn.dataset.filter));
+      });
+
+      // Search
+      document.getElementById('cl-search').addEventListener('input', e => {
+        this.currentSearch = e.target.value;
+        this.applyFilter(this.currentFilter);
+      });
+
+      // Collapse/expand headers (event delegation)
+      document.getElementById('cl-content').addEventListener('click', e => {
+        const header = e.target.closest('.cl-module-header');
+        if (header) header.closest('.cl-module-block')?.classList.toggle('collapsed');
+      });
+
+      // Expand / collapse all
+      document.getElementById('btn-expand-all').addEventListener('click', () => {
+        document.querySelectorAll('.cl-module-block').forEach(b => b.classList.remove('collapsed'));
+      });
+
+      document.getElementById('btn-collapse-all').addEventListener('click', () => {
+        document.querySelectorAll('.cl-module-block').forEach(b => b.classList.add('collapsed'));
+      });
+
+      // PDF export
+      document.getElementById('btn-print').addEventListener('click', () => {
+        document.querySelectorAll('.cl-module-block').forEach(b => b.classList.remove('collapsed'));
+        const d = new Date().toLocaleDateString('fr-FR', { day: '2-digit', month: 'long', year: 'numeric' });
+        document.body.dataset.printDate = d;
+        setTimeout(() => window.print(), 100);
+      });
+
+      // Mobile sidebar
+      document.getElementById('cl-sidebar-toggle').addEventListener('click', () => this.openSidebar());
+      document.getElementById('cl-sidebar-overlay').addEventListener('click', () => this.closeSidebar());
+
+      // Navbar mobile menu géré par main.js (initNavigation)
+
+      // Scroll spy → active sidebar nav item
+      const observer = new IntersectionObserver(entries => {
+        for (const entry of entries) {
+          if (entry.isIntersecting) {
+            const id = entry.target.id.replace('block-', '');
+            document.querySelectorAll('.cl-module-nav-item').forEach(el => {
+              el.classList.toggle('active', el.dataset.module === id);
+            });
+          }
+        }
+      }, { rootMargin: '-15% 0px -70% 0px' });
+
+      document.querySelectorAll('.cl-module-block').forEach(b => observer.observe(b));
+    },
+
+    openSidebar() {
+      document.getElementById('cl-sidebar').classList.add('open');
+      document.getElementById('cl-sidebar-overlay').classList.add('open');
+    },
+
+    closeSidebar() {
+      document.getElementById('cl-sidebar').classList.remove('open');
+      document.getElementById('cl-sidebar-overlay').classList.remove('open');
+    },
+
+    // ── Utilities ─────────────────────────────────────────────────
+    findModule(compId) {
+      for (const mod of this.modules) {
+        if (mod.competences.some(c => c.id === compId)) return mod.id;
+      }
+      return null;
+    },
+
+    relDate(iso) {
+      const diff = Date.now() - new Date(iso).getTime();
+      const min  = Math.floor(diff / 60000);
+      const h    = Math.floor(min / 60);
+      const d    = Math.floor(h / 24);
+      if (min < 1)  return "à l'instant";
+      if (min < 60) return `il y a ${min} min`;
+      if (h   < 24) return `il y a ${h} h`;
+      return `il y a ${d} j`;
+    },
+
+    esc(str) {
+      return String(str)
+        .replace(/&/g, '&amp;').replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+    },
+
+    escAttr(str) {
+      return String(str).replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+    }
+  };
+
+  document.addEventListener('DOMContentLoaded', () => ChecklistApp.init());
+  </script>
+</body>
+</html>

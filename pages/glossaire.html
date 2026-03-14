@@ -1,0 +1,775 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <!--
+    pages/glossaire.html — Glossaire des termes IT/Réseau TSSR
+    Index alphabétique, recherche instantanée, filtres par catégorie
+    Données : ../data/glossaire.json | Aucune persistance (lecture seule)
+  -->
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Glossaire — TSSR Notes</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../assets/css/style.css">
+
+  <style>
+    /* ── Layout ──────────────────────────────────────────────────── */
+    .gl-layout {
+      display: grid;
+      grid-template-columns: 220px 1fr;
+      gap: 0;
+      min-height: calc(100vh - 64px);
+      margin-top: 64px;
+    }
+
+    /* ── Sidebar ─────────────────────────────────────────────────── */
+    .gl-sidebar {
+      background: var(--bg-secondary);
+      border-right: 1px solid var(--border);
+      padding: 1.5rem 1rem;
+      position: sticky;
+      top: 64px;
+      height: calc(100vh - 64px);
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 1.5rem;
+    }
+
+    .gl-sidebar-title {
+      font-size: 0.7rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--text-muted);
+      margin-bottom: 0.5rem;
+    }
+
+    /* Stat card */
+    .gl-stat-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 0.85rem 1rem;
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+
+    .gl-stat-icon { font-size: 1.4rem; }
+
+    .gl-stat-value {
+      font-size: 1.3rem;
+      font-weight: 700;
+      color: var(--primary);
+      line-height: 1;
+    }
+
+    .gl-stat-label {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+    }
+
+    /* Category filters */
+    .gl-cat-list {
+      display: flex;
+      flex-direction: column;
+      gap: 0.25rem;
+    }
+
+    .gl-cat-btn {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.5rem 0.75rem;
+      border: none;
+      border-radius: var(--radius-sm);
+      background: transparent;
+      cursor: pointer;
+      font-size: 0.83rem;
+      color: var(--text-muted);
+      transition: background 0.15s, color 0.15s;
+      text-align: left;
+      width: 100%;
+    }
+
+    .gl-cat-btn:hover { background: var(--surface); color: var(--text); }
+
+    .gl-cat-btn.active {
+      background: var(--primary);
+      color: white;
+      font-weight: 600;
+    }
+
+    .gl-cat-count {
+      margin-left: auto;
+      font-size: 0.72rem;
+      opacity: 0.75;
+      font-weight: 600;
+    }
+
+    /* Alpha index */
+    .gl-alpha-grid {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 3px;
+    }
+
+    .gl-alpha-btn {
+      aspect-ratio: 1;
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      background: var(--surface);
+      font-size: 0.75rem;
+      font-weight: 600;
+      cursor: pointer;
+      color: var(--text-muted);
+      transition: background 0.15s, color 0.15s, border-color 0.15s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .gl-alpha-btn:hover { background: var(--primary-light); color: var(--primary); border-color: var(--primary); }
+    .gl-alpha-btn.has-terms { color: var(--text); border-color: var(--border); background: var(--surface); }
+    .gl-alpha-btn.has-terms:hover { background: var(--primary); color: white; border-color: var(--primary); }
+    .gl-alpha-btn.empty { opacity: 0.3; cursor: default; pointer-events: none; }
+
+    /* ── Main ────────────────────────────────────────────────────── */
+    .gl-main {
+      padding: 2rem;
+      max-width: 960px;
+    }
+
+    .gl-page-header {
+      margin-bottom: 2rem;
+    }
+
+    .gl-page-header h1 {
+      font-size: 1.75rem;
+      font-weight: 700;
+      color: var(--text);
+      margin-bottom: 0.25rem;
+    }
+
+    .gl-page-header p {
+      color: var(--text-muted);
+      font-size: 0.9rem;
+    }
+
+    /* Toolbar */
+    .gl-toolbar {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      margin-bottom: 2rem;
+      flex-wrap: wrap;
+    }
+
+    .gl-search-wrap {
+      position: relative;
+      flex: 1;
+      min-width: 200px;
+      max-width: 420px;
+    }
+
+    .gl-search-wrap .gl-search-icon {
+      position: absolute;
+      left: 0.75rem;
+      top: 50%;
+      transform: translateY(-50%);
+      font-size: 0.9rem;
+      pointer-events: none;
+    }
+
+    .gl-search {
+      width: 100%;
+      padding: 0.6rem 0.9rem 0.6rem 2.25rem;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      font-size: 0.875rem;
+      color: var(--text);
+      background: var(--surface);
+      outline: none;
+      transition: border-color 0.15s, box-shadow 0.15s;
+      font-family: var(--font-sans);
+    }
+
+    .gl-search:focus {
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px rgba(37,99,235,0.1);
+    }
+
+    .gl-result-count {
+      font-size: 0.82rem;
+      color: var(--text-muted);
+      margin-left: auto;
+      white-space: nowrap;
+    }
+
+    /* Letter group */
+    .gl-letter-group {
+      margin-bottom: 2rem;
+      scroll-margin-top: 80px;
+    }
+
+    .gl-letter-group.hidden { display: none; }
+
+    .gl-letter-heading {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      margin-bottom: 1rem;
+    }
+
+    .gl-letter-char {
+      width: 2.25rem;
+      height: 2.25rem;
+      border-radius: 50%;
+      background: var(--primary);
+      color: white;
+      font-size: 1rem;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .gl-letter-line {
+      flex: 1;
+      height: 1px;
+      background: var(--border);
+    }
+
+    .gl-letter-count {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+    }
+
+    /* Term cards */
+    .gl-terms-grid {
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+    }
+
+    .gl-term-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 1.1rem 1.25rem;
+      transition: box-shadow 0.2s, border-color 0.2s;
+      cursor: default;
+    }
+
+    .gl-term-card:hover {
+      box-shadow: var(--shadow-md);
+      border-color: var(--primary-light);
+    }
+
+    .gl-term-card.hidden { display: none; }
+
+    .gl-term-header {
+      display: flex;
+      align-items: flex-start;
+      gap: 0.75rem;
+      margin-bottom: 0.6rem;
+      flex-wrap: wrap;
+    }
+
+    .gl-term-name {
+      font-size: 1rem;
+      font-weight: 700;
+      color: var(--text);
+      font-family: var(--font-mono);
+    }
+
+    .gl-term-full {
+      font-size: 0.82rem;
+      color: var(--text-muted);
+      font-style: italic;
+      margin-top: 0.1rem;
+    }
+
+    .gl-term-badges {
+      display: flex;
+      gap: 0.4rem;
+      flex-wrap: wrap;
+      margin-left: auto;
+    }
+
+    .gl-cat-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.25rem;
+      padding: 0.2rem 0.55rem;
+      border-radius: 99px;
+      font-size: 0.7rem;
+      font-weight: 600;
+      white-space: nowrap;
+    }
+
+    .gl-cat-badge.reseau     { background: #DBEAFE; color: #1E40AF; }
+    .gl-cat-badge.systeme    { background: #D1FAE5; color: #065F46; }
+    .gl-cat-badge.windows    { background: #EDE9FE; color: #5B21B6; }
+    .gl-cat-badge.securite   { background: #FEE2E2; color: #991B1B; }
+    .gl-cat-badge.cloud      { background: #E0F2FE; color: #0369A1; }
+    .gl-cat-badge.scripting  { background: #FEF3C7; color: #92400E; }
+    .gl-cat-badge.itil       { background: #F0FDF4; color: #166534; border: 1px solid #BBF7D0; }
+
+    .gl-term-def {
+      font-size: 0.875rem;
+      color: var(--text-secondary);
+      line-height: 1.65;
+      margin-bottom: 0.5rem;
+    }
+
+    .gl-term-example {
+      background: var(--bg-secondary);
+      border-left: 3px solid var(--primary);
+      border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+      padding: 0.5rem 0.75rem;
+      font-size: 0.78rem;
+      font-family: var(--font-mono);
+      color: var(--text-secondary);
+      white-space: pre-wrap;
+      word-break: break-all;
+    }
+
+    /* Empty state */
+    .gl-empty {
+      text-align: center;
+      padding: 4rem 1rem;
+      color: var(--text-muted);
+      display: none;
+    }
+
+    .gl-empty.visible { display: block; }
+
+    .gl-empty-icon {
+      font-size: 2.5rem;
+      margin-bottom: 0.75rem;
+    }
+
+    .gl-empty p { font-size: 0.9rem; }
+
+    /* Loading */
+    #gl-loading {
+      text-align: center;
+      padding: 4rem;
+      color: var(--text-muted);
+    }
+
+    .spinner {
+      display: inline-block;
+      width: 2rem;
+      height: 2rem;
+      border: 3px solid var(--border);
+      border-top-color: var(--primary);
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+      margin-bottom: 1rem;
+    }
+
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* Mobile sidebar toggle */
+    .gl-sidebar-toggle {
+      display: none;
+      position: fixed;
+      bottom: 1.5rem;
+      left: 1.5rem;
+      z-index: 200;
+      background: var(--primary);
+      color: white;
+      border: none;
+      border-radius: 50%;
+      width: 3rem;
+      height: 3rem;
+      font-size: 1.25rem;
+      cursor: pointer;
+      box-shadow: var(--shadow-lg);
+      align-items: center;
+      justify-content: center;
+    }
+
+    /* ── Responsive ──────────────────────────────────────────────── */
+    @media (max-width: 768px) {
+      .gl-layout { grid-template-columns: 1fr; }
+
+      .gl-sidebar {
+        position: fixed;
+        top: 64px;
+        left: -240px;
+        width: 220px;
+        height: calc(100vh - 64px);
+        z-index: 150;
+        box-shadow: var(--shadow-lg);
+        transition: left 0.3s ease;
+      }
+
+      .gl-sidebar.open { left: 0; }
+      .gl-sidebar-toggle { display: flex; }
+
+      .gl-sidebar-overlay {
+        display: none;
+        position: fixed;
+        inset: 0;
+        background: rgba(0,0,0,0.35);
+        z-index: 140;
+      }
+
+      .gl-sidebar-overlay.open { display: block; }
+
+      .gl-main { padding: 1rem; }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <nav class="navbar" aria-label="Navigation principale">
+      <div class="navbar__inner">
+        <a href="../index.html" class="navbar__logo" aria-label="TSSR Notes — Accueil">
+          <div class="navbar__logo-icon" aria-hidden="true">T</div>
+          <span class="navbar__logo-text">TSSR<span>Notes</span></span>
+        </a>
+
+        <ul class="navbar__nav" role="list">
+          <li><a href="../index.html" class="navbar__link">🏠 Accueil</a></li>
+          <li><a href="cours.html" class="navbar__link">📖 Cours</a></li>
+          <li><a href="quiz.html" class="navbar__link">📝 Quiz</a></li>
+          <li><a href="checklist.html" class="navbar__link">✅ Checklist</a></li>
+          <li><a href="tableau.html" class="navbar__link">📊 Tableaux</a></li>
+          <li><a href="glossaire.html" class="navbar__link active" aria-current="page">📚 Glossaire</a></li>
+          <li><a href="ressources.html" class="navbar__link">🔗 Ressources</a></li>
+        </ul>
+
+        <div class="navbar__actions">
+          <div class="navbar__auth-slot"></div>
+          <button class="navbar__burger" aria-label="Menu" aria-expanded="false">
+            <span></span><span></span><span></span>
+          </button>
+        </div>
+      </div>
+    </nav>
+    <div class="navbar__mobile-menu" role="navigation" aria-label="Menu mobile">
+      <a href="../index.html" class="navbar__mobile-link">🏠 Accueil</a>
+      <a href="cours.html" class="navbar__mobile-link">📖 Cours</a>
+      <a href="quiz.html" class="navbar__mobile-link">📝 Quiz</a>
+      <a href="checklist.html" class="navbar__mobile-link">✅ Checklist</a>
+      <a href="tableau.html" class="navbar__mobile-link">📊 Tableaux</a>
+      <a href="glossaire.html" class="navbar__mobile-link active">📚 Glossaire</a>
+      <a href="ressources.html" class="navbar__mobile-link">🔗 Ressources</a>
+    </div>
+  </header>
+
+  <!-- ── Layout ────────────────────────────────────────────────── -->
+  <div class="gl-layout">
+
+    <!-- Sidebar -->
+    <aside class="gl-sidebar" id="gl-sidebar">
+
+      <!-- Stats -->
+      <div class="gl-stat-card">
+        <span class="gl-stat-icon">📖</span>
+        <div>
+          <div class="gl-stat-value" id="gl-stat-total">—</div>
+          <div class="gl-stat-label">termes au total</div>
+        </div>
+      </div>
+
+      <!-- Category filters -->
+      <div>
+        <p class="gl-sidebar-title">Catégories</p>
+        <div class="gl-cat-list" id="gl-cat-list">
+          <!-- injected by JS -->
+        </div>
+      </div>
+
+      <!-- Alpha index -->
+      <div>
+        <p class="gl-sidebar-title">Index A–Z</p>
+        <div class="gl-alpha-grid" id="gl-alpha-grid">
+          <!-- injected by JS -->
+        </div>
+      </div>
+
+    </aside>
+
+    <!-- Sidebar overlay (mobile) -->
+    <div class="gl-sidebar-overlay" id="gl-sidebar-overlay"></div>
+
+    <!-- Main -->
+    <main class="gl-main">
+
+      <div class="gl-page-header">
+        <h1>📖 Glossaire</h1>
+        <p>Définitions des termes essentiels pour l'examen TSSR.</p>
+      </div>
+
+      <!-- Toolbar -->
+      <div class="gl-toolbar">
+        <div class="gl-search-wrap">
+          <span class="gl-search-icon">🔍</span>
+          <input type="search" class="gl-search" id="gl-search"
+                 placeholder="Rechercher un terme ou une définition…" autocomplete="off">
+        </div>
+        <span class="gl-result-count" id="gl-result-count"></span>
+      </div>
+
+      <!-- Loading -->
+      <div id="gl-loading">
+        <div class="spinner"></div>
+        <p>Chargement du glossaire…</p>
+      </div>
+
+      <!-- Content -->
+      <div id="gl-content"></div>
+
+      <!-- Empty state -->
+      <div class="gl-empty" id="gl-empty">
+        <div class="gl-empty-icon">🔍</div>
+        <p>Aucun terme ne correspond à cette recherche.</p>
+      </div>
+
+    </main>
+  </div>
+
+  <!-- Mobile toggle -->
+  <button class="gl-sidebar-toggle" id="gl-sidebar-toggle" aria-label="Ouvrir la navigation">☰</button>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="footer-inner">
+      <span>TSSR Notes © <span id="footer-year"></span></span>
+      <span>100% local — aucune donnée envoyée</span>
+    </div>
+  </footer>
+
+  <div id="toast-container" aria-live="polite"></div>
+
+  <script src="../data/glossaire.js"></script>
+  <script src="../assets/js/auth.js"></script>
+  <script src="../assets/js/main.js"></script>
+  <script>
+  /*!
+   * GlossaireApp — Glossaire interactif TSSR
+   * Chargement JSON → tri alpha → filtres catégorie + recherche texte
+   */
+
+  const CATEGORIES = {
+    reseau:    { label: 'Réseau',          emoji: '🌐' },
+    systeme:   { label: 'Systèmes Linux',  emoji: '🐧' },
+    windows:   { label: 'Windows / AD',    emoji: '🪟' },
+    securite:  { label: 'Sécurité',        emoji: '🔒' },
+    cloud:     { label: 'Cloud / Virt.',   emoji: '☁️' },
+    scripting: { label: 'Scripting',       emoji: '⚙️' },
+    itil:      { label: 'ITIL / ITSM',     emoji: '📋' },
+  };
+
+  const GlossaireApp = {
+    termes: [],
+    filtered: [],
+    currentCat: 'all',
+    currentSearch: '',
+
+    // ── Init ──────────────────────────────────────────────────────
+    init() {
+      document.getElementById('footer-year').textContent = new Date().getFullYear();
+
+      this.termes = (GLOSSAIRE_DATA.termes || []).sort((a, b) =>
+        a.terme.localeCompare(b.terme, 'fr', { sensitivity: 'base' })
+      );
+
+      document.getElementById('gl-loading').style.display = 'none';
+      document.getElementById('gl-stat-total').textContent = this.termes.length;
+
+      this.renderCategoryFilters();
+      this.renderAlphaIndex();
+      this.applyFilters();
+      this.bindEvents();
+
+      // Log activité
+      if (window.TSSR?.Store?.addActivity) {
+        window.TSSR.Store.addActivity({ type: 'glossaire', label: 'Glossaire consulté', moduleId: null });
+      }
+    },
+
+    // ── Category filter buttons ────────────────────────────────────
+    renderCategoryFilters() {
+      const list = document.getElementById('gl-cat-list');
+
+      const counts = {};
+      for (const t of this.termes) {
+        counts[t.categorie] = (counts[t.categorie] || 0) + 1;
+      }
+
+      const allBtn = this._makeCatBtn('all', '📋', 'Tous les termes', this.termes.length, true);
+      list.appendChild(allBtn);
+
+      for (const [key, cfg] of Object.entries(CATEGORIES)) {
+        if (!counts[key]) continue;
+        list.appendChild(this._makeCatBtn(key, cfg.emoji, cfg.label, counts[key], false));
+      }
+    },
+
+    _makeCatBtn(key, emoji, label, count, active) {
+      const btn = document.createElement('button');
+      btn.className = 'gl-cat-btn' + (active ? ' active' : '');
+      btn.dataset.cat = key;
+      btn.innerHTML = `${emoji} ${label}<span class="gl-cat-count">${count}</span>`;
+      btn.addEventListener('click', () => this.setCat(key));
+      return btn;
+    },
+
+    setCat(cat) {
+      this.currentCat = cat;
+      document.querySelectorAll('.gl-cat-btn').forEach(b =>
+        b.classList.toggle('active', b.dataset.cat === cat)
+      );
+      this.applyFilters();
+    },
+
+    // ── Alpha index ────────────────────────────────────────────────
+    renderAlphaIndex() {
+      const grid = document.getElementById('gl-alpha-grid');
+      const letters = new Set(
+        this.termes.map(t => t.terme[0].toUpperCase())
+      );
+
+      for (let code = 65; code <= 90; code++) {
+        const l = String.fromCharCode(code);
+        const btn = document.createElement('button');
+        btn.className = 'gl-alpha-btn' + (letters.has(l) ? ' has-terms' : ' empty');
+        btn.textContent = l;
+        if (letters.has(l)) {
+          btn.addEventListener('click', () => {
+            const el = document.getElementById(`gl-letter-${l}`);
+            if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+          });
+        }
+        grid.appendChild(btn);
+      }
+    },
+
+    // ── Render ─────────────────────────────────────────────────────
+    applyFilters() {
+      const q = this.currentSearch.toLowerCase().trim();
+      const cat = this.currentCat;
+
+      this.filtered = this.termes.filter(t => {
+        const matchCat = cat === 'all' || t.categorie === cat;
+        const matchQ = !q
+          || t.terme.toLowerCase().includes(q)
+          || (t.complet || '').toLowerCase().includes(q)
+          || t.definition.toLowerCase().includes(q)
+          || (t.exemple || '').toLowerCase().includes(q);
+        return matchCat && matchQ;
+      });
+
+      this.renderContent();
+    },
+
+    renderContent() {
+      const container = document.getElementById('gl-content');
+      const emptyEl   = document.getElementById('gl-empty');
+      const countEl   = document.getElementById('gl-result-count');
+
+      if (this.filtered.length === 0) {
+        container.innerHTML = '';
+        emptyEl.classList.add('visible');
+        countEl.textContent = '0 résultat';
+        return;
+      }
+
+      emptyEl.classList.remove('visible');
+      countEl.textContent = `${this.filtered.length} terme${this.filtered.length > 1 ? 's' : ''}`;
+
+      // Group by first letter
+      const byLetter = {};
+      for (const t of this.filtered) {
+        const l = t.terme[0].toUpperCase();
+        if (!byLetter[l]) byLetter[l] = [];
+        byLetter[l].push(t);
+      }
+
+      const letters = Object.keys(byLetter).sort();
+      container.innerHTML = letters.map(l => `
+        <section class="gl-letter-group" id="gl-letter-${l}">
+          <div class="gl-letter-heading">
+            <div class="gl-letter-char">${l}</div>
+            <div class="gl-letter-line"></div>
+            <span class="gl-letter-count">${byLetter[l].length} terme${byLetter[l].length > 1 ? 's' : ''}</span>
+          </div>
+          <div class="gl-terms-grid">
+            ${byLetter[l].map(t => this.termCardHTML(t)).join('')}
+          </div>
+        </section>
+      `).join('');
+    },
+
+    termCardHTML(t) {
+      const catCfg = CATEGORIES[t.categorie] || { label: t.categorie, emoji: '📌' };
+      const highlight = this.currentSearch.trim();
+
+      const defText  = highlight ? this.hl(this.esc(t.definition), highlight) : this.esc(t.definition);
+      const termText = highlight ? this.hl(this.esc(t.terme), highlight)      : this.esc(t.terme);
+
+      return `
+        <article class="gl-term-card">
+          <div class="gl-term-header">
+            <div>
+              <div class="gl-term-name">${termText}</div>
+              ${t.complet ? `<div class="gl-term-full">${this.esc(t.complet)}</div>` : ''}
+            </div>
+            <div class="gl-term-badges">
+              <span class="gl-cat-badge ${t.categorie}">${catCfg.emoji} ${catCfg.label}</span>
+            </div>
+          </div>
+          <p class="gl-term-def">${defText}</p>
+          ${t.exemple ? `<div class="gl-term-example">${this.esc(t.exemple)}</div>` : ''}
+        </article>`;
+    },
+
+    // ── Events ────────────────────────────────────────────────────
+    bindEvents() {
+      document.getElementById('gl-search').addEventListener('input', e => {
+        this.currentSearch = e.target.value;
+        this.applyFilters();
+      });
+
+      document.getElementById('gl-sidebar-toggle').addEventListener('click', () => {
+        document.getElementById('gl-sidebar').classList.add('open');
+        document.getElementById('gl-sidebar-overlay').classList.add('open');
+      });
+
+      document.getElementById('gl-sidebar-overlay').addEventListener('click', () => {
+        document.getElementById('gl-sidebar').classList.remove('open');
+        document.getElementById('gl-sidebar-overlay').classList.remove('open');
+      });
+
+      // Navbar mobile menu géré par main.js (initNavigation)
+    },
+
+    // ── Utilities ─────────────────────────────────────────────────
+    esc(str) {
+      return String(str || '')
+        .replace(/&/g, '&amp;').replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+    },
+
+    hl(html, q) {
+      if (!q) return html;
+      const safe = q.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+      return html.replace(new RegExp(`(${safe})`, 'gi'),
+        '<mark style="background:#FEF08A;border-radius:2px;padding:0 1px">$1</mark>');
+    }
+  };
+
+  document.addEventListener('DOMContentLoaded', () => GlossaireApp.init());
+  </script>
+</body>
+</html>

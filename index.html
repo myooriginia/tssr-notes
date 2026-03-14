@@ -1,0 +1,949 @@
+<!DOCTYPE html>
+<!--
+  index.html — Page d'accueil TSSR Notes
+  Données : localStorage via assets/js/main.js
+-->
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Synthèses de formation TSSR — Technicien Supérieur Systèmes et Réseaux" />
+  <title>TSSR Notes — Accueil</title>
+
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+
+  <link rel="stylesheet" href="assets/css/style.css" />
+
+  <!-- Styles spécifiques à index.html -->
+  <style>
+    /* ── Hero ── */
+    .hero {
+      background: linear-gradient(135deg, var(--primary-dark) 0%, var(--primary) 60%, #3B82F6 100%);
+      color: #fff;
+      padding: 64px var(--content-pad) 80px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .hero::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background-image:
+        radial-gradient(circle at 20% 50%, rgba(255,255,255,.06) 0%, transparent 50%),
+        radial-gradient(circle at 80% 20%, rgba(255,255,255,.04) 0%, transparent 40%);
+      pointer-events: none;
+    }
+
+    /* Grille décorative */
+    .hero::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background-image:
+        linear-gradient(rgba(255,255,255,.04) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255,255,255,.04) 1px, transparent 1px);
+      background-size: 40px 40px;
+      pointer-events: none;
+    }
+
+    .hero__inner {
+      position: relative;
+      z-index: 1;
+      max-width: var(--content-max);
+      margin: 0 auto;
+    }
+
+    .hero__eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: rgba(255,255,255,.12);
+      border: 1px solid rgba(255,255,255,.2);
+      border-radius: var(--radius-full);
+      padding: 4px 14px;
+      font-size: var(--text-xs);
+      font-weight: var(--weight-semibold);
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      margin-bottom: 20px;
+    }
+
+    .hero__title {
+      font-size: clamp(2rem, 5vw, 3.25rem);
+      font-weight: var(--weight-bold);
+      color: #fff;
+      line-height: 1.1;
+      margin-bottom: 14px;
+      letter-spacing: -0.02em;
+    }
+
+    .hero__title span {
+      color: #93C5FD;
+    }
+
+    .hero__subtitle {
+      font-size: var(--text-lg);
+      color: rgba(255,255,255,.8);
+      margin-bottom: 36px;
+      max-width: 560px;
+      line-height: var(--leading-relaxed);
+    }
+
+    /* Barre de progression globale dans le hero */
+    .hero-progress {
+      background: rgba(255,255,255,.08);
+      border: 1px solid rgba(255,255,255,.15);
+      border-radius: var(--radius-lg);
+      padding: 20px 24px;
+      max-width: 560px;
+    }
+
+    .hero-progress__header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 12px;
+    }
+
+    .hero-progress__title {
+      font-size: var(--text-sm);
+      font-weight: var(--weight-semibold);
+      color: rgba(255,255,255,.9);
+    }
+
+    .hero-progress__pct {
+      font-size: var(--text-2xl);
+      font-weight: var(--weight-bold);
+      color: #fff;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .hero-progress__bar-track {
+      height: 10px;
+      background: rgba(255,255,255,.15);
+      border-radius: var(--radius-full);
+      overflow: hidden;
+      margin-bottom: 10px;
+    }
+
+    .hero-progress__bar-fill {
+      height: 100%;
+      background: linear-gradient(90deg, #93C5FD, #fff);
+      border-radius: var(--radius-full);
+      width: 0%;
+      transition: width 800ms cubic-bezier(.4, 0, .2, 1);
+      box-shadow: 0 0 10px rgba(255,255,255,.3);
+    }
+
+    .hero-progress__label {
+      font-size: var(--text-xs);
+      color: rgba(255,255,255,.6);
+    }
+
+    /* ── Section wrapper ── */
+    .section {
+      padding: 48px var(--content-pad);
+    }
+
+    .section--alt {
+      background: var(--bg);
+    }
+
+    .section__inner {
+      max-width: var(--content-max);
+      margin: 0 auto;
+    }
+
+    .section__header {
+      margin-bottom: 28px;
+    }
+
+    /* ── Dashboard Stats ── */
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 16px;
+    }
+
+    .stat-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 20px;
+      box-shadow: var(--shadow);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .stat-card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 3px;
+    }
+
+    .stat-card--blue::before   { background: var(--primary); }
+    .stat-card--green::before  { background: var(--success); }
+    .stat-card--orange::before { background: var(--warning); }
+    .stat-card--purple::before { background: var(--badge-virtualisation); }
+
+    .stat-card__icon-wrap {
+      width: 44px;
+      height: 44px;
+      border-radius: var(--radius);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 22px;
+      margin-bottom: 14px;
+    }
+
+    .stat-card--blue   .stat-card__icon-wrap { background: var(--primary-light); }
+    .stat-card--green  .stat-card__icon-wrap { background: var(--success-light); }
+    .stat-card--orange .stat-card__icon-wrap { background: var(--warning-light); }
+    .stat-card--purple .stat-card__icon-wrap { background: var(--badge-virtualisation-bg); }
+
+    .stat-card__value {
+      font-size: var(--text-3xl);
+      font-weight: var(--weight-bold);
+      color: var(--text);
+      line-height: 1;
+      margin-bottom: 4px;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .stat-card__label {
+      font-size: var(--text-sm);
+      color: var(--text-muted);
+      margin-bottom: 14px;
+    }
+
+    .stat-card__bar {
+      height: 4px;
+      background: var(--bg-tertiary);
+      border-radius: var(--radius-full);
+      overflow: hidden;
+    }
+
+    .stat-card__bar-fill {
+      height: 100%;
+      border-radius: var(--radius-full);
+      width: 0%;
+      transition: width 800ms cubic-bezier(.4, 0, .2, 1) 200ms;
+    }
+
+    .stat-card--blue   .stat-card__bar-fill { background: var(--primary); }
+    .stat-card--green  .stat-card__bar-fill { background: var(--success); }
+    .stat-card--orange .stat-card__bar-fill { background: var(--warning); }
+    .stat-card--purple .stat-card__bar-fill { background: var(--badge-virtualisation); }
+
+    /* ── Module Grid ── */
+    .module-grid-controls {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      flex-wrap: wrap;
+      margin-bottom: 20px;
+    }
+
+    .module-grid-controls .search-bar {
+      flex: 1;
+      min-width: 200px;
+      max-width: 320px;
+    }
+
+    #module-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(288px, 1fr));
+      gap: 20px;
+    }
+
+    /* ── Activité récente ── */
+    .activity-list {
+      list-style: none;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow);
+      overflow: hidden;
+    }
+
+    .activity-item {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      padding: 14px 20px;
+      border-bottom: 1px solid var(--border);
+      transition: background var(--transition);
+    }
+
+    .activity-item:last-child { border-bottom: none; }
+    .activity-item:hover { background: var(--bg-secondary); }
+
+    .activity-item__icon {
+      font-size: 20px;
+      width: 36px;
+      height: 36px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: var(--bg-secondary);
+      border-radius: var(--radius);
+      flex-shrink: 0;
+    }
+
+    .activity-item__body {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .activity-item__label {
+      display: block;
+      font-size: var(--text-sm);
+      font-weight: var(--weight-medium);
+      color: var(--text);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .activity-item__date {
+      font-size: var(--text-xs);
+      color: var(--text-muted);
+    }
+
+    .activity-empty {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 10px;
+      padding: 40px 20px;
+      color: var(--text-muted);
+      font-size: var(--text-sm);
+      text-align: center;
+    }
+
+    .activity-empty__icon { font-size: 32px; }
+
+    /* ── Prochaine révision ── */
+    .next-revision {
+      background: linear-gradient(135deg, var(--primary-dark), var(--primary));
+      border-radius: var(--radius-xl);
+      padding: 28px 32px;
+      color: #fff;
+      display: flex;
+      align-items: center;
+      gap: 24px;
+      flex-wrap: wrap;
+      box-shadow: var(--shadow-xl);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .next-revision::after {
+      content: '🎯';
+      position: absolute;
+      right: 28px;
+      top: 50%;
+      transform: translateY(-50%);
+      font-size: 64px;
+      opacity: .12;
+      pointer-events: none;
+    }
+
+    .next-revision__icon {
+      font-size: 40px;
+      width: 64px;
+      height: 64px;
+      background: rgba(255,255,255,.15);
+      border-radius: var(--radius-lg);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .next-revision__content { flex: 1; min-width: 200px; }
+
+    .next-revision__eyebrow {
+      font-size: var(--text-xs);
+      font-weight: var(--weight-semibold);
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: rgba(255,255,255,.65);
+      margin-bottom: 4px;
+    }
+
+    .next-revision__name {
+      font-size: var(--text-2xl);
+      font-weight: var(--weight-bold);
+      color: #fff;
+      margin-bottom: 4px;
+    }
+
+    .next-revision__reason {
+      font-size: var(--text-sm);
+      color: rgba(255,255,255,.75);
+      margin: 0;
+    }
+
+    .next-revision__score {
+      font-size: var(--text-xs);
+      font-weight: var(--weight-semibold);
+      background: rgba(255,255,255,.15);
+      border: 1px solid rgba(255,255,255,.25);
+      border-radius: var(--radius-full);
+      padding: 3px 12px;
+      display: inline-block;
+      margin-top: 8px;
+    }
+
+    .next-revision__actions {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      flex-shrink: 0;
+    }
+
+    .next-revision .btn--primary {
+      background: rgba(255,255,255,.2);
+      border-color: rgba(255,255,255,.35);
+      color: #fff;
+    }
+
+    .next-revision .btn--primary:hover {
+      background: rgba(255,255,255,.3);
+      border-color: rgba(255,255,255,.5);
+    }
+
+    .next-revision .btn--outline {
+      background: transparent;
+      border-color: rgba(255,255,255,.35);
+      color: #fff;
+    }
+
+    .next-revision .btn--outline:hover {
+      background: rgba(255,255,255,.1);
+    }
+
+    /* ── Liens rapides ── */
+    .quick-links {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 16px;
+    }
+
+    .quick-link {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+      padding: 28px 16px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      text-decoration: none;
+      color: var(--text);
+      box-shadow: var(--shadow);
+      transition: box-shadow var(--transition), border-color var(--transition), transform var(--transition);
+      text-align: center;
+    }
+
+    .quick-link:hover {
+      box-shadow: var(--shadow-lg);
+      border-color: var(--primary);
+      color: var(--primary-dark);
+      transform: translateY(-3px);
+    }
+
+    .quick-link__icon {
+      font-size: 36px;
+      width: 64px;
+      height: 64px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: var(--radius-lg);
+      background: var(--bg-secondary);
+      transition: background var(--transition);
+    }
+
+    .quick-link:hover .quick-link__icon {
+      background: var(--primary-light);
+    }
+
+    .quick-link__label {
+      font-size: var(--text-base);
+      font-weight: var(--weight-semibold);
+    }
+
+    .quick-link__desc {
+      font-size: var(--text-xs);
+      color: var(--text-muted);
+    }
+
+    /* ── Two-col layout (activité + révision) ── */
+    .bottom-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 28px;
+      align-items: start;
+    }
+
+    /* ── Responsive ── */
+    @media (max-width: 1024px) {
+      .stats-grid { grid-template-columns: repeat(2, 1fr); }
+      .quick-links { grid-template-columns: repeat(3, 1fr); }
+    }
+
+    @media (max-width: 768px) {
+      .hero { padding: 40px var(--content-pad) 56px; }
+      .hero-progress { max-width: 100%; }
+      .stats-grid { grid-template-columns: repeat(2, 1fr); }
+      .bottom-grid { grid-template-columns: 1fr; }
+      .quick-links { grid-template-columns: repeat(3, 1fr); }
+      .next-revision { padding: 20px; }
+      .next-revision::after { display: none; }
+      .next-revision__icon { width: 50px; height: 50px; font-size: 28px; }
+      .section { padding: 32px var(--content-pad); }
+    }
+
+    @media (max-width: 540px) {
+      .stats-grid { grid-template-columns: 1fr; }
+      .quick-links { grid-template-columns: 1fr; }
+      #module-grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+
+<body class="page-wrapper">
+
+  <!-- Barre de lecture de page -->
+  <div class="page-progress" aria-hidden="true"></div>
+
+  <!-- ═══════════════════════════════════════════════
+       NAVIGATION
+       ═══════════════════════════════════════════════ -->
+  <header>
+    <nav class="navbar" aria-label="Navigation principale">
+      <div class="navbar__inner">
+
+        <!-- Logo -->
+        <a href="index.html" class="navbar__logo" aria-label="TSSR Notes — Accueil">
+          <div class="navbar__logo-icon" aria-hidden="true">T</div>
+          <span class="navbar__logo-text">TSSR<span>Notes</span></span>
+        </a>
+
+        <!-- Liens desktop -->
+        <ul class="navbar__nav" role="list">
+          <li>
+            <a href="index.html" class="navbar__link active" aria-current="page">
+              <span class="navbar__link-icon" aria-hidden="true">🏠</span> Accueil
+            </a>
+          </li>
+          <li>
+            <a href="pages/cours.html" class="navbar__link">
+              <span class="navbar__link-icon" aria-hidden="true">📖</span> Cours
+            </a>
+          </li>
+          <li>
+            <a href="pages/quiz.html" class="navbar__link">
+              <span class="navbar__link-icon" aria-hidden="true">📝</span> Quiz
+            </a>
+          </li>
+          <li>
+            <a href="pages/checklist.html" class="navbar__link">
+              <span class="navbar__link-icon" aria-hidden="true">✅</span> Checklist
+            </a>
+          </li>
+          <li>
+            <a href="pages/tableau.html" class="navbar__link">
+              <span class="navbar__link-icon" aria-hidden="true">📊</span> Tableaux
+            </a>
+          </li>
+          <li>
+            <a href="pages/glossaire.html" class="navbar__link">
+              <span class="navbar__link-icon" aria-hidden="true">📚</span> Glossaire
+            </a>
+          </li>
+          <li>
+            <a href="pages/ressources.html" class="navbar__link">
+              <span class="navbar__link-icon" aria-hidden="true">🔗</span> Ressources
+            </a>
+          </li>
+        </ul>
+
+        <!-- Actions droite -->
+        <div class="navbar__actions">
+          <div class="navbar__auth-slot"></div>
+          <button class="btn btn--secondary btn--sm"
+                  onclick="resetData()"
+                  title="Réinitialiser toutes les données (démo)">
+            ↺ Démo
+          </button>
+
+          <!-- Burger -->
+          <button class="navbar__burger"
+                  aria-label="Ouvrir le menu"
+                  aria-expanded="false"
+                  aria-controls="mobile-menu">
+            <span></span><span></span><span></span>
+          </button>
+        </div>
+      </div>
+    </nav>
+
+    <!-- Menu mobile -->
+    <div class="navbar__mobile-menu" id="mobile-menu" role="navigation" aria-label="Menu mobile">
+      <a href="index.html"             class="navbar__mobile-link active" aria-current="page">🏠 Accueil</a>
+      <a href="pages/cours.html"       class="navbar__mobile-link">📖 Cours</a>
+      <a href="pages/quiz.html"        class="navbar__mobile-link">📝 Quiz</a>
+      <a href="pages/checklist.html"   class="navbar__mobile-link">✅ Checklist</a>
+      <a href="pages/tableau.html"     class="navbar__mobile-link">📊 Tableaux</a>
+      <a href="pages/glossaire.html"   class="navbar__mobile-link">📚 Glossaire</a>
+      <a href="pages/ressources.html"  class="navbar__mobile-link">🔗 Ressources</a>
+    </div>
+  </header>
+
+  <main>
+
+    <!-- ═══════════════════════════════════════════════
+         1. HERO — PROGRESSION GLOBALE
+         ═══════════════════════════════════════════════ -->
+    <section class="hero" aria-labelledby="hero-title">
+      <div class="hero__inner">
+        <p class="hero__eyebrow" aria-hidden="true">
+          📡 Formation TSSR · Technicien Supérieur Systèmes et Réseaux
+        </p>
+        <h1 class="hero__title" id="hero-title">
+          Vos <span>synthèses</span> de<br>formation TSSR
+        </h1>
+        <p class="hero__subtitle">
+          Cours structurés, quiz interactifs, checklists et tableaux de référence
+          pour préparer votre certification TSSR avec méthode.
+        </p>
+
+        <!-- Barre de progression globale -->
+        <div class="hero-progress" role="region" aria-label="Progression globale de la formation">
+          <div class="hero-progress__header">
+            <span class="hero-progress__title">Progression globale</span>
+            <span class="hero-progress__pct" id="hero-progress-pct"
+                  aria-live="polite" aria-atomic="true">0%</span>
+          </div>
+          <div class="hero-progress__bar-track" role="progressbar"
+               aria-valuenow="0" aria-valuemin="0" aria-valuemax="100"
+               aria-label="Progression globale">
+            <div class="hero-progress__bar-fill" id="hero-progress-bar"></div>
+          </div>
+          <p class="hero-progress__label" id="hero-progress-label" aria-live="polite">
+            Formation non démarrée
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ═══════════════════════════════════════════════
+         2. DASHBOARD STATS
+         ═══════════════════════════════════════════════ -->
+    <section class="section section--alt" aria-labelledby="stats-title">
+      <div class="section__inner">
+        <div class="section__header">
+          <h2 class="section-title" id="stats-title">Tableau de bord</h2>
+          <p class="section-subtitle">Votre progression en un coup d'œil</p>
+        </div>
+
+        <div class="stats-grid" role="list">
+
+          <!-- Modules étudiés -->
+          <div class="stat-card stat-card--blue" role="listitem">
+            <div class="stat-card__icon-wrap" aria-hidden="true">📖</div>
+            <div class="stat-card__value" id="stat-modules"
+                 aria-live="polite" aria-label="Modules étudiés">0 / 10</div>
+            <div class="stat-card__label">Modules étudiés</div>
+            <div class="stat-card__bar" role="progressbar"
+                 aria-label="Progression modules" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">
+              <div class="stat-card__bar-fill" id="stat-modules-bar"></div>
+            </div>
+          </div>
+
+          <!-- Questions répondues -->
+          <div class="stat-card stat-card--green" role="listitem">
+            <div class="stat-card__icon-wrap" aria-hidden="true">📝</div>
+            <div class="stat-card__value" id="stat-quiz"
+                 aria-live="polite" aria-label="Questions répondues">0</div>
+            <div class="stat-card__label">Questions quiz répondues</div>
+            <div class="stat-card__bar" role="progressbar"
+                 aria-label="Questions répondues" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">
+              <div class="stat-card__bar-fill" id="stat-quiz-bar" style="width:0%"></div>
+            </div>
+          </div>
+
+          <!-- Score moyen -->
+          <div class="stat-card stat-card--orange" role="listitem">
+            <div class="stat-card__icon-wrap" aria-hidden="true">🏆</div>
+            <div class="stat-card__value" id="stat-score"
+                 aria-live="polite" aria-label="Score moyen quiz">—</div>
+            <div class="stat-card__label">Score moyen quiz</div>
+            <div class="stat-card__bar" role="progressbar"
+                 aria-label="Score moyen" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">
+              <div class="stat-card__bar-fill" id="stat-score-bar"></div>
+            </div>
+          </div>
+
+          <!-- Checklist -->
+          <div class="stat-card stat-card--purple" role="listitem">
+            <div class="stat-card__icon-wrap" aria-hidden="true">✅</div>
+            <div class="stat-card__value" id="stat-checklist"
+                 aria-live="polite" aria-label="Checklist complétée">0%</div>
+            <div class="stat-card__label">Checklist complétée</div>
+            <div class="stat-card__bar" role="progressbar"
+                 aria-label="Checklist" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">
+              <div class="stat-card__bar-fill" id="stat-checklist-bar"></div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </section>
+
+    <!-- ═══════════════════════════════════════════════
+         3. GRILLE DES MODULES
+         ═══════════════════════════════════════════════ -->
+    <section class="section" aria-labelledby="modules-title">
+      <div class="section__inner">
+        <div class="section__header">
+          <h2 class="section-title" id="modules-title">Modules de formation</h2>
+          <p class="section-subtitle">Cliquez sur un module pour accéder à sa fiche de cours</p>
+        </div>
+
+        <!-- Contrôles : recherche + filtres -->
+        <div class="module-grid-controls" role="search" aria-label="Filtrer les modules">
+          <div class="search-bar">
+            <svg class="search-bar__icon" aria-hidden="true" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="9" cy="9" r="6"/><path d="m15 15 3 3" stroke-linecap="round"/>
+            </svg>
+            <input type="search" id="module-search" class="form-input"
+                   placeholder="Rechercher un module…" aria-label="Rechercher un module" />
+          </div>
+
+          <div class="filter-bar" style="border:none;padding:0;margin:0;" role="group" aria-label="Filtres par domaine">
+            <button class="filter-chip active" data-filter="all"   aria-pressed="true">Tous</button>
+            <button class="filter-chip" data-filter="reseau"        aria-pressed="false">🌐 Réseau</button>
+            <button class="filter-chip" data-filter="linux"         aria-pressed="false">🐧 Linux</button>
+            <button class="filter-chip" data-filter="windows"       aria-pressed="false">🪟 Windows</button>
+            <button class="filter-chip" data-filter="securite"      aria-pressed="false">🔒 Sécurité</button>
+            <button class="filter-chip" data-filter="virtualisation" aria-pressed="false">☁️ Virt.</button>
+            <button class="filter-chip" data-filter="scripting"     aria-pressed="false">⚙️ Scripts</button>
+            <button class="filter-chip" data-filter="itil"          aria-pressed="false">📋 ITIL</button>
+            <button class="filter-chip" data-filter="wip"           aria-pressed="false">🔄 En cours</button>
+            <button class="filter-chip" data-filter="done"          aria-pressed="false">✅ Maîtrisés</button>
+          </div>
+        </div>
+
+        <!-- Grille rendue par JS -->
+        <div id="module-grid" aria-live="polite" aria-label="Grille des modules"></div>
+
+      </div>
+    </section>
+
+    <!-- ═══════════════════════════════════════════════
+         4 & 5. ACTIVITÉ RÉCENTE + PROCHAINE RÉVISION
+         ═══════════════════════════════════════════════ -->
+    <section class="section section--alt" aria-label="Activité et révision">
+      <div class="section__inner">
+        <div class="bottom-grid">
+
+          <!-- 4. Activité récente -->
+          <div>
+            <div class="section__header">
+              <h2 class="section-title" id="activity-title">Activité récente</h2>
+              <p class="section-subtitle">Vos 5 dernières actions sur le site</p>
+            </div>
+            <ul class="activity-list" id="activity-list"
+                aria-labelledby="activity-title" aria-live="polite">
+              <!-- Rendu par JS -->
+            </ul>
+          </div>
+
+          <!-- 5. Prochaine révision -->
+          <div>
+            <div class="section__header">
+              <h2 class="section-title" id="revision-title">Prochaine révision</h2>
+              <p class="section-subtitle">Module suggéré selon votre progression</p>
+            </div>
+
+            <div class="next-revision" id="next-revision-card" hidden
+                 role="region" aria-labelledby="revision-title">
+              <div class="next-revision__icon" id="next-revision-icon" aria-hidden="true">❓</div>
+              <div class="next-revision__content">
+                <p class="next-revision__eyebrow">À réviser en priorité</p>
+                <p class="next-revision__name" id="next-revision-name">—</p>
+                <p class="next-revision__reason" id="next-revision-reason">—</p>
+                <span class="next-revision__score" id="next-revision-score"></span>
+              </div>
+              <div class="next-revision__actions">
+                <a href="#" id="next-revision-link" class="btn btn--primary">
+                  📖 Consulter
+                </a>
+                <a href="#" id="next-revision-quiz" class="btn btn--outline">
+                  📝 Quiz
+                </a>
+              </div>
+            </div>
+
+            <!-- Placeholder si aucune donnée -->
+            <div id="next-revision-placeholder" class="card card--flat" style="padding:24px;text-align:center;">
+              <p style="font-size:2rem;margin-bottom:8px;">🚀</p>
+              <p class="text-muted" style="font-size:var(--text-sm);">
+                Commencez par consulter un module pour obtenir une suggestion personnalisée.
+              </p>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </section>
+
+    <!-- ═══════════════════════════════════════════════
+         6. LIENS RAPIDES
+         ═══════════════════════════════════════════════ -->
+    <section class="section" aria-labelledby="quicklinks-title">
+      <div class="section__inner">
+        <div class="section__header">
+          <h2 class="section-title" id="quicklinks-title">Accès rapide</h2>
+          <p class="section-subtitle">Toutes les ressources de votre formation</p>
+        </div>
+
+        <nav class="quick-links" aria-label="Liens rapides">
+          <a href="pages/quiz.html" class="quick-link">
+            <div class="quick-link__icon" aria-hidden="true">📝</div>
+            <span class="quick-link__label">Quiz</span>
+            <span class="quick-link__desc">Questions de révision QCM</span>
+          </a>
+          <a href="pages/checklist.html" class="quick-link">
+            <div class="quick-link__icon" aria-hidden="true">✅</div>
+            <span class="quick-link__label">Checklist</span>
+            <span class="quick-link__desc">Procédures pas à pas</span>
+          </a>
+          <a href="pages/tableau.html" class="quick-link">
+            <div class="quick-link__icon" aria-hidden="true">📊</div>
+            <span class="quick-link__label">Tableaux</span>
+            <span class="quick-link__desc">Ports, commandes, protocoles</span>
+          </a>
+          <a href="pages/glossaire.html" class="quick-link">
+            <div class="quick-link__icon" aria-hidden="true">📚</div>
+            <span class="quick-link__label">Glossaire</span>
+            <span class="quick-link__desc">Définitions & acronymes IT</span>
+          </a>
+          <a href="pages/cours.html" class="quick-link">
+            <div class="quick-link__icon" aria-hidden="true">📖</div>
+            <span class="quick-link__label">Cours</span>
+            <span class="quick-link__desc">Fiches de synthèse par module</span>
+          </a>
+          <a href="pages/ressources.html" class="quick-link">
+            <div class="quick-link__icon" aria-hidden="true">🔗</div>
+            <span class="quick-link__label">Ressources</span>
+            <span class="quick-link__desc">Docs officielles, outils, RFCs</span>
+          </a>
+        </nav>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- ═══════════════════════════════════════════════
+       FOOTER
+       ═══════════════════════════════════════════════ -->
+  <footer class="footer" role="contentinfo">
+    <div class="footer__inner">
+      <span>© <span id="footer-year"></span> TSSR Notes — Site statique GitHub Pages</span>
+      <nav class="footer__links" aria-label="Liens de pied de page">
+        <a href="pages/ressources.html" class="footer__link">Ressources</a>
+        <a href="pages/glossaire.html"  class="footer__link">Glossaire</a>
+        <a href="https://github.com/"   class="footer__link" target="_blank" rel="noopener">GitHub</a>
+      </nav>
+    </div>
+  </footer>
+
+  <!-- Toast container -->
+  <div class="toast-container" role="status" aria-live="polite" aria-atomic="true"></div>
+
+  <script src="assets/js/auth.js"></script>
+  <script src="assets/js/main.js"></script>
+  <script>
+    /* ── Script inline spécifique à index.html ── */
+
+    // Bouton démo : injecte des données fictives pour visualiser le rendu
+    function resetData() {
+      const demo = [
+        { id:'reseau',        progress:78, status:'wip',  lastVisit: new Date(Date.now()-86400000*2).toISOString(), quizScores:[72,80,65] },
+        { id:'linux',         progress:55, status:'wip',  lastVisit: new Date(Date.now()-86400000*5).toISOString(), quizScores:[60,58] },
+        { id:'windows',       progress:30, status:'wip',  lastVisit: new Date(Date.now()-86400000*1).toISOString(), quizScores:[45] },
+        { id:'securite',      progress:10, status:'wip',  lastVisit: null, quizScores:[40] },
+        { id:'virtualisation',progress:0,  status:'todo', lastVisit: null, quizScores:[] },
+        { id:'bash',          progress:90, status:'done', lastVisit: new Date(Date.now()-86400000*3).toISOString(), quizScores:[92,88,95] },
+        { id:'powershell',    progress:40, status:'wip',  lastVisit: new Date(Date.now()-86400000*7).toISOString(), quizScores:[55,62] },
+        { id:'ad',            progress:20, status:'wip',  lastVisit: null, quizScores:[38] },
+        { id:'cisco',         progress:5,  status:'wip',  lastVisit: null, quizScores:[30] },
+        { id:'itil',          progress:0,  status:'todo', lastVisit: null, quizScores:[] },
+      ];
+
+      // Fusionne avec les défauts
+      const full = window.TSSR.getModules().map(m => ({
+        ...m,
+        ...(demo.find(d => d.id === m.id) || {}),
+      }));
+
+      Store.set(KEYS.modules, full);
+      Store.set(KEYS.quiz,      { totalAnswered: 134, totalCorrect: 98, sessions: 12 });
+      Store.set(KEYS.checklist, { totalItems: 60,    completedItems: 27 });
+      Store.set(KEYS.activity, [
+        { type:'quiz',      label:'Quiz Réseaux — 10 questions',   moduleId:'reseau',   date: new Date(Date.now()-1000*60*12).toISOString() },
+        { type:'cours',     label:'Scripting Bash',                moduleId:'bash',     date: new Date(Date.now()-1000*60*60*3).toISOString() },
+        { type:'checklist', label:'Installation Windows Server',   moduleId:'windows',  date: new Date(Date.now()-86400000).toISOString() },
+        { type:'quiz',      label:'Quiz Sécurité — 8 questions',   moduleId:'securite', date: new Date(Date.now()-86400000*2).toISOString() },
+        { type:'glossaire', label:'Consultation Glossaire — VLAN', moduleId:null,       date: new Date(Date.now()-86400000*3).toISOString() },
+      ]);
+
+      renderHomePage();
+      window.TSSR.showToast('Données de démo chargées ✓', 'default');
+    }
+
+    // Gestion du placeholder "Prochaine révision"
+    const origRenderNextRevision = window.renderNextRevision;
+    function patchNextRevision() {
+      const card        = document.getElementById('next-revision-card');
+      const placeholder = document.getElementById('next-revision-placeholder');
+      if (card && !card.hidden && placeholder) {
+        placeholder.style.display = 'none';
+      }
+    }
+
+    // Surcharge de renderHomePage pour gérer le placeholder
+    const _renderHomePage = renderHomePage;
+    function renderHomePage() {
+      _renderHomePage();
+      patchNextRevision();
+    }
+
+    // Année footer
+    const yearEl = document.getElementById('footer-year');
+    if (yearEl) yearEl.textContent = new Date().getFullYear();
+
+    // Aria-pressed sur les filter chips
+    document.querySelectorAll('.filter-chip[data-filter]').forEach(chip => {
+      chip.addEventListener('click', () => {
+        document.querySelectorAll('.filter-chip[data-filter]')
+          .forEach(c => c.setAttribute('aria-pressed', 'false'));
+        chip.setAttribute('aria-pressed', 'true');
+      });
+    });
+  </script>
+
+</body>
+</html>

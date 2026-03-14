@@ -1,0 +1,1336 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <!--
+    pages/ressources.html — Ressources & Cheatsheets TSSR
+    Liens officiels, labs, outils, cheatsheets Cisco/Linux/PowerShell, raccourcis clavier
+  -->
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Ressources — TSSR Notes</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../assets/css/style.css">
+
+  <style>
+    /* ── Page layout ─────────────────────────────────────────────── */
+    .res-main {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 2rem 1.5rem 4rem;
+      margin-top: 64px;
+    }
+
+    .res-page-header {
+      margin-bottom: 2.5rem;
+    }
+
+    .res-page-header h1 {
+      font-size: 1.75rem;
+      font-weight: 700;
+      color: var(--text);
+      margin-bottom: 0.25rem;
+    }
+
+    .res-page-header p {
+      color: var(--text-muted);
+      font-size: 0.9rem;
+    }
+
+    /* ── Section headers ─────────────────────────────────────────── */
+    .res-section {
+      margin-bottom: 3rem;
+    }
+
+    .res-section-header {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      margin-bottom: 1.25rem;
+      padding-bottom: 0.75rem;
+      border-bottom: 2px solid var(--border);
+    }
+
+    .res-section-icon {
+      font-size: 1.4rem;
+    }
+
+    .res-section-title {
+      font-size: 1.15rem;
+      font-weight: 700;
+      color: var(--text);
+    }
+
+    .res-section-count {
+      margin-left: auto;
+      font-size: 0.78rem;
+      color: var(--text-muted);
+      background: var(--bg-secondary);
+      border: 1px solid var(--border);
+      border-radius: 99px;
+      padding: 0.15rem 0.6rem;
+      font-weight: 600;
+    }
+
+    /* ── Resource cards grid ─────────────────────────────────────── */
+    .res-cards-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 1rem;
+    }
+
+    .res-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 1.1rem 1.25rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+      transition: box-shadow 0.2s, border-color 0.2s, transform 0.15s;
+      text-decoration: none;
+      color: inherit;
+    }
+
+    .res-card:hover {
+      box-shadow: var(--shadow-md);
+      border-color: var(--primary);
+      transform: translateY(-2px);
+    }
+
+    .res-card-top {
+      display: flex;
+      align-items: flex-start;
+      gap: 0.75rem;
+    }
+
+    .res-card-emoji {
+      font-size: 1.5rem;
+      flex-shrink: 0;
+      line-height: 1;
+    }
+
+    .res-card-title {
+      font-size: 0.9rem;
+      font-weight: 700;
+      color: var(--text);
+      line-height: 1.3;
+    }
+
+    .res-card-domain {
+      display: inline-block;
+      font-size: 0.68rem;
+      font-weight: 600;
+      padding: 0.15rem 0.5rem;
+      border-radius: 99px;
+      margin-top: 0.2rem;
+    }
+
+    .res-card-desc {
+      font-size: 0.82rem;
+      color: var(--text-muted);
+      line-height: 1.55;
+      flex: 1;
+    }
+
+    .res-card-footer {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-top: auto;
+      padding-top: 0.6rem;
+      border-top: 1px solid var(--bg-secondary);
+    }
+
+    .res-card-tag {
+      font-size: 0.7rem;
+      color: var(--text-muted);
+      font-weight: 500;
+    }
+
+    .res-card-arrow {
+      font-size: 0.85rem;
+      color: var(--primary);
+      font-weight: 700;
+    }
+
+    /* Category badge colors (reusing gl-cat-badge classes) */
+    .tag-officiel   { background: #DBEAFE; color: #1E40AF; }
+    .tag-lab        { background: #D1FAE5; color: #065F46; }
+    .tag-outil      { background: #FEF3C7; color: #92400E; }
+    .tag-certif     { background: #EDE9FE; color: #5B21B6; }
+    .tag-communaute { background: #FEE2E2; color: #991B1B; }
+
+    /* ── Cheatsheet tabs ─────────────────────────────────────────── */
+    .cheat-tabs {
+      display: flex;
+      gap: 0.5rem;
+      margin-bottom: 1rem;
+      flex-wrap: wrap;
+    }
+
+    .cheat-tab {
+      padding: 0.5rem 1rem;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      background: var(--surface);
+      cursor: pointer;
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: var(--text-muted);
+      transition: background 0.15s, color 0.15s, border-color 0.15s;
+    }
+
+    .cheat-tab:hover { background: var(--bg-secondary); color: var(--text); }
+
+    .cheat-tab.active {
+      background: var(--primary);
+      color: white;
+      border-color: var(--primary);
+    }
+
+    .cheat-panel {
+      display: none;
+    }
+
+    .cheat-panel.active {
+      display: block;
+    }
+
+    /* Code block with copy button */
+    .code-block {
+      background: #1E2432;
+      border-radius: var(--radius);
+      margin-bottom: 1.25rem;
+      overflow: hidden;
+    }
+
+    .code-block-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0.6rem 1rem;
+      background: #161B27;
+      border-bottom: 1px solid rgba(255,255,255,0.08);
+    }
+
+    .code-block-title {
+      font-size: 0.78rem;
+      font-weight: 600;
+      color: #94A3B8;
+      font-family: var(--font-mono);
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .code-block-title .dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+    }
+
+    .dot-red    { background: #EF4444; }
+    .dot-yellow { background: #F59E0B; }
+    .dot-green  { background: #10B981; }
+
+    .code-block-copy {
+      padding: 0.3rem 0.7rem;
+      background: rgba(255,255,255,0.1);
+      border: 1px solid rgba(255,255,255,0.15);
+      border-radius: 4px;
+      color: #94A3B8;
+      font-size: 0.72rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.15s, color 0.15s;
+      font-family: var(--font-sans);
+    }
+
+    .code-block-copy:hover { background: rgba(255,255,255,0.18); color: white; }
+    .code-block-copy.copied { background: #10B981; color: white; border-color: #10B981; }
+
+    .code-block pre {
+      margin: 0;
+      padding: 1rem 1.25rem;
+      overflow-x: auto;
+    }
+
+    .code-block code {
+      font-family: var(--font-mono);
+      font-size: 0.82rem;
+      color: #E2E8F0;
+      line-height: 1.7;
+      white-space: pre;
+    }
+
+    .code-block code .c  { color: #64748B; font-style: italic; }  /* comment */
+    .code-block code .k  { color: #7DD3FC; }                        /* keyword */
+    .code-block code .s  { color: #86EFAC; }                        /* string */
+    .code-block code .n  { color: #FCD34D; }                        /* number/ip */
+    .code-block code .cmd { color: #C4B5FD; font-weight: 600; }    /* command */
+
+    /* ── Keyboard shortcuts table ────────────────────────────────── */
+    .kb-tabs {
+      display: flex;
+      gap: 0.5rem;
+      margin-bottom: 1rem;
+      flex-wrap: wrap;
+    }
+
+    .kb-tab {
+      padding: 0.45rem 0.9rem;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      background: var(--surface);
+      cursor: pointer;
+      font-size: 0.82rem;
+      font-weight: 600;
+      color: var(--text-muted);
+      transition: background 0.15s, color 0.15s, border-color 0.15s;
+    }
+
+    .kb-tab:hover { background: var(--bg-secondary); color: var(--text); }
+    .kb-tab.active { background: var(--primary); color: white; border-color: var(--primary); }
+
+    .kb-panel { display: none; }
+    .kb-panel.active { display: block; }
+
+    .kb-table {
+      width: 100%;
+      border-collapse: collapse;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      overflow: hidden;
+    }
+
+    .kb-table thead {
+      background: var(--bg-secondary);
+    }
+
+    .kb-table th {
+      padding: 0.65rem 1rem;
+      text-align: left;
+      font-size: 0.75rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: var(--text-muted);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .kb-table td {
+      padding: 0.65rem 1rem;
+      font-size: 0.85rem;
+      color: var(--text-secondary);
+      border-bottom: 1px solid var(--bg-secondary);
+      vertical-align: middle;
+    }
+
+    .kb-table tr:last-child td { border-bottom: none; }
+    .kb-table tr:hover td { background: #FAFBFF; }
+
+    .kb-key {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.2rem;
+      flex-wrap: wrap;
+    }
+
+    kbd {
+      display: inline-block;
+      padding: 0.15rem 0.45rem;
+      background: #F1F5F9;
+      border: 1px solid #CBD5E1;
+      border-radius: 4px;
+      box-shadow: 0 1px 0 #94A3B8;
+      font-family: var(--font-mono);
+      font-size: 0.75rem;
+      font-weight: 600;
+      color: var(--text);
+      white-space: nowrap;
+    }
+
+    .kb-sep {
+      color: var(--text-muted);
+      font-size: 0.75rem;
+    }
+
+    /* ── Responsive ──────────────────────────────────────────────── */
+    @media (max-width: 768px) {
+      .res-main { padding: 1rem; }
+      .res-cards-grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <nav class="navbar" aria-label="Navigation principale">
+      <div class="navbar__inner">
+        <a href="../index.html" class="navbar__logo" aria-label="TSSR Notes — Accueil">
+          <div class="navbar__logo-icon" aria-hidden="true">T</div>
+          <span class="navbar__logo-text">TSSR<span>Notes</span></span>
+        </a>
+
+        <ul class="navbar__nav" role="list">
+          <li><a href="../index.html" class="navbar__link">🏠 Accueil</a></li>
+          <li><a href="cours.html" class="navbar__link">📖 Cours</a></li>
+          <li><a href="quiz.html" class="navbar__link">📝 Quiz</a></li>
+          <li><a href="checklist.html" class="navbar__link">✅ Checklist</a></li>
+          <li><a href="tableau.html" class="navbar__link">📊 Tableaux</a></li>
+          <li><a href="glossaire.html" class="navbar__link">📚 Glossaire</a></li>
+          <li><a href="ressources.html" class="navbar__link active" aria-current="page">🔗 Ressources</a></li>
+        </ul>
+
+        <div class="navbar__actions">
+          <div class="navbar__auth-slot"></div>
+          <button class="navbar__burger" aria-label="Menu" aria-expanded="false">
+            <span></span><span></span><span></span>
+          </button>
+        </div>
+      </div>
+    </nav>
+    <div class="navbar__mobile-menu" role="navigation" aria-label="Menu mobile">
+      <a href="../index.html" class="navbar__mobile-link">🏠 Accueil</a>
+      <a href="cours.html" class="navbar__mobile-link">📖 Cours</a>
+      <a href="quiz.html" class="navbar__mobile-link">📝 Quiz</a>
+      <a href="checklist.html" class="navbar__mobile-link">✅ Checklist</a>
+      <a href="tableau.html" class="navbar__mobile-link">📊 Tableaux</a>
+      <a href="glossaire.html" class="navbar__mobile-link">📚 Glossaire</a>
+      <a href="ressources.html" class="navbar__mobile-link active">🔗 Ressources</a>
+    </div>
+  </header>
+
+  <!-- ── Main content ──────────────────────────────────────────── -->
+  <main class="res-main">
+
+    <div class="res-page-header">
+      <h1>🔗 Ressources</h1>
+      <p>Documentation officielle, labs, outils, cheatsheets et raccourcis clavier pour préparer le TSSR.</p>
+    </div>
+
+    <!-- ════════════════════════════════════════════════
+         SECTION 1 — Documentation officielle
+    ════════════════════════════════════════════════ -->
+    <section class="res-section" id="sec-doc">
+      <div class="res-section-header">
+        <span class="res-section-icon">📄</span>
+        <h2 class="res-section-title">Documentation officielle</h2>
+        <span class="res-section-count">8 ressources</span>
+      </div>
+      <div class="res-cards-grid">
+
+        <a class="res-card" href="https://learn.microsoft.com/fr-fr/windows-server/" target="_blank" rel="noopener">
+          <div class="res-card-top">
+            <span class="res-card-emoji">🪟</span>
+            <div>
+              <div class="res-card-title">Microsoft Docs — Windows Server</div>
+              <span class="res-card-domain tag-officiel">Officiel</span>
+            </div>
+          </div>
+          <p class="res-card-desc">Documentation complète sur Windows Server 2022 : ADDS, DNS, DHCP, IIS, Hyper-V, PowerShell.</p>
+          <div class="res-card-footer">
+            <span class="res-card-tag">learn.microsoft.com</span>
+            <span class="res-card-arrow">→</span>
+          </div>
+        </a>
+
+        <a class="res-card" href="https://learn.microsoft.com/fr-fr/powershell/" target="_blank" rel="noopener">
+          <div class="res-card-top">
+            <span class="res-card-emoji">💠</span>
+            <div>
+              <div class="res-card-title">PowerShell Documentation</div>
+              <span class="res-card-domain tag-officiel">Officiel</span>
+            </div>
+          </div>
+          <p class="res-card-desc">Référence complète des cmdlets PowerShell 7, modules Windows, DSC et scripting avancé.</p>
+          <div class="res-card-footer">
+            <span class="res-card-tag">learn.microsoft.com</span>
+            <span class="res-card-arrow">→</span>
+          </div>
+        </a>
+
+        <a class="res-card" href="https://www.cisco.com/c/en/us/support/index.html" target="_blank" rel="noopener">
+          <div class="res-card-top">
+            <span class="res-card-emoji">🔧</span>
+            <div>
+              <div class="res-card-title">Cisco Support & Documentation</div>
+              <span class="res-card-domain tag-officiel">Officiel</span>
+            </div>
+          </div>
+          <p class="res-card-desc">IOS Command Reference, guides de configuration, notes de version pour les équipements Cisco.</p>
+          <div class="res-card-footer">
+            <span class="res-card-tag">cisco.com</span>
+            <span class="res-card-arrow">→</span>
+          </div>
+        </a>
+
+        <a class="res-card" href="https://www.ssi.gouv.fr/guide/guide-dhygiene-informatique/" target="_blank" rel="noopener">
+          <div class="res-card-top">
+            <span class="res-card-emoji">🔒</span>
+            <div>
+              <div class="res-card-title">ANSSI — Guide d'hygiène informatique</div>
+              <span class="res-card-domain tag-officiel">Officiel</span>
+            </div>
+          </div>
+          <p class="res-card-desc">Les 42 mesures essentielles pour sécuriser un système d'information. Document incontournable au TSSR.</p>
+          <div class="res-card-footer">
+            <span class="res-card-tag">ssi.gouv.fr</span>
+            <span class="res-card-arrow">→</span>
+          </div>
+        </a>
+
+        <a class="res-card" href="https://docs.docker.com/" target="_blank" rel="noopener">
+          <div class="res-card-top">
+            <span class="res-card-emoji">🐳</span>
+            <div>
+              <div class="res-card-title">Docker Documentation</div>
+              <span class="res-card-domain tag-officiel">Officiel</span>
+            </div>
+          </div>
+          <p class="res-card-desc">Guides Docker Engine, Dockerfile, Docker Compose, registres et bonnes pratiques de conteneurisation.</p>
+          <div class="res-card-footer">
+            <span class="res-card-tag">docs.docker.com</span>
+            <span class="res-card-arrow">→</span>
+          </div>
+        </a>
+
+        <a class="res-card" href="https://man7.org/linux/man-pages/" target="_blank" rel="noopener">
+          <div class="res-card-top">
+            <span class="res-card-emoji">🐧</span>
+            <div>
+              <div class="res-card-title">Linux man-pages</div>
+              <span class="res-card-domain tag-officiel">Officiel</span>
+            </div>
+          </div>
+          <p class="res-card-desc">Pages de manuel Linux complètes pour toutes les commandes, appels système et formats de fichiers.</p>
+          <div class="res-card-footer">
+            <span class="res-card-tag">man7.org</span>
+            <span class="res-card-arrow">→</span>
+          </div>
+        </a>
+
+        <a class="res-card" href="https://www.rfc-editor.org/" target="_blank" rel="noopener">
+          <div class="res-card-top">
+            <span class="res-card-emoji">📜</span>
+            <div>
+              <div class="res-card-title">RFC Editor — IETF</div>
+              <span class="res-card-domain tag-officiel">Officiel</span>
+            </div>
+          </div>
+          <p class="res-card-desc">Spécifications officielles des protocoles Internet. RFC 791 (IP), RFC 793 (TCP), RFC 2460 (IPv6), RFC 8446 (TLS 1.3)…</p>
+          <div class="res-card-footer">
+            <span class="res-card-tag">rfc-editor.org</span>
+            <span class="res-card-arrow">→</span>
+          </div>
+        </a>
+
+        <a class="res-card" href="https://axelos.com/certifications/itil-service-management" target="_blank" rel="noopener">
+          <div class="res-card-top">
+            <span class="res-card-emoji">📋</span>
+            <div>
+              <div class="res-card-title">ITIL 4 — Axelos</div>
+              <span class="res-card-domain tag-officiel">Officiel</span>
+            </div>
+          </div>
+          <p class="res-card-desc">Ressources ITIL v4 : Service Value System, pratiques de gestion, guides de certification Foundation.</p>
+          <div class="res-card-footer">
+            <span class="res-card-tag">axelos.com</span>
+            <span class="res-card-arrow">→</span>
+          </div>
+        </a>
+
+      </div>
+    </section>
+
+    <!-- ════════════════════════════════════════════════
+         SECTION 2 — Labs & Entraînement
+    ════════════════════════════════════════════════ -->
+    <section class="res-section" id="sec-labs">
+      <div class="res-section-header">
+        <span class="res-section-icon">🧪</span>
+        <h2 class="res-section-title">Labs & Entraînement pratique</h2>
+        <span class="res-section-count">6 ressources</span>
+      </div>
+      <div class="res-cards-grid">
+
+        <a class="res-card" href="https://www.netacad.com/" target="_blank" rel="noopener">
+          <div class="res-card-top">
+            <span class="res-card-emoji">🎓</span>
+            <div>
+              <div class="res-card-title">Cisco Networking Academy</div>
+              <span class="res-card-domain tag-lab">Lab</span>
+            </div>
+          </div>
+          <p class="res-card-desc">Cours officiels Cisco avec Packet Tracer intégré. Modules CCNA, CyberOps, Linux Essentials, Python.</p>
+          <div class="res-card-footer">
+            <span class="res-card-tag">netacad.com</span>
+            <span class="res-card-arrow">→</span>
+          </div>
+        </a>
+
+        <a class="res-card" href="https://tryhackme.com/" target="_blank" rel="noopener">
+          <div class="res-card-top">
+            <span class="res-card-emoji">🛡️</span>
+            <div>
+              <div class="res-card-title">TryHackMe</div>
+              <span class="res-card-domain tag-lab">Lab</span>
+            </div>
+          </div>
+          <p class="res-card-desc">Apprentissage de la cybersécurité par labs gamifiés. Parcours Pre-Security, Jr Penetration Tester, SOC Level 1.</p>
+          <div class="res-card-footer">
+            <span class="res-card-tag">tryhackme.com</span>
+            <span class="res-card-arrow">→</span>
+          </div>
+        </a>
+
+        <a class="res-card" href="https://www.gns3.com/" target="_blank" rel="noopener">
+          <div class="res-card-top">
+            <span class="res-card-emoji">🌐</span>
+            <div>
+              <div class="res-card-title">GNS3 — Network Simulator</div>
+              <span class="res-card-domain tag-lab">Lab</span>
+            </div>
+          </div>
+          <p class="res-card-desc">Simulateur réseau open-source pour créer des topologies complexes avec de vraies images IOS Cisco.</p>
+          <div class="res-card-footer">
+            <span class="res-card-tag">gns3.com</span>
+            <span class="res-card-arrow">→</span>
+          </div>
+        </a>
+
+        <a class="res-card" href="https://labs.azure.com/" target="_blank" rel="noopener">
+          <div class="res-card-top">
+            <span class="res-card-emoji">☁️</span>
+            <div>
+              <div class="res-card-title">Microsoft Learn — Labs Azure</div>
+              <span class="res-card-domain tag-lab">Lab</span>
+            </div>
+          </div>
+          <p class="res-card-desc">Labs guidés Microsoft pour Windows Server, Active Directory et Azure — environnements cloud temporaires gratuits.</p>
+          <div class="res-card-footer">
+            <span class="res-card-tag">labs.azure.com</span>
+            <span class="res-card-arrow">→</span>
+          </div>
+        </a>
+
+        <a class="res-card" href="https://overthewire.org/wargames/" target="_blank" rel="noopener">
+          <div class="res-card-top">
+            <span class="res-card-emoji">⚔️</span>
+            <div>
+              <div class="res-card-title">OverTheWire — Wargames</div>
+              <span class="res-card-domain tag-lab">Lab</span>
+            </div>
+          </div>
+          <p class="res-card-desc">Wargames Linux progressifs (Bandit = débutant) pour maîtriser la ligne de commande, les permissions et les bases sécurité.</p>
+          <div class="res-card-footer">
+            <span class="res-card-tag">overthewire.org</span>
+            <span class="res-card-arrow">→</span>
+          </div>
+        </a>
+
+        <a class="res-card" href="https://www.virtualbox.org/" target="_blank" rel="noopener">
+          <div class="res-card-top">
+            <span class="res-card-emoji">💻</span>
+            <div>
+              <div class="res-card-title">VirtualBox</div>
+              <span class="res-card-domain tag-lab">Lab</span>
+            </div>
+          </div>
+          <p class="res-card-desc">Hyperviseur Type 2 gratuit pour créer des VMs Windows/Linux en local. Parfait pour les labs TSSR sans infrastructure.</p>
+          <div class="res-card-footer">
+            <span class="res-card-tag">virtualbox.org</span>
+            <span class="res-card-arrow">→</span>
+          </div>
+        </a>
+
+      </div>
+    </section>
+
+    <!-- ════════════════════════════════════════════════
+         SECTION 3 — Outils & Utilitaires
+    ════════════════════════════════════════════════ -->
+    <section class="res-section" id="sec-outils">
+      <div class="res-section-header">
+        <span class="res-section-icon">🛠️</span>
+        <h2 class="res-section-title">Outils & Utilitaires</h2>
+        <span class="res-section-count">6 ressources</span>
+      </div>
+      <div class="res-cards-grid">
+
+        <a class="res-card" href="https://www.wireshark.org/" target="_blank" rel="noopener">
+          <div class="res-card-top">
+            <span class="res-card-emoji">🦈</span>
+            <div>
+              <div class="res-card-title">Wireshark</div>
+              <span class="res-card-domain tag-outil">Outil</span>
+            </div>
+          </div>
+          <p class="res-card-desc">Analyseur de trames réseau open-source. Indispensable pour comprendre les protocoles et diagnostiquer les pannes réseau.</p>
+          <div class="res-card-footer">
+            <span class="res-card-tag">wireshark.org</span>
+            <span class="res-card-arrow">→</span>
+          </div>
+        </a>
+
+        <a class="res-card" href="https://nmap.org/" target="_blank" rel="noopener">
+          <div class="res-card-top">
+            <span class="res-card-emoji">🔍</span>
+            <div>
+              <div class="res-card-title">Nmap</div>
+              <span class="res-card-domain tag-outil">Outil</span>
+            </div>
+          </div>
+          <p class="res-card-desc">Scanner réseau et de ports. Découverte d'hôtes, détection OS et services, scripts NSE pour l'audit de sécurité.</p>
+          <div class="res-card-footer">
+            <span class="res-card-tag">nmap.org</span>
+            <span class="res-card-arrow">→</span>
+          </div>
+        </a>
+
+        <a class="res-card" href="https://glpi-project.org/" target="_blank" rel="noopener">
+          <div class="res-card-top">
+            <span class="res-card-emoji">📋</span>
+            <div>
+              <div class="res-card-title">GLPI</div>
+              <span class="res-card-domain tag-outil">Outil</span>
+            </div>
+          </div>
+          <p class="res-card-desc">Solution ITSM open-source : gestion de parc, helpdesk, CMDB, ticketing. Standard ITIL dans de nombreuses entreprises françaises.</p>
+          <div class="res-card-footer">
+            <span class="res-card-tag">glpi-project.org</span>
+            <span class="res-card-arrow">→</span>
+          </div>
+        </a>
+
+        <a class="res-card" href="https://ipcalc.fr/" target="_blank" rel="noopener">
+          <div class="res-card-top">
+            <span class="res-card-emoji">🧮</span>
+            <div>
+              <div class="res-card-title">Calculateur de sous-réseaux</div>
+              <span class="res-card-domain tag-outil">Outil</span>
+            </div>
+          </div>
+          <p class="res-card-desc">Calcul rapide en ligne : adresse réseau, broadcast, plage d'hôtes, CIDR ↔ masque. Essentiel pour les exercices de subnetting.</p>
+          <div class="res-card-footer">
+            <span class="res-card-tag">ipcalc.fr</span>
+            <span class="res-card-arrow">→</span>
+          </div>
+        </a>
+
+        <a class="res-card" href="https://www.putty.org/" target="_blank" rel="noopener">
+          <div class="res-card-top">
+            <span class="res-card-emoji">🖥️</span>
+            <div>
+              <div class="res-card-title">PuTTY / MobaXterm</div>
+              <span class="res-card-domain tag-outil">Outil</span>
+            </div>
+          </div>
+          <p class="res-card-desc">Clients SSH/Telnet/Serial pour Windows. MobaXterm inclut un terminal X11, un gestionnaire de sessions et des outils réseau intégrés.</p>
+          <div class="res-card-footer">
+            <span class="res-card-tag">putty.org</span>
+            <span class="res-card-arrow">→</span>
+          </div>
+        </a>
+
+        <a class="res-card" href="https://code.visualstudio.com/" target="_blank" rel="noopener">
+          <div class="res-card-top">
+            <span class="res-card-emoji">📝</span>
+            <div>
+              <div class="res-card-title">Visual Studio Code</div>
+              <span class="res-card-domain tag-outil">Outil</span>
+            </div>
+          </div>
+          <p class="res-card-desc">Éditeur de code polyvalent. Extensions recommandées : PowerShell, Bash Debug, Remote-SSH, YAML, Docker.</p>
+          <div class="res-card-footer">
+            <span class="res-card-tag">code.visualstudio.com</span>
+            <span class="res-card-arrow">→</span>
+          </div>
+        </a>
+
+      </div>
+    </section>
+
+    <!-- ════════════════════════════════════════════════
+         SECTION 4 — Cheatsheets
+    ════════════════════════════════════════════════ -->
+    <section class="res-section" id="sec-cheat">
+      <div class="res-section-header">
+        <span class="res-section-icon">⚡</span>
+        <h2 class="res-section-title">Commandes à connaître — Cheatsheets</h2>
+      </div>
+
+      <div class="cheat-tabs" role="tablist">
+        <button class="cheat-tab active" data-panel="cheat-cisco" role="tab">🔧 Cisco IOS</button>
+        <button class="cheat-tab" data-panel="cheat-linux" role="tab">🐧 Linux</button>
+        <button class="cheat-tab" data-panel="cheat-ps" role="tab">💠 PowerShell</button>
+        <button class="cheat-tab" data-panel="cheat-docker" role="tab">🐳 Docker</button>
+      </div>
+
+      <!-- Cisco IOS -->
+      <div class="cheat-panel active" id="cheat-cisco">
+
+        <div class="code-block">
+          <div class="code-block-header">
+            <span class="code-block-title">
+              <span class="dot dot-red"></span>
+              <span class="dot dot-yellow"></span>
+              <span class="dot dot-green"></span>
+              Cisco IOS — Navigation & Configuration de base
+            </span>
+            <button class="code-block-copy">📋 Copier</button>
+          </div>
+          <pre><code><span class="c"># Modes IOS</span>
+Router>                   <span class="c"># User EXEC (lecture seule)</span>
+Router> <span class="cmd">enable</span>             <span class="c"># → Privileged EXEC</span>
+Router# <span class="cmd">configure terminal</span>  <span class="c"># → Global Config</span>
+Router(config)# <span class="cmd">interface GigabitEthernet0/0</span>  <span class="c"># → Interface Config</span>
+Router(config-if)# <span class="cmd">end</span>   <span class="c"># → retour Privileged EXEC</span>
+
+<span class="c"># Configuration de base</span>
+Router(config)# <span class="cmd">hostname</span> R1
+Router(config)# <span class="cmd">enable secret</span> MonMotDePasse!
+Router(config)# <span class="cmd">service password-encryption</span>
+Router(config)# <span class="cmd">banner motd</span> # Acces autorise uniquement #
+
+<span class="c"># SSH v2</span>
+R1(config)# <span class="cmd">ip domain-name</span> lab.local
+R1(config)# <span class="cmd">crypto key generate rsa modulus</span> 2048
+R1(config)# <span class="cmd">ip ssh version</span> 2
+R1(config)# <span class="cmd">line vty 0 4</span>
+R1(config-line)# <span class="cmd">transport input ssh</span>
+R1(config-line)# <span class="cmd">login local</span>
+
+<span class="c"># Sauvegarde</span>
+R1# <span class="cmd">copy running-config startup-config</span>
+R1# <span class="cmd">write memory</span>   <span class="c"># alias</span></code></pre>
+        </div>
+
+        <div class="code-block">
+          <div class="code-block-header">
+            <span class="code-block-title">
+              <span class="dot dot-red"></span><span class="dot dot-yellow"></span><span class="dot dot-green"></span>
+              Cisco IOS — VLAN, Trunk &amp; Routing
+            </span>
+            <button class="code-block-copy">📋 Copier</button>
+          </div>
+          <pre><code><span class="c"># VLANs sur switch</span>
+SW(config)# <span class="cmd">vlan</span> 10
+SW(config-vlan)# <span class="cmd">name</span> COMPTA
+SW(config)# <span class="cmd">interface Fa0/1</span>
+SW(config-if)# <span class="cmd">switchport mode access</span>
+SW(config-if)# <span class="cmd">switchport access vlan</span> 10
+
+<span class="c"># Port trunk</span>
+SW(config-if)# <span class="cmd">switchport mode trunk</span>
+SW(config-if)# <span class="cmd">switchport trunk allowed vlan</span> 10,20,30
+
+<span class="c"># Route statique &amp; défaut</span>
+R1(config)# <span class="cmd">ip route</span> <span class="n">192.168.2.0</span> 255.255.255.0 <span class="n">10.0.0.2</span>
+R1(config)# <span class="cmd">ip route</span> <span class="n">0.0.0.0</span> 0.0.0.0 <span class="n">203.0.113.1</span>
+
+<span class="c"># OSPF</span>
+R1(config)# <span class="cmd">router ospf</span> 1
+R1(config-router)# <span class="cmd">network</span> <span class="n">10.0.0.0</span> 0.255.255.255 area 0
+R1(config-router)# <span class="cmd">passive-interface</span> GigabitEthernet0/1
+
+<span class="c"># ACL étendue nommée</span>
+R1(config)# <span class="cmd">ip access-list extended</span> BLOC_TELNET
+R1(config-ext-nacl)# <span class="cmd">deny</span> tcp any any eq 23
+R1(config-ext-nacl)# <span class="cmd">permit ip</span> any any
+R1(config-if)# <span class="cmd">ip access-group</span> BLOC_TELNET in
+
+<span class="c"># NAT/PAT</span>
+R1(config-if)# <span class="cmd">ip nat inside</span>          <span class="c"># sur interface LAN</span>
+R1(config-if)# <span class="cmd">ip nat outside</span>         <span class="c"># sur interface WAN</span>
+R1(config)# <span class="cmd">ip nat inside source list</span> 1 interface Gi0/0 overload
+
+<span class="c"># Vérifications</span>
+R1# <span class="cmd">show ip route</span>
+R1# <span class="cmd">show ip interface brief</span>
+R1# <span class="cmd">show ip ospf neighbor</span>
+R1# <span class="cmd">show vlan brief</span>
+R1# <span class="cmd">show spanning-tree</span></code></pre>
+        </div>
+
+      </div>
+
+      <!-- Linux -->
+      <div class="cheat-panel" id="cheat-linux">
+
+        <div class="code-block">
+          <div class="code-block-header">
+            <span class="code-block-title">
+              <span class="dot dot-red"></span><span class="dot dot-yellow"></span><span class="dot dot-green"></span>
+              Linux — Fichiers, Permissions &amp; Utilisateurs
+            </span>
+            <button class="code-block-copy">📋 Copier</button>
+          </div>
+          <pre><code><span class="c"># Navigation</span>
+ls -lah              <span class="c"># liste détaillée avec tailles lisibles</span>
+find /etc -name "*.conf" -type f
+find / -perm -4000 2>/dev/null  <span class="c"># fichiers SUID</span>
+
+<span class="c"># Permissions (chmod)</span>
+chmod 755 script.sh      <span class="c"># rwxr-xr-x</span>
+chmod u+x,g-w fichier    <span class="c"># notation symbolique</span>
+chown user:groupe fichier
+chown -R www-data /var/www/html
+
+<span class="c"># Utilisateurs &amp; groupes</span>
+useradd -m -s /bin/bash -G sudo alice
+passwd alice
+usermod -aG docker alice    <span class="c"># ajoute alice au groupe docker</span>
+userdel -r alice            <span class="c"># supprime user + home</span>
+id alice                    <span class="c"># affiche UID, GID, groupes</span>
+getent passwd alice         <span class="c"># infos depuis /etc/passwd</span>
+
+<span class="c"># Recherche de contenu</span>
+grep -rn "mot" /etc/         <span class="c"># récursif + numéro de ligne</span>
+grep -E "^(root|www)" /etc/passwd
+tail -f /var/log/syslog      <span class="c"># logs en temps réel</span>
+journalctl -u ssh -n 50      <span class="c"># 50 dernières lignes service SSH</span></code></pre>
+        </div>
+
+        <div class="code-block">
+          <div class="code-block-header">
+            <span class="code-block-title">
+              <span class="dot dot-red"></span><span class="dot dot-yellow"></span><span class="dot dot-green"></span>
+              Linux — Réseau, Services &amp; systemd
+            </span>
+            <button class="code-block-copy">📋 Copier</button>
+          </div>
+          <pre><code><span class="c"># Réseau</span>
+ip addr show
+ip route show
+ip addr add <span class="n">192.168.1.10</span>/24 dev eth0
+ip route add default via <span class="n">192.168.1.1</span>
+ss -tulnp               <span class="c"># ports en écoute avec PID</span>
+ping -c 4 <span class="n">8.8.8.8</span>
+traceroute <span class="n">8.8.8.8</span>
+dig @<span class="n">8.8.8.8</span> google.com A  <span class="c"># requête DNS</span>
+
+<span class="c"># Pare-feu UFW</span>
+ufw enable
+ufw allow 22/tcp
+ufw deny 23/tcp
+ufw status verbose
+
+<span class="c"># iptables (Debian/Ubuntu)</span>
+iptables -A INPUT -p tcp --dport 22 -j ACCEPT
+iptables -A INPUT -j DROP
+iptables -L -n -v --line-numbers
+
+<span class="c"># systemd</span>
+systemctl start nginx
+systemctl stop nginx
+systemctl enable --now nginx      <span class="c"># active + démarre</span>
+systemctl status nginx
+systemctl list-units --type=service --state=running
+journalctl -u nginx --since "1 hour ago" -f
+
+<span class="c"># Paquets</span>
+apt update && apt upgrade -y
+apt install vim curl net-tools -y
+dpkg -l | grep nginx
+apt remove --purge nginx</code></pre>
+        </div>
+
+        <div class="code-block">
+          <div class="code-block-header">
+            <span class="code-block-title">
+              <span class="dot dot-red"></span><span class="dot dot-yellow"></span><span class="dot dot-green"></span>
+              Linux — Script Bash — Template de référence
+            </span>
+            <button class="code-block-copy">📋 Copier</button>
+          </div>
+          <pre><code>#!/bin/bash
+<span class="c"># Description : script de sauvegarde</span>
+set -euo pipefail
+IFS=$'\n\t'
+
+<span class="c"># Variables</span>
+SOURCE_DIR="/var/www/html"
+BACKUP_DIR="/backups"
+DATE=$(date +%Y%m%d_%H%M%S)
+LOG_FILE="/var/log/backup.log"
+
+<span class="c"># Fonctions</span>
+log() { echo "[$(date '+%F %T')] $*" | tee -a "$LOG_FILE"; }
+die() { log "ERREUR : $*"; exit 1; }
+
+<span class="c"># Vérifications</span>
+[[ -d "$SOURCE_DIR" ]] || die "Répertoire source introuvable : $SOURCE_DIR"
+[[ $(id -u) -eq 0 ]]   || die "Ce script doit être exécuté en root"
+
+<span class="c"># Traitement</span>
+log "Début de la sauvegarde..."
+tar -czf "${BACKUP_DIR}/backup_${DATE}.tar.gz" "$SOURCE_DIR" \
+  && log "Sauvegarde réussie : backup_${DATE}.tar.gz" \
+  || die "Échec de la compression"
+
+<span class="c"># Nettoyage : conserver seulement les 7 dernières sauvegardes</span>
+find "$BACKUP_DIR" -name "backup_*.tar.gz" -mtime +7 -delete
+
+log "Terminé."</code></pre>
+        </div>
+
+      </div>
+
+      <!-- PowerShell -->
+      <div class="cheat-panel" id="cheat-ps">
+
+        <div class="code-block">
+          <div class="code-block-header">
+            <span class="code-block-title">
+              <span class="dot dot-red"></span><span class="dot dot-yellow"></span><span class="dot dot-green"></span>
+              PowerShell — Cmdlets essentiels &amp; Pipeline
+            </span>
+            <button class="code-block-copy">📋 Copier</button>
+          </div>
+          <pre><code><span class="c"># Découverte</span>
+Get-Command *Service*              <span class="c"># cherche les cmdlets</span>
+Get-Help Get-Process -Examples     <span class="c"># exemples d'utilisation</span>
+Get-Member -InputObject (Get-Date) <span class="c"># propriétés d'un objet</span>
+
+<span class="c"># Pipeline (Where-Object, Sort, Select)</span>
+Get-Process | Where-Object { $_.CPU -gt 10 } | Sort-Object CPU -Desc | Select-Object -First 5
+Get-Service | Where-Object Status -eq 'Stopped' | Select-Object Name, DisplayName
+
+<span class="c"># Réseau</span>
+Get-NetIPAddress -AddressFamily IPv4
+New-NetIPAddress -IPAddress 192.168.1.10 -PrefixLength 24 -InterfaceAlias "Ethernet" -DefaultGateway 192.168.1.1
+Set-DnsClientServerAddress -InterfaceAlias "Ethernet" -ServerAddresses 8.8.8.8, 8.8.4.4
+Test-NetConnection -ComputerName google.com -Port 443
+
+<span class="c"># Services</span>
+Get-Service -Name "W32Time"
+Start-Service -Name "W32Time"
+Stop-Service  -Name "W32Time"
+Set-Service   -Name "W32Time" -StartupType Automatic
+
+<span class="c"># Fichiers</span>
+Get-ChildItem -Path C:\Windows -Filter *.log -Recurse
+New-Item -ItemType Directory -Path C:\MonDossier
+Copy-Item -Path C:\src\* -Destination C:\dst\ -Recurse
+Remove-Item -Path C:\tmp\* -Recurse -Force</code></pre>
+        </div>
+
+        <div class="code-block">
+          <div class="code-block-header">
+            <span class="code-block-title">
+              <span class="dot dot-red"></span><span class="dot dot-yellow"></span><span class="dot dot-green"></span>
+              PowerShell — Active Directory &amp; Script structuré
+            </span>
+            <button class="code-block-copy">📋 Copier</button>
+          </div>
+          <pre><code><span class="c"># Module Active Directory (Import si nécessaire)</span>
+Import-Module ActiveDirectory
+
+<span class="c"># Utilisateurs</span>
+New-ADUser -Name "Jean Dupont" -SamAccountName "jdupont" `
+  -UserPrincipalName "jdupont@corp.local" `
+  -Path "OU=Comptabilite,DC=corp,DC=local" `
+  -AccountPassword (ConvertTo-SecureString "P@ssword1!" -AsPlainText -Force) `
+  -Enabled $true
+
+Get-ADUser -Filter { Department -eq "Comptabilite" } -Properties *
+Set-ADUser -Identity jdupont -Department "Finance"
+Disable-ADAccount -Identity jdupont
+Remove-ADUser -Identity jdupont -Confirm:$false
+
+<span class="c"># Groupes et OUs</span>
+New-ADGroup -Name "GRP_Finance" -GroupScope Global -Path "OU=Groupes,DC=corp,DC=local"
+Add-ADGroupMember -Identity "GRP_Finance" -Members jdupont
+New-ADOrganizationalUnit -Name "Finance" -Path "DC=corp,DC=local"
+
+<span class="c"># Template script PowerShell</span>
+[CmdletBinding()]
+param(
+    [Parameter(Mandatory)][string]$NomUtilisateur,
+    [string]$OU = "OU=Users,DC=corp,DC=local"
+)
+
+try {
+    $User = Get-ADUser -Identity $NomUtilisateur -ErrorAction Stop
+    Write-Host "Utilisateur trouvé : $($User.DistinguishedName)" -ForegroundColor Green
+}
+catch [Microsoft.ActiveDirectory.Management.ADIdentityNotFoundException] {
+    Write-Error "Utilisateur '$NomUtilisateur' introuvable dans AD."
+    exit 1
+}
+catch {
+    Write-Error "Erreur inattendue : $_"
+    exit 2
+}</code></pre>
+        </div>
+
+      </div>
+
+      <!-- Docker -->
+      <div class="cheat-panel" id="cheat-docker">
+
+        <div class="code-block">
+          <div class="code-block-header">
+            <span class="code-block-title">
+              <span class="dot dot-red"></span><span class="dot dot-yellow"></span><span class="dot dot-green"></span>
+              Docker — Conteneurs, Images &amp; Compose
+            </span>
+            <button class="code-block-copy">📋 Copier</button>
+          </div>
+          <pre><code><span class="c"># Images</span>
+docker pull nginx:latest
+docker images
+docker rmi nginx:latest
+docker build -t monapp:1.0 .
+
+<span class="c"># Conteneurs</span>
+docker run -d -p 8080:80 --name web nginx
+docker run -it ubuntu:22.04 /bin/bash      <span class="c"># interactif</span>
+docker ps                                  <span class="c"># conteneurs actifs</span>
+docker ps -a                               <span class="c"># tous les conteneurs</span>
+docker stop web && docker rm web
+docker exec -it web bash                   <span class="c"># shell dans un conteneur actif</span>
+docker logs web -f                         <span class="c"># logs en temps réel</span>
+docker inspect web                         <span class="c"># détails JSON</span>
+
+<span class="c"># Volumes &amp; Réseau</span>
+docker volume create monvolume
+docker network create --driver bridge monreseau
+docker run -d -v monvolume:/data --network monreseau --name db mysql:8
+
+<span class="c"># Nettoyage</span>
+docker system prune -af   <span class="c"># supprime tout (images/conteneurs/réseaux inutilisés)</span>
+docker volume prune
+
+<span class="c"># Docker Compose</span>
+docker compose up -d        <span class="c"># démarrer en arrière-plan</span>
+docker compose down         <span class="c"># arrêter &amp; supprimer conteneurs</span>
+docker compose logs -f app  <span class="c"># logs du service "app"</span>
+docker compose ps</code></pre>
+        </div>
+
+        <div class="code-block">
+          <div class="code-block-header">
+            <span class="code-block-title">
+              <span class="dot dot-red"></span><span class="dot dot-yellow"></span><span class="dot dot-green"></span>
+              docker-compose.yml — Exemple LAMP Stack
+            </span>
+            <button class="code-block-copy">📋 Copier</button>
+          </div>
+          <pre><code>services:
+  web:
+    image: php:8.2-apache
+    ports:
+      - "<span class="n">80</span>:80"
+    volumes:
+      - ./src:/var/www/html
+    depends_on:
+      - db
+    networks:
+      - lamp_net
+
+  db:
+    image: mysql:<span class="n">8</span>.0
+    environment:
+      MYSQL_ROOT_PASSWORD: rootpassword
+      MYSQL_DATABASE: appdb
+      MYSQL_USER: appuser
+      MYSQL_PASSWORD: apppassword
+    volumes:
+      - db_data:/var/lib/mysql
+    networks:
+      - lamp_net
+
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin
+    ports:
+      - "<span class="n">8080</span>:80"
+    environment:
+      PMA_HOST: db
+    networks:
+      - lamp_net
+
+volumes:
+  db_data:
+
+networks:
+  lamp_net:
+    driver: bridge</code></pre>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ════════════════════════════════════════════════
+         SECTION 5 — Raccourcis clavier
+    ════════════════════════════════════════════════ -->
+    <section class="res-section" id="sec-kb">
+      <div class="res-section-header">
+        <span class="res-section-icon">⌨️</span>
+        <h2 class="res-section-title">Raccourcis clavier essentiels</h2>
+      </div>
+
+      <div class="kb-tabs" role="tablist">
+        <button class="kb-tab active" data-panel="kb-wireshark">🦈 Wireshark</button>
+        <button class="kb-tab" data-panel="kb-vmware">💻 VMware / VirtualBox</button>
+        <button class="kb-tab" data-panel="kb-windows">🪟 Windows Admin</button>
+        <button class="kb-tab" data-panel="kb-linux-shell">🐧 Shell Linux</button>
+      </div>
+
+      <!-- Wireshark -->
+      <div class="kb-panel active" id="kb-wireshark">
+        <table class="kb-table">
+          <thead>
+            <tr><th>Raccourci</th><th>Action</th></tr>
+          </thead>
+          <tbody>
+            <tr><td><span class="kb-key"><kbd>Ctrl</kbd><span class="kb-sep">+</span><kbd>E</kbd></span></td><td>Démarrer / Arrêter la capture</td></tr>
+            <tr><td><span class="kb-key"><kbd>Ctrl</kbd><span class="kb-sep">+</span><kbd>K</kbd></span></td><td>Ouvrir les options de capture</td></tr>
+            <tr><td><span class="kb-key"><kbd>Ctrl</kbd><span class="kb-sep">+</span><kbd>F</kbd></span></td><td>Rechercher un paquet</td></tr>
+            <tr><td><span class="kb-key"><kbd>Ctrl</kbd><span class="kb-sep">+</span><kbd>G</kbd></span></td><td>Aller au paquet n°...</td></tr>
+            <tr><td><span class="kb-key"><kbd>Ctrl</kbd><span class="kb-sep">+</span><kbd>R</kbd></span></td><td>Ouvrir un fichier de capture</td></tr>
+            <tr><td><span class="kb-key"><kbd>Ctrl</kbd><span class="kb-sep">+</span><kbd>S</kbd></span></td><td>Enregistrer la capture</td></tr>
+            <tr><td><span class="kb-key"><kbd>Ctrl</kbd><span class="kb-sep">+</span><kbd>Shift</kbd><span class="kb-sep">+</span><kbd>D</kbd></span></td><td>Dupliquer l'onglet de capture</td></tr>
+            <tr><td><span class="kb-key"><kbd>Ctrl</kbd><span class="kb-sep">+</span><kbd>Alt</kbd><span class="kb-sep">+</span><kbd>Shift</kbd><span class="kb-sep">+</span><kbd>T</kbd></span></td><td>Suivre le flux TCP</td></tr>
+            <tr><td><span class="kb-key"><kbd>Alt</kbd><span class="kb-sep">+</span><kbd>→</kbd></span></td><td>Paquet suivant (même conversation)</td></tr>
+            <tr><td><span class="kb-key"><kbd>F5</kbd></span></td><td>Actualiser / relancer la capture</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- VMware / VirtualBox -->
+      <div class="kb-panel" id="kb-vmware">
+        <table class="kb-table">
+          <thead>
+            <tr><th>Raccourci</th><th>Action</th><th>Logiciel</th></tr>
+          </thead>
+          <tbody>
+            <tr><td><span class="kb-key"><kbd>Ctrl</kbd><span class="kb-sep">+</span><kbd>Alt</kbd></span></td><td>Libérer la souris / sortir de la VM</td><td>VMware Workstation</td></tr>
+            <tr><td><span class="kb-key"><kbd>Ctrl</kbd><span class="kb-sep">+</span><kbd>Alt</kbd><span class="kb-sep">+</span><kbd>Enter</kbd></span></td><td>Mode plein écran</td><td>VMware Workstation</td></tr>
+            <tr><td><span class="kb-key"><kbd>Ctrl</kbd><span class="kb-sep">+</span><kbd>Alt</kbd><span class="kb-sep">+</span><kbd>Del</kbd></span></td><td>Envoyer Ctrl+Alt+Suppr à la VM</td><td>VMware Workstation</td></tr>
+            <tr><td><span class="kb-key"><kbd>Ctrl</kbd><span class="kb-sep">+</span><kbd>Alt</kbd><span class="kb-sep">+</span><kbd>P</kbd></span></td><td>Mettre la VM en pause</td><td>VMware Workstation</td></tr>
+            <tr><td><span class="kb-key"><kbd>Host</kbd><span class="kb-sep">+</span><kbd>F</kbd></span></td><td>Mode plein écran (Host = Ctrl droit)</td><td>VirtualBox</td></tr>
+            <tr><td><span class="kb-key"><kbd>Host</kbd><span class="kb-sep">+</span><kbd>S</kbd></span></td><td>Snapshot rapide</td><td>VirtualBox</td></tr>
+            <tr><td><span class="kb-key"><kbd>Host</kbd><span class="kb-sep">+</span><kbd>R</kbd></span></td><td>Redémarrer la VM</td><td>VirtualBox</td></tr>
+            <tr><td><span class="kb-key"><kbd>Host</kbd><span class="kb-sep">+</span><kbd>Del</kbd></span></td><td>Envoyer Ctrl+Alt+Suppr à la VM</td><td>VirtualBox</td></tr>
+            <tr><td><span class="kb-key"><kbd>Host</kbd><span class="kb-sep">+</span><kbd>Home</kbd></span></td><td>Afficher le menu VM</td><td>VirtualBox</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Windows Admin -->
+      <div class="kb-panel" id="kb-windows">
+        <table class="kb-table">
+          <thead>
+            <tr><th>Raccourci</th><th>Action</th></tr>
+          </thead>
+          <tbody>
+            <tr><td><span class="kb-key"><kbd>Win</kbd><span class="kb-sep">+</span><kbd>R</kbd></span></td><td>Exécuter (Run)</td></tr>
+            <tr><td><span class="kb-key"><kbd>Win</kbd><span class="kb-sep">+</span><kbd>X</kbd></span></td><td>Menu Outils d'administration rapide</td></tr>
+            <tr><td><code style="font-size:.82rem">eventvwr.msc</code></td><td>Observateur d'événements</td></tr>
+            <tr><td><code style="font-size:.82rem">dsa.msc</code></td><td>Active Directory Utilisateurs et Ordinateurs</td></tr>
+            <tr><td><code style="font-size:.82rem">gpmc.msc</code></td><td>Console de gestion des stratégies de groupe</td></tr>
+            <tr><td><code style="font-size:.82rem">dhcpmgmt.msc</code></td><td>Console DHCP</td></tr>
+            <tr><td><code style="font-size:.82rem">dnsmgmt.msc</code></td><td>Console DNS</td></tr>
+            <tr><td><code style="font-size:.82rem">compmgmt.msc</code></td><td>Gestion de l'ordinateur</td></tr>
+            <tr><td><code style="font-size:.82rem">ncpa.cpl</code></td><td>Connexions réseau</td></tr>
+            <tr><td><code style="font-size:.82rem">services.msc</code></td><td>Gestionnaire de services</td></tr>
+            <tr><td><code style="font-size:.82rem">regedit</code></td><td>Éditeur de registre</td></tr>
+            <tr><td><span class="kb-key"><kbd>Ctrl</kbd><span class="kb-sep">+</span><kbd>Shift</kbd><span class="kb-sep">+</span><kbd>Enter</kbd></span></td><td>Exécuter en tant qu'administrateur (depuis Démarrer)</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Linux Shell -->
+      <div class="kb-panel" id="kb-linux-shell">
+        <table class="kb-table">
+          <thead>
+            <tr><th>Raccourci Bash</th><th>Action</th></tr>
+          </thead>
+          <tbody>
+            <tr><td><span class="kb-key"><kbd>Ctrl</kbd><span class="kb-sep">+</span><kbd>C</kbd></span></td><td>Interrompre le processus en cours (SIGINT)</td></tr>
+            <tr><td><span class="kb-key"><kbd>Ctrl</kbd><span class="kb-sep">+</span><kbd>Z</kbd></span></td><td>Suspendre le processus (mettre en arrière-plan)</td></tr>
+            <tr><td><span class="kb-key"><kbd>Ctrl</kbd><span class="kb-sep">+</span><kbd>D</kbd></span></td><td>EOF — fermer le terminal / déconnecter SSH</td></tr>
+            <tr><td><span class="kb-key"><kbd>Ctrl</kbd><span class="kb-sep">+</span><kbd>L</kbd></span></td><td>Effacer l'écran (clear)</td></tr>
+            <tr><td><span class="kb-key"><kbd>Ctrl</kbd><span class="kb-sep">+</span><kbd>R</kbd></span></td><td>Recherche dans l'historique (reverse-i-search)</td></tr>
+            <tr><td><span class="kb-key"><kbd>Ctrl</kbd><span class="kb-sep">+</span><kbd>A</kbd></span></td><td>Début de ligne</td></tr>
+            <tr><td><span class="kb-key"><kbd>Ctrl</kbd><span class="kb-sep">+</span><kbd>E</kbd></span></td><td>Fin de ligne</td></tr>
+            <tr><td><span class="kb-key"><kbd>Ctrl</kbd><span class="kb-sep">+</span><kbd>U</kbd></span></td><td>Effacer depuis le curseur jusqu'au début de ligne</td></tr>
+            <tr><td><span class="kb-key"><kbd>Ctrl</kbd><span class="kb-sep">+</span><kbd>K</kbd></span></td><td>Effacer depuis le curseur jusqu'à la fin de ligne</td></tr>
+            <tr><td><span class="kb-key"><kbd>Ctrl</kbd><span class="kb-sep">+</span><kbd>W</kbd></span></td><td>Effacer le mot précédent</td></tr>
+            <tr><td><span class="kb-key"><kbd>Alt</kbd><span class="kb-sep">+</span><kbd>.</kbd></span></td><td>Dernier argument de la commande précédente</td></tr>
+            <tr><td><span class="kb-key"><kbd>!!</kbd></span></td><td>Répéter la dernière commande (ex: <code>sudo !!</code>)</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+    </section>
+
+  </main>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="footer-inner">
+      <span>TSSR Notes © <span id="footer-year"></span></span>
+      <span>100% local — aucune donnée envoyée</span>
+    </div>
+  </footer>
+
+  <div id="toast-container" aria-live="polite"></div>
+
+  <script src="../assets/js/auth.js"></script>
+  <script src="../assets/js/main.js"></script>
+  <script>
+  document.addEventListener('DOMContentLoaded', () => {
+    document.getElementById('footer-year').textContent = new Date().getFullYear();
+
+    // Navbar mobile menu géré par main.js (initNavigation)
+
+    // ── Cheatsheet tabs ────────────────────────────────────────
+    document.querySelectorAll('.cheat-tab').forEach(tab => {
+      tab.addEventListener('click', () => {
+        const panelId = tab.dataset.panel;
+        tab.closest('section').querySelectorAll('.cheat-tab').forEach(t => t.classList.remove('active'));
+        tab.closest('section').querySelectorAll('.cheat-panel').forEach(p => p.classList.remove('active'));
+        tab.classList.add('active');
+        document.getElementById(panelId)?.classList.add('active');
+      });
+    });
+
+    // ── Keyboard shortcut tabs ─────────────────────────────────
+    document.querySelectorAll('.kb-tab').forEach(tab => {
+      tab.addEventListener('click', () => {
+        const panelId = tab.dataset.panel;
+        tab.closest('section').querySelectorAll('.kb-tab').forEach(t => t.classList.remove('active'));
+        tab.closest('section').querySelectorAll('.kb-panel').forEach(p => p.classList.remove('active'));
+        tab.classList.add('active');
+        document.getElementById(panelId)?.classList.add('active');
+      });
+    });
+
+    // ── Copy buttons ───────────────────────────────────────────
+    document.querySelectorAll('.code-block-copy').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const code = btn.closest('.code-block')?.querySelector('code');
+        if (!code) return;
+        // Texte brut sans balises HTML
+        const text = code.innerText;
+        if (window.TSSR?.copyToClipboard) {
+          window.TSSR.copyToClipboard(text, btn);
+        } else {
+          navigator.clipboard.writeText(text).then(() => {
+            const orig = btn.textContent;
+            btn.textContent = '✓ Copié !';
+            btn.classList.add('copied');
+            setTimeout(() => { btn.textContent = orig; btn.classList.remove('copied'); }, 2000);
+          });
+        }
+      });
+    });
+  });
+  </script>
+</body>
+</html>
