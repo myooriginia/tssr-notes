@@ -356,6 +356,17 @@
 
     .gl-empty p { font-size: 0.9rem; }
 
+    /* Cours groups (collapsibles) */
+    .gl-cours-group.collapsed .gl-terms-grid { display: none; }
+    .gl-cours-header { cursor: pointer; user-select: none; }
+    .gl-cours-chevron {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      flex-shrink: 0;
+      transition: transform 0.2s;
+    }
+    .gl-cours-group.collapsed .gl-cours-chevron { transform: rotate(-90deg); }
+
     /* Loading */
     #gl-loading {
       text-align: center;
@@ -375,6 +386,16 @@
     }
 
     @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* Overlay sidebar (mobile) — caché par défaut, hors du flux grid */
+    .gl-sidebar-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.35);
+      z-index: 140;
+    }
+    .gl-sidebar-overlay.open { display: block; }
 
     /* Mobile sidebar toggle */
     .gl-sidebar-toggle {
@@ -413,16 +434,6 @@
 
       .gl-sidebar.open { left: 0; }
       .gl-sidebar-toggle { display: flex; }
-
-      .gl-sidebar-overlay {
-        display: none;
-        position: fixed;
-        inset: 0;
-        background: rgba(0,0,0,0.35);
-        z-index: 140;
-      }
-
-      .gl-sidebar-overlay.open { display: block; }
 
       .gl-main { padding: 1rem; }
     }
@@ -491,7 +502,7 @@
 
       <!-- Alpha index -->
       <div>
-        <p class="gl-sidebar-title">Index A–Z</p>
+        <p class="gl-sidebar-title">Cours</p>
         <div class="gl-alpha-grid" id="gl-alpha-grid">
           <!-- injected by JS -->
         </div>
@@ -499,15 +510,12 @@
 
     </aside>
 
-    <!-- Sidebar overlay (mobile) -->
-    <div class="gl-sidebar-overlay" id="gl-sidebar-overlay"></div>
-
     <!-- Main -->
     <main class="gl-main">
 
       <div class="gl-page-header">
         <h1>📖 Glossaire</h1>
-        <p>Définitions des termes essentiels pour l'examen TSSR.</p>
+        <p>992 termes · 14 thématiques — source : <em>Glossaire Général TSSR</em>, ENI École Informatique.</p>
       </div>
 
       <!-- Toolbar -->
@@ -538,6 +546,9 @@
     </main>
   </div>
 
+  <!-- Sidebar overlay (mobile) — hors du grid pour ne pas perturber la mise en page -->
+  <div class="gl-sidebar-overlay" id="gl-sidebar-overlay"></div>
+
   <!-- Mobile toggle -->
   <button class="gl-sidebar-toggle" id="gl-sidebar-toggle" aria-label="Ouvrir la navigation">☰</button>
 
@@ -557,30 +568,78 @@
   <script>
   /*!
    * GlossaireApp — Glossaire interactif TSSR
-   * Chargement JSON → tri alpha → filtres catégorie + recherche texte
+   * Source : GLOSSAIRE_DATA.categories[].termes[]
+   * 13 catégories thématiques, 932 termes, recherche + filtre + groupes par cours
    */
 
-  const CATEGORIES = {
-    reseau:    { label: 'Réseau',          emoji: '🌐' },
-    systeme:   { label: 'Systèmes Linux',  emoji: '🐧' },
-    windows:   { label: 'Windows / AD',    emoji: '🪟' },
-    securite:  { label: 'Sécurité',        emoji: '🔒' },
-    cloud:     { label: 'Cloud / Virt.',   emoji: '☁️' },
-    scripting: { label: 'Scripting',       emoji: '⚙️' },
-    itil:      { label: 'ITIL / ITSM',     emoji: '📋' },
+  // Correspondance cours (ordre sidebar) → catégories glossaire
+  const COURS_GROUPS = [
+    { id: 'admin-gnu-linux',         titre: 'Administration GNU Linux',         emoji: '🐧', cats: [] },
+    { id: 'base-reseaux',            titre: 'Base des Réseaux',                 emoji: '🌐', cats: ['bases-reseaux'] },
+    { id: 'glpi',                    titre: 'GLPI',                             emoji: '🎫', cats: ['glpi'] },
+    { id: 'itil-gestion-parc',       titre: 'ITIL et gestion de parc',          emoji: '📋', cats: ['itil'] },
+    { id: 'scripting-bash',          titre: 'Initiation scripting Bash',        emoji: '⚙️', cats: ['bash'] },
+    { id: 'scripting-ps-initiation', titre: 'Initiation scripting PowerShell',  emoji: '💠', cats: [] },
+    { id: 'initiation-powershell',   titre: 'Initiation à PowerShell',          emoji: '💡', cats: ['powershell'] },
+    { id: 'intro-linux',             titre: 'Introduction à Linux',             emoji: '🐧', cats: [] },
+    { id: 'infra-reseau',            titre: 'Les infrastructures réseau',       emoji: '🔧', cats: ['infra-cisco'] },
+    { id: 'm365-outils-collab',      titre: 'M365 — Outils collaboratifs',      emoji: '📎', cats: [] },
+    { id: 'messagerie-cloud-365',    titre: 'Messagerie Cloud et 365',          emoji: '☁️', cats: ['m365'] },
+    { id: 'services-transverses-ms', titre: 'Microsoft — Services transverses', emoji: '🪟', cats: ['services-transverses-ms'] },
+    { id: 'reseau-securite',         titre: 'Réseau et sécurité',               emoji: '🔒', cats: ['securite'] },
+    { id: 'sauvegarde-restauration', titre: 'Sauvegarde et restauration',       emoji: '💾', cats: ['sauvegarde'] },
+    { id: 'services-reseau-linux',   titre: 'Services réseau Linux',            emoji: '🐧', cats: ['services-linux'] },
+    { id: 'services-reseau-ms',      titre: 'Services réseau Microsoft',        emoji: '🪟', cats: ['services-ms'] },
+    { id: 'systeme-client-ms',       titre: 'Système Client Microsoft',         emoji: '🖥️', cats: ['systeme-client'] },
+    { id: 'virtualisation-serveur',  titre: 'Virtualisation de serveur',        emoji: '🔲', cats: ['virtualisation'] },
+  ];
+
+  // Couleurs des badges catégorie (style inline pour éviter les conflits)
+  const CAT_COLORS = {
+    'bases-reseaux':  { bg: '#1e3a5f', color: '#93c5fd' },
+    'infra-cisco':    { bg: '#1e3a5f', color: '#60a5fa' },
+    'securite':       { bg: '#3b1a1a', color: '#fca5a5' },
+    'services-linux': { bg: '#1a3b2a', color: '#86efac' },
+    'services-ms':    { bg: '#2e1a4a', color: '#c4b5fd' },
+    'systeme-client': { bg: '#2e1a4a', color: '#a78bfa' },
+    'powershell':     { bg: '#1a2e4a', color: '#7dd3fc' },
+    'bash':           { bg: '#2a2a1a', color: '#fde68a' },
+    'virtualisation': { bg: '#1a3535', color: '#5eead4' },
+    'sauvegarde':     { bg: '#2a1a2a', color: '#f0abfc' },
+    'glpi':           { bg: '#1a3525', color: '#6ee7b7' },
+    'itil':                    { bg: '#1a2e1a', color: '#a3e635' },
+    'm365':                    { bg: '#1a2e3a', color: '#38bdf8' },
+    'services-transverses-ms': { bg: '#2a1e3a', color: '#e0aaff' },
   };
 
   const GlossaireApp = {
-    termes: [],
-    filtered: [],
-    currentCat: 'all',
+    termes:        [],  // [{terme, definition, categorie, catTitre, catEmoji}, ...]
+    catMap:        {},  // id → {titre, emoji}
+    filtered:      [],
+    currentCat:    'all',
     currentSearch: '',
 
     // ── Init ──────────────────────────────────────────────────────
     init() {
       document.getElementById('footer-year').textContent = new Date().getFullYear();
 
-      this.termes = (GLOSSAIRE_DATA.termes || []).sort((a, b) =>
+      // Aplatir les catégories en liste de termes
+      const categories = GLOSSAIRE_DATA.categories || [];
+      for (const cat of categories) {
+        this.catMap[cat.id] = { titre: cat.titre, emoji: cat.emoji };
+        for (const t of cat.termes) {
+          this.termes.push({
+            terme:     t.terme,
+            definition: t.definition,
+            categorie: cat.id,
+            catTitre:  cat.titre,
+            catEmoji:  cat.emoji,
+          });
+        }
+      }
+
+      // Tri alphabétique global
+      this.termes.sort((a, b) =>
         a.terme.localeCompare(b.terme, 'fr', { sensitivity: 'base' })
       );
 
@@ -588,31 +647,23 @@
       document.getElementById('gl-stat-total').textContent = this.termes.length;
 
       this.renderCategoryFilters();
-      this.renderAlphaIndex();
+      this.renderCoursNav();
       this.applyFilters();
       this.bindEvents();
-
-      // Log activité
-      if (window.TSSR?.Store?.addActivity) {
-        window.TSSR.Store.addActivity({ type: 'glossaire', label: 'Glossaire consulté', moduleId: null });
-      }
     },
 
-    // ── Category filter buttons ────────────────────────────────────
+    // ── Filtres catégorie ──────────────────────────────────────────
     renderCategoryFilters() {
       const list = document.getElementById('gl-cat-list');
 
-      const counts = {};
-      for (const t of this.termes) {
-        counts[t.categorie] = (counts[t.categorie] || 0) + 1;
-      }
+      // Bouton "Tous"
+      list.appendChild(this._makeCatBtn('all', '📋', 'Tous les termes', this.termes.length, true));
 
-      const allBtn = this._makeCatBtn('all', '📋', 'Tous les termes', this.termes.length, true);
-      list.appendChild(allBtn);
-
-      for (const [key, cfg] of Object.entries(CATEGORIES)) {
-        if (!counts[key]) continue;
-        list.appendChild(this._makeCatBtn(key, cfg.emoji, cfg.label, counts[key], false));
+      // Une entrée par catégorie dans l'ordre du fichier source
+      for (const cat of (GLOSSAIRE_DATA.categories || [])) {
+        list.appendChild(
+          this._makeCatBtn(cat.id, cat.emoji, cat.titre, cat.termes.length, false)
+        );
       }
     },
 
@@ -631,42 +682,37 @@
         b.classList.toggle('active', b.dataset.cat === cat)
       );
       this.applyFilters();
+      // Scroll haut de page
+      document.getElementById('gl-content').scrollIntoView({ behavior: 'smooth', block: 'start' });
     },
 
-    // ── Alpha index ────────────────────────────────────────────────
-    renderAlphaIndex() {
-      const grid = document.getElementById('gl-alpha-grid');
-      const letters = new Set(
-        this.termes.map(t => t.terme[0].toUpperCase())
-      );
-
-      for (let code = 65; code <= 90; code++) {
-        const l = String.fromCharCode(code);
+    // ── Navigation par cours ───────────────────────────────────────
+    renderCoursNav() {
+      const nav = document.getElementById('gl-alpha-grid');
+      nav.className = 'gl-cat-list';  // réutilise les styles existants
+      for (const g of COURS_GROUPS) {
+        if (!g.cats.length) continue;
         const btn = document.createElement('button');
-        btn.className = 'gl-alpha-btn' + (letters.has(l) ? ' has-terms' : ' empty');
-        btn.textContent = l;
-        if (letters.has(l)) {
-          btn.addEventListener('click', () => {
-            const el = document.getElementById(`gl-letter-${l}`);
-            if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
-          });
-        }
-        grid.appendChild(btn);
+        btn.className = 'gl-cat-btn';
+        btn.innerHTML = `${g.emoji} ${g.titre}`;
+        btn.addEventListener('click', () => {
+          const el = document.getElementById(`gl-cours-${g.id}`);
+          if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        });
+        nav.appendChild(btn);
       }
     },
 
-    // ── Render ─────────────────────────────────────────────────────
+    // ── Filtres & rendu ────────────────────────────────────────────
     applyFilters() {
-      const q = this.currentSearch.toLowerCase().trim();
+      const q   = this.currentSearch.toLowerCase().trim();
       const cat = this.currentCat;
 
       this.filtered = this.termes.filter(t => {
         const matchCat = cat === 'all' || t.categorie === cat;
-        const matchQ = !q
+        const matchQ   = !q
           || t.terme.toLowerCase().includes(q)
-          || (t.complet || '').toLowerCase().includes(q)
-          || t.definition.toLowerCase().includes(q)
-          || (t.exemple || '').toLowerCase().includes(q);
+          || t.definition.toLowerCase().includes(q);
         return matchCat && matchQ;
       });
 
@@ -688,49 +734,59 @@
       emptyEl.classList.remove('visible');
       countEl.textContent = `${this.filtered.length} terme${this.filtered.length > 1 ? 's' : ''}`;
 
-      // Group by first letter
-      const byLetter = {};
+      // Regrouper par cours dans l'ordre de COURS_GROUPS
+      const byCat = {};
       for (const t of this.filtered) {
-        const l = t.terme[0].toUpperCase();
-        if (!byLetter[l]) byLetter[l] = [];
-        byLetter[l].push(t);
+        if (!byCat[t.categorie]) byCat[t.categorie] = [];
+        byCat[t.categorie].push(t);
       }
 
-      const letters = Object.keys(byLetter).sort();
-      container.innerHTML = letters.map(l => `
-        <section class="gl-letter-group" id="gl-letter-${l}">
-          <div class="gl-letter-heading">
-            <div class="gl-letter-char">${l}</div>
-            <div class="gl-letter-line"></div>
-            <span class="gl-letter-count">${byLetter[l].length} terme${byLetter[l].length > 1 ? 's' : ''}</span>
-          </div>
-          <div class="gl-terms-grid">
-            ${byLetter[l].map(t => this.termCardHTML(t)).join('')}
-          </div>
-        </section>
-      `).join('');
+      const sections = [];
+      for (const g of COURS_GROUPS) {
+        const terms = [];
+        for (const cat of g.cats) {
+          if (byCat[cat]) terms.push(...byCat[cat]);
+        }
+        if (!terms.length) continue;
+        terms.sort((a, b) => a.terme.localeCompare(b.terme, 'fr', { sensitivity: 'base' }));
+        sections.push(`
+          <section class="gl-letter-group gl-cours-group" id="gl-cours-${g.id}">
+            <div class="gl-letter-heading gl-cours-header" tabindex="0" role="button"
+                 aria-label="${g.titre} — ${terms.length} termes">
+              <div class="gl-letter-char" aria-hidden="true">${g.emoji}</div>
+              <span style="flex:1;font-size:.95rem;font-weight:700;color:var(--text)">${this.esc(g.titre)}</span>
+              <span class="gl-letter-count">${terms.length} terme${terms.length > 1 ? 's' : ''}</span>
+              <span class="gl-cours-chevron" aria-hidden="true">▾</span>
+            </div>
+            <div class="gl-terms-grid">
+              ${terms.map(t => this.termCardHTML(t)).join('')}
+            </div>
+          </section>
+        `);
+      }
+      container.innerHTML = sections.join('');
     },
 
     termCardHTML(t) {
-      const catCfg = CATEGORIES[t.categorie] || { label: t.categorie, emoji: '📌' };
-      const highlight = this.currentSearch.trim();
+      const hl      = this.currentSearch.trim();
+      const colors  = CAT_COLORS[t.categorie] || { bg: '#1e2a3a', color: '#94a3b8' };
+      const defText = hl ? this.hl(this.esc(t.definition), hl) : this.esc(t.definition);
+      const termTxt = hl ? this.hl(this.esc(t.terme),      hl) : this.esc(t.terme);
 
-      const defText  = highlight ? this.hl(this.esc(t.definition), highlight) : this.esc(t.definition);
-      const termText = highlight ? this.hl(this.esc(t.terme), highlight)      : this.esc(t.terme);
+      // Badge visible seulement si filtre "Tous" actif (évite la redondance)
+      const badge = this.currentCat === 'all'
+        ? `<span class="gl-cat-badge"
+               style="background:${colors.bg};color:${colors.color};border:1px solid ${colors.color}33"
+             >${t.catEmoji} ${this.esc(t.catTitre)}</span>`
+        : '';
 
       return `
         <article class="gl-term-card">
           <div class="gl-term-header">
-            <div>
-              <div class="gl-term-name">${termText}</div>
-              ${t.complet ? `<div class="gl-term-full">${this.esc(t.complet)}</div>` : ''}
-            </div>
-            <div class="gl-term-badges">
-              <span class="gl-cat-badge ${t.categorie}">${catCfg.emoji} ${catCfg.label}</span>
-            </div>
+            <div class="gl-term-name">${termTxt}</div>
+            <div class="gl-term-badges">${badge}</div>
           </div>
           <p class="gl-term-def">${defText}</p>
-          ${t.exemple ? `<div class="gl-term-example">${this.esc(t.exemple)}</div>` : ''}
         </article>`;
     },
 
@@ -739,6 +795,19 @@
       document.getElementById('gl-search').addEventListener('input', e => {
         this.currentSearch = e.target.value;
         this.applyFilters();
+      });
+
+      // Sections rétractables
+      const content = document.getElementById('gl-content');
+      content.addEventListener('click', e => {
+        const h = e.target.closest('.gl-cours-header');
+        if (h) h.closest('.gl-cours-group').classList.toggle('collapsed');
+      });
+      content.addEventListener('keydown', e => {
+        if (e.key === 'Enter' || e.key === ' ') {
+          const h = e.target.closest('.gl-cours-header');
+          if (h) { h.closest('.gl-cours-group').classList.toggle('collapsed'); e.preventDefault(); }
+        }
       });
 
       document.getElementById('gl-sidebar-toggle').addEventListener('click', () => {
@@ -750,11 +819,9 @@
         document.getElementById('gl-sidebar').classList.remove('open');
         document.getElementById('gl-sidebar-overlay').classList.remove('open');
       });
-
-      // Navbar mobile menu géré par main.js (initNavigation)
     },
 
-    // ── Utilities ─────────────────────────────────────────────────
+    // ── Utilitaires ───────────────────────────────────────────────
     esc(str) {
       return String(str || '')
         .replace(/&/g, '&amp;').replace(/</g, '&lt;')
@@ -765,7 +832,7 @@
       if (!q) return html;
       const safe = q.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
       return html.replace(new RegExp(`(${safe})`, 'gi'),
-        '<mark style="background:#FEF08A;border-radius:2px;padding:0 1px">$1</mark>');
+        '<mark style="background:#cba6f733;border-radius:2px;padding:0 2px;color:var(--text)">$1</mark>');
     }
   };
 

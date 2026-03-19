@@ -933,7 +933,7 @@
                 <div class="sidebar-module__bar-fill" style="width:${progress}%"></div>
               </div>
             </div>
-            <span class="sidebar-module__pct">${totalSections > 0 ? masteredCount + '/' + totalSections : ''}</span>
+
           </a>`;
       }).join('');
 
@@ -944,7 +944,7 @@
                title="${cours.titre}">
             <span class="sidebar-course__emoji">${cours.emoji}</span>
             <span class="sidebar-course__name">${cours.titre}</span>
-            <span class="sidebar-course__count">${filteredModules.length}</span>
+
             <span class="sidebar-course__chevron">›</span>
           </div>
           <div class="sidebar-course__modules ${isOpen ? 'open' : ''}">
@@ -1063,6 +1063,10 @@
         </div>
         <div class="breadcrumb__item">
           <a href="cours.html" class="breadcrumb__link">Cours</a>
+          <span class="breadcrumb__sep" aria-hidden="true">›</span>
+        </div>
+        <div class="breadcrumb__item">
+          <span class="breadcrumb__link">${module.coursTitre}</span>
           <span class="breadcrumb__sep" aria-hidden="true">›</span>
         </div>
         <div class="breadcrumb__item">

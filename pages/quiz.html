@@ -170,104 +170,117 @@
     .history-empty { text-align: center; color: var(--text-muted); font-size: var(--text-sm); padding: 16px; }
 
     /* ══════════════════════════════════════════
-       ÉCRAN 2 — CONFIGURATION (mode module)
+       ÉCRAN 2 — QUIZ PAR MODULE
        ══════════════════════════════════════════ */
-    .config-card {
-      background: var(--surface);
+    .mod-accordion { display: flex; flex-direction: column; gap: 5px; }
+
+    /* Accordéon cours */
+    .mod-accord {
       border: 1px solid var(--border);
-      border-radius: var(--radius-xl);
-      padding: 28px;
-      box-shadow: var(--shadow);
-      margin-bottom: 16px;
+      border-radius: var(--radius-lg);
+      overflow: hidden;
     }
-    .config-card__title {
-      font-size: var(--text-lg);
-      font-weight: var(--weight-semibold);
-      color: var(--text);
-      margin-bottom: 16px;
-      display: flex;
-      align-items: center;
-      gap: 8px;
-    }
-    .module-checkboxes {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-      gap: 8px;
-    }
-    .module-checkbox {
+    .mod-accord__hd {
       display: flex;
       align-items: center;
       gap: 10px;
-      padding: 10px 12px;
-      border: 1.5px solid var(--border);
-      border-radius: var(--radius);
+      padding: 11px 16px;
+      background: var(--bg-secondary);
       cursor: pointer;
-      transition: border-color var(--transition), background var(--transition);
       user-select: none;
+      transition: background var(--transition);
     }
-    .module-checkbox:hover { background: var(--bg-secondary); }
-    .module-checkbox.selected { border-color: var(--primary); background: var(--primary-light); }
-    .module-checkbox input { display: none; }
-    .module-checkbox__check {
-      width: 18px; height: 18px;
-      border: 2px solid var(--border-strong);
-      border-radius: var(--radius-sm);
-      display: flex; align-items: center; justify-content: center;
-      flex-shrink: 0;
-      transition: background var(--transition), border-color var(--transition);
-    }
-    .module-checkbox.selected .module-checkbox__check {
-      background: var(--primary);
-      border-color: var(--primary);
-    }
-    .module-checkbox.selected .module-checkbox__check::after {
-      content: '✓';
-      color: #fff;
-      font-size: 11px;
-      font-weight: var(--weight-bold);
-    }
-    .module-checkbox__label { font-size: var(--text-sm); font-weight: var(--weight-medium); color: var(--text); }
-
-    /* Slider de nombre de questions */
-    .range-wrap { display: flex; align-items: center; gap: 16px; }
-    input[type="range"] {
+    .mod-accord__hd:hover { background: var(--bg-tertiary, #23233a); }
+    .mod-accord__hd:focus-visible { outline: 2px solid var(--primary); outline-offset: -2px; }
+    .mod-accord__emoji { font-size: 1.05rem; flex-shrink: 0; line-height: 1; }
+    .mod-accord__name {
       flex: 1;
-      height: 6px;
-      -webkit-appearance: none;
-      background: var(--bg-tertiary);
+      font-size: var(--text-sm);
+      font-weight: var(--weight-semibold);
+      color: var(--text);
+      line-height: 1.3;
+    }
+    .mod-accord__count {
+      font-size: var(--text-xs);
+      color: var(--text-muted);
+      background: var(--bg-tertiary, #23233a);
+      padding: 2px 8px;
       border-radius: var(--radius-full);
-      outline: none;
+      white-space: nowrap;
+      flex-shrink: 0;
     }
-    input[type="range"]::-webkit-slider-thumb {
-      -webkit-appearance: none;
-      width: 20px; height: 20px;
-      background: var(--primary);
-      border-radius: 50%;
-      cursor: pointer;
-      box-shadow: var(--shadow-sm);
+    .mod-accord__chevron {
+      font-size: 0.65rem;
+      color: var(--text-muted);
+      transition: transform 0.2s;
+      flex-shrink: 0;
     }
-    .range-value {
-      font-size: var(--text-xl);
-      font-weight: var(--weight-bold);
-      color: var(--primary);
-      min-width: 32px;
-      text-align: center;
+    .mod-accord.open .mod-accord__chevron { transform: rotate(90deg); }
+    .mod-accord__body {
+      display: none;
+      flex-direction: column;
+      gap: 4px;
+      padding: 6px 10px 10px;
+      background: var(--surface);
+      border-top: 1px solid var(--border);
     }
+    .mod-accord.open .mod-accord__body { display: flex; }
 
-    /* Difficulté */
-    .diff-chips { display: flex; gap: 8px; flex-wrap: wrap; }
-    .diff-chip {
-      padding: 5px 14px;
-      border-radius: var(--radius-full);
+    /* Carte module */
+    .mod-card {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 9px 12px;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      background: var(--bg-secondary);
+    }
+    .mod-card__emoji { font-size: 1rem; flex-shrink: 0; line-height: 1; }
+    .mod-card__name {
+      flex: 1;
+      font-size: var(--text-sm);
+      font-weight: var(--weight-medium);
+      color: var(--text);
+      min-width: 0;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+    .mod-card__btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 5px 11px;
+      border-radius: var(--radius);
       font-size: var(--text-xs);
       font-weight: var(--weight-semibold);
-      border: 1.5px solid var(--border);
-      cursor: pointer;
-      transition: all var(--transition);
+      border: 1px solid var(--border);
+      background: var(--bg-tertiary, #23233a);
+      color: var(--text-muted);
+      cursor: not-allowed;
+      white-space: nowrap;
+      flex-shrink: 0;
+      opacity: 0.7;
     }
-    .diff-chip.active-facile    { background: var(--success-light); border-color: var(--success); color: #065F46; }
-    .diff-chip.active-moyen     { background: var(--warning-light); border-color: var(--warning); color: #92400E; }
-    .diff-chip.active-difficile { background: var(--danger-light);  border-color: var(--danger);  color: #991B1B; }
+    .mod-card__btn--active {
+      background: var(--success);
+      border-color: var(--success);
+      color: #fff;
+      cursor: pointer;
+      opacity: 1;
+    }
+    .mod-card__btn--active:hover { filter: brightness(1.1); }
+    .mod-card__soon {
+      font-size: 0.6rem;
+      font-weight: var(--weight-semibold);
+      padding: 1px 5px;
+      border-radius: var(--radius-full);
+      background: var(--warning-light);
+      color: #92400E;
+      text-transform: uppercase;
+      letter-spacing: 0.03em;
+    }
 
     /* ══════════════════════════════════════════
        ÉCRAN 3 — QUIZ ACTIF
@@ -797,7 +810,7 @@
     </div>
 
     <!-- ═══════════════════════════════
-         ÉCRAN 2 — CONFIGURATION MODULE
+         ÉCRAN 2 — QUIZ PAR MODULE
          ═══════════════════════════════ -->
     <div class="quiz-screen" id="screen-config">
 
@@ -807,53 +820,13 @@
                   onclick="QuizApp.showScreen('home')">📝 Quiz</button>
           <span class="breadcrumb__sep">›</span>
         </div>
-        <span class="breadcrumb__current">Configuration</span>
+        <span class="breadcrumb__current">Par module</span>
       </div>
 
-      <!-- Sélection des modules -->
-      <div class="config-card">
-        <div class="config-card__title">📚 Modules à inclure</div>
-        <div class="module-checkboxes" id="config-module-checkboxes" role="group" aria-label="Sélection des modules">
-          <!-- Rendu par JS -->
-        </div>
-        <div style="margin-top:10px;display:flex;gap:8px;">
-          <button class="btn btn--ghost btn--sm" onclick="QuizApp.selectAllModules()">Tout sélectionner</button>
-          <button class="btn btn--ghost btn--sm" onclick="QuizApp.deselectAllModules()">Tout désélectionner</button>
-        </div>
+      <div class="mod-accordion" id="mod-accordion-container">
+        <!-- Rendu par buildModuleScreen() -->
       </div>
 
-      <!-- Difficulté -->
-      <div class="config-card">
-        <div class="config-card__title">🎯 Difficultés incluses</div>
-        <div class="diff-chips" role="group" aria-label="Filtres de difficulté">
-          <button class="diff-chip active-facile" data-diff="facile" aria-pressed="true"
-                  onclick="QuizApp.toggleDiff('facile', this)">⭐ Facile</button>
-          <button class="diff-chip active-moyen" data-diff="moyen" aria-pressed="true"
-                  onclick="QuizApp.toggleDiff('moyen', this)">⭐⭐ Moyen</button>
-          <button class="diff-chip active-difficile" data-diff="difficile" aria-pressed="true"
-                  onclick="QuizApp.toggleDiff('difficile', this)">⭐⭐⭐ Difficile</button>
-        </div>
-      </div>
-
-      <!-- Nombre de questions -->
-      <div class="config-card">
-        <div class="config-card__title">🔢 Nombre de questions</div>
-        <div class="range-wrap">
-          <span style="font-size:var(--text-sm);color:var(--text-muted)">5</span>
-          <input type="range" id="config-nb-questions" min="5" max="30" step="5" value="10"
-                 oninput="document.getElementById('config-nb-value').textContent=this.value"
-                 aria-label="Nombre de questions" />
-          <span style="font-size:var(--text-sm);color:var(--text-muted)">30</span>
-          <span class="range-value" id="config-nb-value">10</span>
-        </div>
-      </div>
-
-      <div class="btn-group" style="justify-content:flex-end;">
-        <button class="btn btn--secondary" onclick="QuizApp.showScreen('home')">← Retour</button>
-        <button class="btn btn--primary" onclick="QuizApp.launchFromConfig()" id="btn-launch-config">
-          Démarrer le quiz →
-        </button>
-      </div>
     </div>
 
     <!-- ═══════════════════════════════
@@ -1000,6 +973,7 @@
 
   <div class="toast-container" role="status" aria-live="polite"></div>
 
+  <script src="../data/modules-index.js"></script>
   <script src="../data/quiz.js"></script>
   <script src="../assets/js/auth.js"></script>
   <script src="../assets/js/main.js"></script>
@@ -1018,16 +992,86 @@
 
   // ── Métadonnées des modules ──
   const MODULE_META = {
-    reseau:         { label: 'Réseaux',           emoji: '🌐' },
-    linux:          { label: 'Linux',              emoji: '🐧' },
-    windows:        { label: 'Windows Server',     emoji: '🪟' },
-    securite:       { label: 'Sécurité',           emoji: '🔒' },
-    virtualisation: { label: 'Virtualisation',     emoji: '☁️' },
-    bash:           { label: 'Scripting Bash',     emoji: '⚙️' },
-    powershell:     { label: 'PowerShell',         emoji: '💠' },
-    ad:             { label: 'Active Directory',   emoji: '🏢' },
-    cisco:          { label: 'Cisco avancé',       emoji: '🔧' },
-    itil:           { label: 'ITIL / GLPI',        emoji: '📋' },
+    reseau:                   { label: 'Réseaux',                emoji: '🌐' },
+    linux:                    { label: 'Linux',                   emoji: '🐧' },
+    windows:                  { label: 'Windows Server',          emoji: '🪟' },
+    securite:                 { label: 'Sécurité',                emoji: '🔒' },
+    virtualisation:           { label: 'Virtualisation',          emoji: '☁️' },
+    bash:                     { label: 'Scripting Bash',          emoji: '⚙️' },
+    powershell:               { label: 'PowerShell',              emoji: '💠' },
+    ad:                       { label: 'Active Directory',        emoji: '🏢' },
+    cisco:                    { label: 'Cisco avancé',            emoji: '🔧' },
+    itil:                     { label: 'ITIL / GLPI',             emoji: '📋' },
+    'admin-linux-installation': { label: 'Installation Linux',    emoji: '🐧' },
+    'admin-linux-demarrage':    { label: 'Démarrage Linux',       emoji: '🚀' },
+    'examen-blanc':           { label: 'Examen blanc',            emoji: '🎓' },
+    'ms-transv-m01':          { label: 'Mise en place infra MS',  emoji: '🏗️' },
+    'ms-transv-m02':          { label: 'Remote Desktop Services', emoji: '🖥️' },
+    'ms-transv-m03':          { label: 'Publication RemoteApp',   emoji: '📦' },
+    'ms-transv-m04':          { label: 'Déploiement OS',          emoji: '💿' },
+    'ms-transv-m05':          { label: 'WDS',                     emoji: '🌐' },
+    'ms-transv-m06':          { label: 'MDT',                     emoji: '🛠️' },
+    'srvms-m01':              { label: 'Administration Windows',  emoji: '🪟' },
+    'srvms-m02':              { label: 'Active Directory',        emoji: '🗂️' },
+    'srvms-m03':              { label: 'GPO',                     emoji: '📋' },
+    'srvms-m04':              { label: 'Routage',                 emoji: '🗺️' },
+    'srvms-m05':              { label: 'DHCP',                    emoji: '📡' },
+    'srvms-m06':              { label: 'DNS',                     emoji: '🌍' },
+    'base-reseaux-m01':       { label: 'Modèle OSI',              emoji: '📶' },
+    'base-reseaux-m02':       { label: 'Unités Informatiques',    emoji: '🔢' },
+    'base-reseaux-m03':       { label: 'Adressage IPv4',          emoji: '🌐' },
+    'base-reseaux-m04':       { label: 'Communication Réseau',    emoji: '📡' },
+    'base-reseaux-m05':       { label: 'Premières Commandes',     emoji: '💻' },
+    'glpi-m01':               { label: 'Présentation & Installation', emoji: '🖥️' },
+    'glpi-m02':               { label: 'Auth AD & Habilitations',   emoji: '🔐' },
+    'glpi-m03':               { label: 'Gestion de Parc',           emoji: '🗄️' },
+    'glpi-m04':               { label: 'Assistance & Tickets',       emoji: '🎫' },
+    'glpi-m05':               { label: 'MySQL & MariaDB',             emoji: '🗃️' },
+    'glpi-m06':               { label: 'Plugins & FusionInventory',  emoji: '🔌' },
+    'ps-m01':                 { label: 'Présentation PowerShell',    emoji: '⚡' },
+    'ps-m02':                 { label: 'Langage Objet',              emoji: '🔷' },
+    'ps-m03':                 { label: 'Manipulation des Objets',    emoji: '🔧' },
+    'ps-m04':                 { label: 'Structures & Variables',     emoji: '📦' },
+    'ps-m05':                 { label: 'Réalisation d\'un script',   emoji: '📝' },
+    'ps-m06':                 { label: 'Pour aller plus loin',       emoji: '🚀' },
+    'bash-m01':               { label: 'Analyse',                    emoji: '🔍' },
+    'bash-m02':               { label: 'Écriture des scripts',       emoji: '✍️' },
+    'bash-m03':               { label: 'Premières commandes',        emoji: '⌨️' },
+    'bash-m04':               { label: 'Les variables',              emoji: '📊' },
+    'bash-m05':               { label: 'Caractères spéciaux',        emoji: '🎨' },
+    'bash-m06':               { label: 'Exécution conditionnelle',   emoji: '🔀' },
+    'bash-m07':               { label: 'Structures de boucle',       emoji: '🔁' },
+    'bash-m08':               { label: 'Les fonctions',              emoji: '🧩' },
+    'itil-m01':               { label: 'La gestion des services',   emoji: '🏢' },
+    'itil-m02':               { label: 'Stratégie et Conception',   emoji: '📐' },
+    'itil-m03':               { label: 'Transition des services',   emoji: '🔄' },
+    'itil-m04':               { label: 'Exploitation des services', emoji: '⚙️' },
+    'itil-m05':               { label: 'Amélioration continue',     emoji: '📈' },
+    'itil-m06':               { label: 'Savoir-être technicien',    emoji: '🤝' },
+    'infra-m01':              { label: 'Config. périphériques',     emoji: '🖥️' },
+    'infra-m02':              { label: 'Commutation Ethernet',      emoji: '🔀' },
+    'infra-m03':              { label: 'Le routage',                emoji: '🗺️' },
+    'infra-m04':              { label: 'Réseaux sans fil',          emoji: '📶' },
+    'infra-m05':              { label: 'ACL',                        emoji: '🔒' },
+    'infra-m06':              { label: 'NAT / NAPT',                 emoji: '🔁' },
+    'infra-m07':              { label: 'Sauvegarde & maintenance',   emoji: '💾' },
+    'm365-m01':               { label: 'Découverte Microsoft 365',   emoji: '☁️' },
+    'm365-m02':               { label: 'Notions de base sur Word',   emoji: '📝' },
+    'm365-m03':               { label: 'Notions de base sur Excel',  emoji: '📊' },
+    'm365-m04':               { label: 'Outlook & dépannage',        emoji: '📧' },
+    'm365-m05':               { label: 'Teams, SharePoint, OneDrive', emoji: '🤝' },
+    'cloud365-m01':           { label: 'Composantes Cloud & M365',    emoji: '☁️' },
+    'cloud365-m02':           { label: 'Administration M365',         emoji: '⚙️' },
+    'cloud365-m03':           { label: 'Sécurité & conformité',       emoji: '🔐' },
+    'cloud365-m04':           { label: 'Services complémentaires',    emoji: '🧩' },
+    'sec-m01':                { label: 'Rappel et pare-feu',          emoji: '🔥' },
+    'sec-m02':                { label: 'Le NAT',                      emoji: '🔀' },
+    'sec-m03':                { label: 'Exposer les services',         emoji: '🌐' },
+    'sec-m04':                { label: 'Sécuriser le surf',            emoji: '🛡️' },
+    'sec-m05':                { label: 'Gestion des certificats',      emoji: '📜' },
+    'sec-m06':                { label: 'VPN Télétravail & Site-à-Site', emoji: '🔒' },
+    'sec-m07':                { label: 'Connecter les sites (IPSec)',   emoji: '🏢' },
+    'sauv-m01':               { label: 'Sauvegarde & Disponibilité',   emoji: '💾' },
   };
 
   const MODE_LABELS = {
@@ -1072,8 +1116,8 @@
 
     /* ── Rendu écran d'accueil ── */
     renderHome() {
-      const history  = Store.get(QK.history, []);
-      const failed   = Store.get(QK.failed, {});
+      const history  = _QStore.get(QK.history, []);
+      const failed   = _QStore.get(QK.failed, {});
       const failedCt = Object.keys(failed).length;
 
       // Calculer stats globales
@@ -1116,13 +1160,13 @@
       this.mode = mode;
 
       if (mode === 'module') {
-        this.buildConfigScreen();
+        this.buildModuleScreen();
         this.showScreen('config');
         return;
       }
 
       if (mode === 'revision') {
-        const failed  = Store.get(QK.failed, {});
+        const failed  = _QStore.get(QK.failed, {});
         const failIds = Object.keys(failed);
         if (!failIds.length) {
           window.TSSR?.showToast('Aucune question ratée ! Commencez par faire un quiz.', 'default');
@@ -1147,92 +1191,67 @@
 
       if (mode === 'exam') {
         if (!confirm('⚠️ Mode Examen — 30 questions, 45 minutes.\nPas de feedback immédiat.\n\nPrêt à commencer ?')) return;
-        this.questions = shuffle([...this.allQuestions]).slice(0, 30);
+        this.questions = this.allQuestions.filter(q => q.module === 'examen-blanc');
         this.launchQuiz();
       }
     },
 
-    /* ── Config screen ── */
-    buildConfigScreen() {
-      const container = document.getElementById('config-module-checkboxes');
-      const modules   = [...new Set(this.allQuestions.map(q => q.module))];
-      this.selectedModules = [...modules]; // Tous sélectionnés par défaut
 
-      container.innerHTML = modules.map(m => {
-        const meta = MODULE_META[m] || { emoji: '📌', label: m };
-        return `
-        <label class="module-checkbox selected" data-mod="${m}">
-          <input type="checkbox" checked value="${m}" />
-          <div class="module-checkbox__check"></div>
-          <span class="module-checkbox__label">${meta.emoji} ${meta.label}</span>
-        </label>`;
-      }).join('');
+    /* ── Écran par module : accordéon cours → modules ── */
+    buildModuleScreen() {
+      const container = document.getElementById('mod-accordion-container');
+      if (!container || container.dataset.built) return;
+      container.dataset.built = '1';
 
-      // Events
-      container.querySelectorAll('.module-checkbox').forEach(el => {
-        el.addEventListener('click', () => {
-          el.classList.toggle('selected');
-          const cb = el.querySelector('input');
-          cb.checked = !cb.checked;
-          this.selectedModules = [...container.querySelectorAll('input:checked')]
-            .map(i => i.value);
-        });
+      const allCours    = typeof MODULES_INDEX !== 'undefined' ? MODULES_INDEX : [];
+      const modulesWithQ = new Set(this.allQuestions.map(q => q.module));
+
+      const renderBtn = (m) => modulesWithQ.has(m.id)
+        ? `<button class="mod-card__btn mod-card__btn--active" data-mod="${m.id}">▶ Démarrer</button>`
+        : `<button class="mod-card__btn" disabled aria-disabled="true">Démarrer <span class="mod-card__soon">Bientôt</span></button>`;
+
+      container.innerHTML = allCours.map(c => `
+        <div class="mod-accord" data-cours="${c.id}">
+          <div class="mod-accord__hd" role="button" tabindex="0" aria-expanded="false">
+            <span class="mod-accord__emoji">${c.emoji}</span>
+            <span class="mod-accord__name">${c.titre}</span>
+            <span class="mod-accord__count">${c.modules.length} module${c.modules.length > 1 ? 's' : ''}</span>
+            <span class="mod-accord__chevron">▶</span>
+          </div>
+          <div class="mod-accord__body">
+            ${c.modules.map(m => `
+            <div class="mod-card">
+              <span class="mod-card__emoji">${m.emoji}</span>
+              <span class="mod-card__name">${m.titre}</span>
+              ${renderBtn(m)}
+            </div>`).join('')}
+          </div>
+        </div>`).join('');
+
+      container.addEventListener('click', e => {
+        // Bouton Démarrer
+        const btn = e.target.closest('.mod-card__btn--active');
+        if (btn) { this.launchModule(btn.dataset.mod); return; }
+
+        // Toggle accordéon
+        const hd = e.target.closest('.mod-accord__hd');
+        if (hd) {
+          const accord = hd.closest('.mod-accord');
+          const open   = accord.classList.toggle('open');
+          hd.setAttribute('aria-expanded', open);
+        }
       });
 
-      // Reset diff chips
-      document.querySelectorAll('.diff-chip').forEach(c => {
-        c.classList.add(`active-${c.dataset.diff}`);
-        c.setAttribute('aria-pressed', 'true');
+      container.addEventListener('keydown', e => {
+        if (e.key !== 'Enter' && e.key !== ' ') return;
+        const hd = e.target.closest('.mod-accord__hd');
+        if (hd) { e.preventDefault(); hd.click(); }
       });
-      this.selectedDiffs = ['facile', 'moyen', 'difficile'];
     },
 
-    selectAllModules() {
-      document.querySelectorAll('#config-module-checkboxes .module-checkbox').forEach(el => {
-        el.classList.add('selected');
-        el.querySelector('input').checked = true;
-      });
-      this.selectedModules = [...document.querySelectorAll('#config-module-checkboxes input')]
-        .map(i => i.value);
-    },
-
-    deselectAllModules() {
-      document.querySelectorAll('#config-module-checkboxes .module-checkbox').forEach(el => {
-        el.classList.remove('selected');
-        el.querySelector('input').checked = false;
-      });
-      this.selectedModules = [];
-    },
-
-    toggleDiff(diff, btn) {
-      const active  = btn.classList.contains(`active-${diff}`);
-      if (active) {
-        btn.classList.remove(`active-${diff}`);
-        btn.setAttribute('aria-pressed', 'false');
-        this.selectedDiffs = this.selectedDiffs.filter(d => d !== diff);
-      } else {
-        btn.classList.add(`active-${diff}`);
-        btn.setAttribute('aria-pressed', 'true');
-        this.selectedDiffs.push(diff);
-      }
-    },
-
-    launchFromConfig() {
-      if (!this.selectedModules.length) {
-        window.TSSR?.showToast('Sélectionnez au moins un module', 'danger'); return;
-      }
-      if (!this.selectedDiffs.length) {
-        window.TSSR?.showToast('Sélectionnez au moins une difficulté', 'danger'); return;
-      }
-      const nb = parseInt(document.getElementById('config-nb-questions').value) || 10;
-      const pool = this.allQuestions.filter(q =>
-        this.selectedModules.includes(q.module) &&
-        this.selectedDiffs.includes(q.difficulte)
-      );
-      if (!pool.length) {
-        window.TSSR?.showToast('Aucune question pour ces critères', 'danger'); return;
-      }
-      this.questions = shuffle(pool).slice(0, nb);
+    launchModule(moduleId) {
+      this.mode      = 'module';
+      this.questions = shuffle([...this.allQuestions.filter(q => q.module === moduleId)]);
       this.launchQuiz();
     },
 
@@ -1324,21 +1343,21 @@
       this.answers.push({ id: q.id, correct, selected: selectedIndex, timeMs });
 
       // Mettre à jour le registre des échecs
-      const failed = Store.get(QK.failed, {});
+      const failed = _QStore.get(QK.failed, {});
       if (correct) {
         delete failed[q.id];
       } else {
         failed[q.id] = (failed[q.id] || 0) + 1;
       }
-      Store.set(QK.failed, failed);
+      _QStore.set(QK.failed, failed);
 
       // Mise à jour stats par module
-      const stats = Store.get(QK.stats, {});
+      const stats = _QStore.get(QK.stats, {});
       const ms    = stats[q.module] || { answered: 0, correct: 0 };
       ms.answered++;
       if (correct) ms.correct++;
       stats[q.module] = ms;
-      Store.set(QK.stats, stats);
+      _QStore.set(QK.stats, stats);
 
       // Coloriser les boutons
       document.querySelectorAll('.choice-btn').forEach(btn => {
@@ -1467,28 +1486,48 @@
         </div>`;
       }).join('');
 
-      // Questions ratées
-      const wrong = this.questions
+      // Questions à afficher : toutes en mode exam, seulement les ratées sinon
+      const isExam = session.mode === 'exam';
+      const toShow = this.questions
         .map((q, i) => ({ q, a: session.answers[i] }))
-        .filter(({ a }) => !a?.correct);
+        .filter(({ a }) => isExam || !a?.correct);
 
-      document.getElementById('failed-count-badge').textContent = wrong.length;
-      const failedList = document.getElementById('failed-list');
+      const failedSection = document.getElementById('failed-section');
+      const failedList    = document.getElementById('failed-list');
+      const failedBadge   = document.getElementById('failed-count-badge');
 
-      if (!wrong.length) {
-        document.getElementById('failed-section').style.display = 'none';
+      if (isExam) {
+        // En mode examen : afficher toutes les corrections avec titre adapté
+        const titleSpan = failedSection.querySelector('.failed-section__title');
+        if (titleSpan) {
+          titleSpan.innerHTML = `📋 Corrections complètes <span class="badge badge--danger" id="failed-count-badge">${session.correct} / ${session.total}</span>`;
+        } else {
+          failedBadge.textContent = `${session.correct} / ${session.total}`;
+        }
+        failedSection.style.display = '';
       } else {
-        document.getElementById('failed-section').style.display = '';
-        failedList.innerHTML = wrong.map(({ q, a }) => {
-          const letters = ['A', 'B', 'C', 'D'];
-          const selected = a?.selected ?? -1;
+        failedBadge.textContent = toShow.length;
+      }
+
+      if (!toShow.length && !isExam) {
+        failedSection.style.display = 'none';
+      } else {
+        failedSection.style.display = '';
+        failedList.innerHTML = toShow.map(({ q, a }, idx) => {
+          const letters   = ['A', 'B', 'C', 'D'];
+          const selected  = a?.selected ?? -1;
+          const isCorrect = a?.correct;
+          const num       = isExam ? `<span style="font-weight:700;color:var(--text-muted);margin-right:.4rem">Q${idx + 1}.</span>` : '';
+          const statusIcon = isExam ? (isCorrect ? '✅' : selected >= 0 ? '❌' : '⏩') : '❌';
           return `
-          <div class="failed-item">
-            <div class="failed-item__question">❓ ${q.question}</div>
+          <div class="failed-item" style="${isExam && isCorrect ? 'opacity:.75' : ''}">
+            <div class="failed-item__question">${num}${statusIcon} ${q.question}</div>
             ${selected >= 0
-              ? `<div class="failed-item__your-answer">❌ Votre réponse : ${letters[selected]}. ${q.choix[selected]}</div>`
+              ? `<div class="failed-item__your-answer" style="color:${isCorrect ? 'var(--success)' : 'var(--danger)'}">
+                   ${isCorrect ? '✅' : '❌'} Votre réponse : ${letters[selected]}. ${q.choix[selected]}
+                 </div>`
               : '<div class="failed-item__your-answer">⏩ Sans réponse</div>'}
-            <div class="failed-item__correct-answer">✅ Bonne réponse : ${letters[q.reponse]}. ${q.choix[q.reponse]}</div>
+            ${!isCorrect ? `<div class="failed-item__correct-answer">✅ Bonne réponse : ${letters[q.reponse]}. ${q.choix[q.reponse]}</div>` : ''}
             <div class="failed-item__expl">💡 ${q.explication}</div>
           </div>`;
         }).join('');
@@ -1497,7 +1536,7 @@
 
     /* ── Sauvegarder une session ── */
     saveSession(session) {
-      const history = Store.get(QK.history, []);
+      const history = _QStore.get(QK.history, []);
       // Stocker seulement les infos essentielles (pas les questions complètes)
       history.unshift({
         date:        session.date,
@@ -1507,13 +1546,15 @@
         correct:     session.correct,
         timeSeconds: session.timeSeconds,
       });
-      Store.set(QK.history, history.slice(0, 50)); // Max 50 sessions
+      _QStore.set(QK.history, history.slice(0, 50)); // Max 50 sessions
     },
 
     /* ── Refaire le même quiz ── */
     retry() {
       if (!this.lastSession) { this.showScreen('home'); return; }
-      this.questions = shuffle([...this.lastSession.questions]);
+      this.questions = this.lastSession.mode === 'exam'
+        ? [...this.lastSession.questions]
+        : shuffle([...this.lastSession.questions]);
       this.launchQuiz();
     },
 
@@ -1578,7 +1619,8 @@
   };
 
   /* ── Utilitaires ── */
-  const Store = window.TSSR?.Store || {
+  // Alias local (évite le conflit de redéclaration avec main.js qui déclare aussi `const Store`)
+  const _QStore = window.TSSR?.Store || {
     get:  (k, d) => { try { const v = localStorage.getItem(k); return v ? JSON.parse(v) : d; } catch { return d; } },
     set:  (k, v) => { try { localStorage.setItem(k, JSON.stringify(v)); } catch {} },
   };
