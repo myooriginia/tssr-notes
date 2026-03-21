@@ -108,6 +108,7 @@
     .mode-card--module::before  { background: var(--success); }
     .mode-card--revision::before{ background: var(--warning); }
     .mode-card--exam::before    { background: var(--danger); }
+    .mode-card--diag::before    { background: #8B5CF6; }
 
     .mode-card:hover {
       box-shadow: var(--shadow-lg);
@@ -117,6 +118,7 @@
     .mode-card--module:hover  { border-color: var(--success); }
     .mode-card--revision:hover{ border-color: var(--warning); }
     .mode-card--exam:hover    { border-color: var(--danger); }
+    .mode-card--diag:hover    { border-color: #8B5CF6; }
 
     .mode-card__icon { font-size: 32px; margin-bottom: 12px; }
     .mode-card__title { font-size: var(--text-lg); font-weight: var(--weight-bold); color: var(--text); margin-bottom: 4px; }
@@ -133,6 +135,172 @@
     .mode-card--module .mode-card__meta  { background: var(--success-light); color: #065F46; }
     .mode-card--revision .mode-card__meta{ background: var(--warning-light); color: #92400E; }
     .mode-card--exam .mode-card__meta    { background: var(--danger-light);  color: #991B1B; }
+    .mode-card--diag .mode-card__meta    { background: #EDE9FE;              color: #5B21B6; }
+
+    /* ══════════════════════════════════════════
+       ÉCRANS 5 & 6 — CAS PRATIQUES
+       ══════════════════════════════════════════ */
+    .diag-terminal {
+      font-family: var(--font-mono);
+      background: #0d1117;
+      border-radius: var(--radius-lg);
+      overflow: hidden;
+      margin: 16px 0;
+    }
+    .diag-terminal__topbar {
+      background: #161b22;
+      padding: 8px 14px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .diag-terminal__dot { width: 12px; height: 12px; border-radius: 50%; }
+    .diag-terminal__output {
+      padding: 14px 16px;
+      min-height: 120px;
+      max-height: 280px;
+      overflow-y: auto;
+      font-size: 0.82rem;
+      line-height: 1.6;
+      color: #c9d1d9;
+    }
+    .diag-terminal__output .line--cmd { color: #58a6ff; }
+    .diag-terminal__output .line--out { color: #c9d1d9; }
+    .diag-terminal__output .line--err { color: #f85149; }
+    .diag-terminal__input-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 16px 12px;
+      border-top: 1px solid #30363d;
+    }
+    .diag-terminal__prompt { color: #3fb950; font-size: 0.82rem; white-space: nowrap; }
+    .diag-terminal__input {
+      flex: 1;
+      background: transparent;
+      border: none;
+      color: #c9d1d9;
+      font-family: var(--font-mono);
+      font-size: 0.82rem;
+      outline: none;
+    }
+    .diag-tree-node {
+      background: var(--surface);
+      border: 2px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 18px 20px;
+      margin-bottom: 16px;
+    }
+    .diag-tree-question {
+      font-size: var(--text-base);
+      font-weight: var(--weight-semibold);
+      color: var(--text);
+      margin-bottom: 14px;
+      line-height: 1.5;
+    }
+    .diag-tree-choices { display: flex; flex-direction: column; gap: 8px; }
+    .diag-tree-btn {
+      text-align: left;
+      padding: 10px 14px;
+      background: var(--bg-secondary);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      font-size: var(--text-sm);
+      color: var(--text);
+      cursor: pointer;
+      transition: border-color var(--transition), background var(--transition);
+    }
+    .diag-tree-btn:hover { border-color: var(--primary); background: var(--primary-light); }
+    .diag-tree-solution {
+      border-radius: var(--radius-lg);
+      padding: 18px 20px;
+      margin-bottom: 16px;
+    }
+    .diag-tree-solution--ok { background: var(--success-light); border: 2px solid var(--success); }
+    .diag-tree-solution--ko { background: var(--warning-light); border: 2px solid var(--warning); }
+    .diag-tree-solution__title { font-weight: var(--weight-bold); font-size: var(--text-base); margin-bottom: 8px; color: var(--text); }
+    .diag-tree-solution__expl  { font-size: var(--text-sm); color: var(--text-secondary); line-height: var(--leading-relaxed); }
+    .diag-scenario-step {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 20px;
+      margin-bottom: 16px;
+    }
+    .diag-scenario-desc { font-size: var(--text-base); color: var(--text); margin-bottom: 16px; line-height: 1.6; font-weight: var(--weight-medium); }
+    .diag-scenario-choices { display: flex; flex-direction: column; gap: 8px; }
+    .diag-scenario-btn {
+      text-align: left;
+      padding: 12px 16px;
+      background: var(--bg-secondary);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      font-size: var(--text-sm);
+      color: var(--text);
+      cursor: pointer;
+      transition: all var(--transition);
+    }
+    .diag-scenario-btn:hover:not(:disabled) { border-color: var(--primary); }
+    .diag-scenario-btn--correct { background: var(--success-light); border-color: var(--success); color: #065F46; font-weight: var(--weight-semibold); }
+    .diag-scenario-btn--wrong   { background: var(--danger-light);  border-color: var(--danger);  color: #991B1B; }
+    .diag-scenario-feedback {
+      margin-top: 10px;
+      padding: 10px 14px;
+      border-radius: var(--radius);
+      font-size: var(--text-sm);
+      line-height: 1.5;
+    }
+    .diag-scenario-feedback--ok { background: var(--success-light); color: #065F46; }
+    .diag-scenario-feedback--ko { background: var(--danger-light);  color: #991B1B; }
+    .diag-cas-header {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 16px 20px;
+      margin-bottom: 16px;
+    }
+    .diag-cas-header__top {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin-bottom: 8px;
+    }
+    .diag-cas-header__title { font-size: var(--text-lg); font-weight: var(--weight-bold); color: var(--text); flex: 1; min-width: 0; }
+    .diag-cas-meta {
+      display: flex;
+      align-items: flex-start;
+      gap: 8px;
+      font-size: var(--text-sm);
+      color: var(--text-secondary, var(--text));
+      line-height: 1.6;
+      padding: 10px 14px;
+      border-radius: var(--radius);
+      margin-top: 8px;
+    }
+    .diag-cas-meta__icon { flex-shrink: 0; font-size: 1rem; line-height: 1.6; }
+    .diag-cas-meta--objectif {
+      background: rgba(139, 92, 246, 0.08);
+      border-left: 3px solid #8B5CF6;
+      font-weight: var(--weight-medium);
+      color: var(--text);
+    }
+    .diag-cas-meta--contexte {
+      background: var(--bg-secondary);
+      border-left: 3px solid var(--border);
+      font-style: italic;
+    }
+    .diag-cas-nav {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-top: 16px;
+      padding-top: 8px;
+    }
+    .diag-indices { margin: 10px 0; }
+    .diag-indices summary { font-size: var(--text-sm); color: var(--primary); cursor: pointer; padding: 4px 0; }
+    .diag-indices ul { margin: 8px 0 0 16px; font-size: var(--text-sm); color: var(--text-muted); line-height: 1.8; }
+    .diag-cmd-btns { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 14px; }
 
     /* Historique des sessions */
     .history-section { margin-top: 8px; }
@@ -821,6 +989,14 @@
           <div class="mode-card__desc">30 questions, 45 minutes chrono. Conditions d'examen réelles. Pas de feedback immédiat.</div>
           <span class="mode-card__meta">30 questions · 45 min</span>
         </button>
+
+        <button class="mode-card mode-card--diag" onclick="DiagApp.open()" role="listitem"
+                style="grid-column: 1 / -1;">
+          <div class="mode-card__icon" aria-hidden="true">🔧</div>
+          <div class="mode-card__title">Cas Pratiques</div>
+          <div class="mode-card__desc">Simulateur de terminal, arbres de décision et scénarios guidés. Mettez en pratique vos compétences sur des situations réelles.</div>
+          <span class="mode-card__meta">240 cas · 18 cours</span>
+        </button>
       </div>
 
       <!-- Historique des sessions -->
@@ -992,12 +1168,75 @@
       </div>
     </div>
 
+    <!-- ═══════════════════════════════
+         ÉCRAN 5 — CAS PRATIQUES — SÉLECTION
+         ═══════════════════════════════ -->
+    <div class="quiz-screen" id="screen-diag">
+
+      <div class="breadcrumb" style="margin-bottom:20px;">
+        <div class="breadcrumb__item">
+          <button class="breadcrumb__link" style="background:none;border:none;cursor:pointer;font:inherit;"
+                  onclick="QuizApp.showScreen('home')">📝 Quiz</button>
+          <span class="breadcrumb__sep">›</span>
+        </div>
+        <span class="breadcrumb__current">🔧 Cas Pratiques</span>
+      </div>
+
+      <div class="mod-accordion" id="diag-accordion-container">
+        <!-- Rendu par DiagApp.buildScreen() -->
+      </div>
+    </div>
+
+    <!-- ═══════════════════════════════
+         ÉCRAN 6 — CAS PRATIQUES — JOUEUR
+         ═══════════════════════════════ -->
+    <div class="quiz-screen" id="screen-diag-play">
+
+      <div class="diag-cas-header">
+        <div class="breadcrumb" style="margin-bottom:10px;">
+          <div class="breadcrumb__item">
+            <button class="breadcrumb__link" style="background:none;border:none;cursor:pointer;font:inherit;"
+                    onclick="QuizApp.showScreen('home')">📝 Quiz</button>
+            <span class="breadcrumb__sep">›</span>
+          </div>
+          <div class="breadcrumb__item">
+            <button class="breadcrumb__link" style="background:none;border:none;cursor:pointer;font:inherit;"
+                    onclick="DiagApp.open()">🔧 Cas Pratiques</button>
+            <span class="breadcrumb__sep">›</span>
+          </div>
+          <span class="breadcrumb__current" id="diag-breadcrumb-module">Module</span>
+        </div>
+        <div class="diag-cas-header__top">
+          <span class="badge badge--neutral" id="diag-format-badge">terminal</span>
+          <span class="diff-badge" id="diag-diff-badge">moyen</span>
+          <h2 class="diag-cas-header__title" id="diag-cas-title">Titre du cas</h2>
+        </div>
+        <div class="diag-cas-meta diag-cas-meta--objectif">
+          <span class="diag-cas-meta__icon">🎯</span>
+          <span id="diag-cas-objectif"></span>
+        </div>
+        <div class="diag-cas-meta diag-cas-meta--contexte">
+          <span class="diag-cas-meta__icon">📋</span>
+          <span id="diag-cas-contexte"></span>
+        </div>
+      </div>
+
+      <div id="diag-play-zone"></div>
+
+      <div class="diag-cas-nav">
+        <button class="btn btn--secondary btn--sm" id="diag-btn-prev" onclick="DiagApp.prevCas()">← Précédent</button>
+        <span class="text-muted text-sm" id="diag-cas-counter">1 / 2</span>
+        <button class="btn btn--secondary btn--sm" id="diag-btn-next" onclick="DiagApp.nextCas()">Suivant →</button>
+      </div>
+    </div>
+
   </div><!-- /quiz-wrap -->
 
   <div class="toast-container" role="status" aria-live="polite"></div>
 
   <script src="../data/modules-index.js"></script>
   <script src="../data/quiz.js"></script>
+  <script src="../data/diagnostics.js"></script>
   <script src="../assets/js/auth.js"></script>
   <script src="../assets/js/main.js"></script>
   <script>
@@ -1418,6 +1657,7 @@
       const isLast = this.currentIndex === this.questions.length - 1;
       btnNext.textContent = isLast ? '📊 Voir les résultats' : 'Suivante →';
       btnNext.setAttribute('aria-label', isLast ? 'Voir les résultats' : 'Question suivante');
+      btnNext.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
 
       // Vibration (mobile)
       if (navigator.vibrate) navigator.vibrate(correct ? [50] : [100, 50, 100]);
@@ -1690,6 +1930,357 @@
     header?.setAttribute('aria-expanded', !open);
   }
 
+  /* ════════════════════════════════════════════════════════════
+     DIAG APP — Cas Pratiques
+     ════════════════════════════════════════════════════════════ */
+
+  function _escHtml(s) {
+    if (!s) return '';
+    return s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+  }
+
+  const DiagApp = {
+    currentCours:    null,
+    currentModule:   null,
+    currentCasList:  [],
+    currentCasIndex: 0,
+    _treeHistory:    [],
+
+    open() {
+      this.buildScreen();
+      QuizApp.showScreen('diag');
+    },
+
+    buildScreen() {
+      const container = document.getElementById('diag-accordion-container');
+      if (!container || typeof DIAGNOSTICS_DATA === 'undefined') return;
+      if (container.children.length) return; // already built
+
+      DIAGNOSTICS_DATA.cours.forEach(cours => {
+        const accord = document.createElement('div');
+        accord.className = 'mod-accord';
+        accord.innerHTML =
+          `<div class="mod-accord__hd" tabindex="0" role="button" aria-expanded="false">` +
+            `<span class="mod-accord__emoji">${cours.emoji || '📚'}</span>` +
+            `<span class="mod-accord__name">${_escHtml(cours.titre)}</span>` +
+            `<span class="mod-accord__count">${cours.modules.length} modules</span>` +
+            `<span class="mod-accord__chevron">▶</span>` +
+          `</div>` +
+          `<div class="mod-accord__body"></div>`;
+
+        const hd   = accord.querySelector('.mod-accord__hd');
+        const body = accord.querySelector('.mod-accord__body');
+
+        hd.addEventListener('click', () => {
+          const isOpen = accord.classList.toggle('open');
+          hd.setAttribute('aria-expanded', isOpen);
+          if (isOpen && !body.children.length) {
+            cours.modules.forEach(mod => {
+              const n    = mod.cas ? mod.cas.length : 0;
+              const card = document.createElement('div');
+              card.className = 'mod-card';
+              const btn = document.createElement('button');
+              btn.className = 'mod-card__btn' + (n > 0 ? ' mod-card__btn--active' : '');
+              btn.textContent = n > 0 ? `▶ ${n} cas` : 'Bientôt';
+              if (n === 0) { btn.disabled = true; btn.setAttribute('aria-disabled', 'true'); }
+              else {
+                btn.dataset.cours = cours.id;
+                btn.dataset.mod   = mod.id;
+                btn.addEventListener('click', () => DiagApp.launchModule(cours.id, mod.id));
+              }
+              card.innerHTML =
+                `<span class="mod-card__emoji">${cours.emoji || '📚'}</span>` +
+                `<span class="mod-card__name">${_escHtml(mod.titre)}</span>`;
+              card.appendChild(btn);
+              body.appendChild(card);
+            });
+          }
+        });
+        hd.addEventListener('keydown', e => {
+          if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); hd.click(); }
+        });
+        container.appendChild(accord);
+      });
+    },
+
+    launchModule(coursId, modId) {
+      const cours = DIAGNOSTICS_DATA.cours.find(c => c.id === coursId);
+      const mod   = cours && cours.modules.find(m => m.id === modId);
+      if (!mod || !mod.cas || !mod.cas.length) return;
+      this.currentCours    = cours;
+      this.currentModule   = mod;
+      this.currentCasList  = mod.cas;
+      this.currentCasIndex = 0;
+      this._renderCas();
+      QuizApp.showScreen('diag-play');
+    },
+
+    prevCas() {
+      if (this.currentCasIndex > 0) { this.currentCasIndex--; this._renderCas(); window.scrollTo(0, 0); }
+    },
+    nextCas() {
+      if (this.currentCasIndex < this.currentCasList.length - 1) {
+        this.currentCasIndex++; this._renderCas(); window.scrollTo(0, 0);
+      }
+    },
+
+    _renderCas() {
+      const cas = this.currentCasList[this.currentCasIndex];
+      if (!cas) return;
+
+      document.getElementById('diag-breadcrumb-module').textContent = this.currentModule.titre;
+      document.getElementById('diag-cas-title').textContent         = cas.titre;
+      document.getElementById('diag-cas-objectif').textContent      = cas.objectif;
+      document.getElementById('diag-cas-contexte').textContent      = cas.contexte;
+      document.getElementById('diag-format-badge').textContent      = cas.format;
+      document.getElementById('diag-cas-counter').textContent =
+        (this.currentCasIndex + 1) + ' / ' + this.currentCasList.length;
+
+      const diffEl = document.getElementById('diag-diff-badge');
+      diffEl.textContent = cas.difficulte;
+      diffEl.className   = 'diff-badge diff-badge--' + cas.difficulte;
+
+      document.getElementById('diag-btn-prev').disabled =
+        this.currentCasIndex === 0;
+      document.getElementById('diag-btn-next').disabled =
+        this.currentCasIndex === this.currentCasList.length - 1;
+
+      const zone = document.getElementById('diag-play-zone');
+      zone.innerHTML = '';
+      if      (cas.format === 'terminal') this._renderTerminal(zone, cas);
+      else if (cas.format === 'arbre')    this._renderArbre(zone, cas);
+      else if (cas.format === 'scenario') this._renderScenario(zone, cas);
+    },
+
+    /* ── Terminal ── */
+    _renderTerminal(zone, cas) {
+      const c    = cas.contenu;
+      const cmds = Object.keys(c.commandes);
+
+      // Terminal block
+      const term = document.createElement('div');
+      term.className = 'diag-terminal';
+      term.innerHTML =
+        `<div class="diag-terminal__topbar">` +
+          `<span class="diag-terminal__dot" style="background:#ff5f57;"></span>` +
+          `<span class="diag-terminal__dot" style="background:#febc2e;"></span>` +
+          `<span class="diag-terminal__dot" style="background:#28c840;"></span>` +
+          `<span style="margin-left:8px;font-size:0.72rem;color:#8b949e;font-family:var(--font-mono);">terminal — ${_escHtml(cas.titre)}</span>` +
+        `</div>` +
+        `<div class="diag-terminal__output" id="diag-term-out"></div>` +
+        `<div class="diag-terminal__input-row">` +
+          `<span class="diag-terminal__prompt">${_escHtml(c.prompt || '$ ')}</span>` +
+          `<input class="diag-terminal__input" id="diag-term-in" type="text" ` +
+                 `autocomplete="off" autocorrect="off" spellcheck="false" ` +
+                 `placeholder="Tapez une commande ou cliquez sur un bouton…" />` +
+        `</div>`;
+      zone.appendChild(term);
+
+      // Boutons de commandes
+      const btnWrap = document.createElement('div');
+      btnWrap.className = 'diag-cmd-btns';
+      cmds.forEach(cmd => {
+        const b = document.createElement('button');
+        b.className   = 'btn btn--secondary btn--sm';
+        b.style.cssText = 'font-family:var(--font-mono);font-size:0.72rem;max-width:280px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;';
+        b.textContent = cmd.length > 55 ? cmd.slice(0, 52) + '…' : cmd;
+        b.title = cmd;
+        b.addEventListener('click', () => _execCmd(cmd));
+        btnWrap.appendChild(b);
+      });
+      zone.appendChild(btnWrap);
+
+      // Helpers
+      const output = term.querySelector('#diag-term-out');
+      const input  = term.querySelector('#diag-term-in');
+      const prompt = c.prompt || '$ ';
+
+      function _appendLine(text, cls) {
+        (text || '').split('\n').forEach(line => {
+          const d = document.createElement('div');
+          d.className   = cls || 'line--out';
+          d.textContent = line;
+          output.appendChild(d);
+        });
+        output.scrollTop = output.scrollHeight;
+      }
+
+      function _execCmd(cmd) {
+        _appendLine(prompt + cmd.split('\n')[0], 'line--cmd');
+        const out = c.commandes[cmd];
+        if (out) _appendLine(out, 'line--out');
+        input.value = '';
+      }
+
+      input.addEventListener('keydown', e => {
+        if (e.key === 'Enter') {
+          const val = input.value.trim();
+          if (!val) return;
+          if (Object.prototype.hasOwnProperty.call(c.commandes, val)) {
+            _execCmd(val);
+          } else {
+            const match = cmds.find(k => k === val || k.startsWith(val.split(' ')[0] + ' ') && val.length > 3);
+            if (match) { _execCmd(match); }
+            else {
+              _appendLine(prompt + val, 'line--cmd');
+              _appendLine('Commande non reconnue. Utilisez les boutons ou tapez la commande exacte.', 'line--err');
+              input.value = '';
+            }
+          }
+        } else if (e.key === 'Tab') {
+          e.preventDefault();
+          const v = input.value.trim();
+          const m = cmds.find(k => k.startsWith(v) && k !== v);
+          if (m) input.value = m.split('\n')[0];
+        }
+      });
+
+      // Validation / indices / solution
+      if (c.validation && c.validation.length) {
+        const el = document.createElement('details');
+        el.className = 'diag-indices';
+        el.innerHTML = `<summary>📋 Points de validation (${c.validation.length})</summary>` +
+          `<ul>${c.validation.map(v => `<li>${_escHtml(v)}</li>`).join('')}</ul>`;
+        zone.appendChild(el);
+      }
+      if (c.indices && c.indices.length) {
+        const el = document.createElement('details');
+        el.className = 'diag-indices';
+        el.innerHTML = `<summary>💡 Indices</summary>` +
+          `<ul>${c.indices.map(i => `<li>${_escHtml(i)}</li>`).join('')}</ul>`;
+        zone.appendChild(el);
+      }
+      if (c.solution && c.solution.length) {
+        const el = document.createElement('details');
+        el.className = 'diag-indices';
+        el.innerHTML = `<summary>🔑 Solution</summary>` +
+          `<ul>${c.solution.map(s => `<li><code>${_escHtml(s)}</code></li>`).join('')}</ul>`;
+        zone.appendChild(el);
+      }
+
+      setTimeout(() => input.focus(), 80);
+    },
+
+    /* ── Arbre de décision ── */
+    _renderArbre(zone, cas) {
+      this._treeHistory = [];
+      this._renderNoeud(zone, cas.contenu, cas.contenu.noeud_depart);
+    },
+
+    _renderNoeud(zone, c, noeudId) {
+      zone.innerHTML = '';
+
+      if (this._treeHistory.length > 0) {
+        const trail = document.createElement('div');
+        trail.style.cssText = 'display:flex;align-items:center;gap:6px;flex-wrap:wrap;margin-bottom:12px;font-size:0.78rem;color:var(--text-muted);';
+        const resetBtn = document.createElement('span');
+        resetBtn.style.cssText = 'cursor:pointer;color:var(--primary);';
+        resetBtn.textContent   = '↺ Recommencer';
+        resetBtn.addEventListener('click', () => {
+          const cas = this.currentCasList[this.currentCasIndex];
+          this._treeHistory = [];
+          this._renderNoeud(zone, cas.contenu, cas.contenu.noeud_depart);
+        });
+        trail.appendChild(resetBtn);
+        zone.appendChild(trail);
+      }
+
+      const noeud = c.noeuds[noeudId];
+      if (!noeud) return;
+
+      if (noeud.solution) {
+        const cls  = noeud.correct ? 'diag-tree-solution--ok' : 'diag-tree-solution--ko';
+        const icon = noeud.correct ? '✅' : '⚠️';
+        const div  = document.createElement('div');
+        div.className = 'diag-tree-solution ' + cls;
+        div.innerHTML =
+          `<div class="diag-tree-solution__title">${icon} ${_escHtml(noeud.texte)}</div>` +
+          `<div class="diag-tree-solution__expl">${_escHtml(noeud.explication)}</div>`;
+        const resetBtn2 = document.createElement('button');
+        resetBtn2.className   = 'btn btn--secondary btn--sm';
+        resetBtn2.style.marginTop = '14px';
+        resetBtn2.textContent = '↺ Recommencer';
+        resetBtn2.addEventListener('click', () => {
+          const cas = this.currentCasList[this.currentCasIndex];
+          this._treeHistory = [];
+          this._renderNoeud(zone, cas.contenu, cas.contenu.noeud_depart);
+        });
+        div.appendChild(resetBtn2);
+        zone.appendChild(div);
+      } else {
+        const div = document.createElement('div');
+        div.className = 'diag-tree-node';
+        const qEl = document.createElement('div');
+        qEl.className   = 'diag-tree-question';
+        qEl.textContent = noeud.question;
+        div.appendChild(qEl);
+        const choicesEl = document.createElement('div');
+        choicesEl.className = 'diag-tree-choices';
+        noeud.choix.forEach(choix => {
+          const btn = document.createElement('button');
+          btn.className   = 'diag-tree-btn';
+          btn.textContent = choix.texte;
+          btn.addEventListener('click', () => {
+            this._treeHistory.push(noeudId);
+            this._renderNoeud(zone, c, choix.suite);
+            window.scrollTo(0, zone.getBoundingClientRect().top + window.scrollY - 80);
+          });
+          choicesEl.appendChild(btn);
+        });
+        div.appendChild(choicesEl);
+        zone.appendChild(div);
+      }
+    },
+
+    /* ── Scénario ── */
+    _renderScenario(zone, cas) {
+      cas.contenu.etapes.forEach((etape, i) => {
+        const step = document.createElement('div');
+        step.className = 'diag-scenario-step';
+
+        const label = document.createElement('div');
+        label.style.cssText = 'font-size:var(--text-xs);color:var(--text-muted);margin-bottom:8px;font-weight:var(--weight-semibold);';
+        label.textContent = 'ÉTAPE ' + (i + 1) + ' / ' + cas.contenu.etapes.length;
+
+        const desc = document.createElement('div');
+        desc.className   = 'diag-scenario-desc';
+        desc.textContent = etape.description;
+
+        const choicesEl = document.createElement('div');
+        choicesEl.className = 'diag-scenario-choices';
+
+        const fbEl = document.createElement('div');
+        fbEl.className = 'diag-scenario-feedback';
+        fbEl.style.display = 'none';
+
+        etape.choix.forEach(choix => {
+          const btn = document.createElement('button');
+          btn.className       = 'diag-scenario-btn';
+          btn.textContent     = choix.texte;
+          btn.dataset.correct = choix.correct;
+          btn.addEventListener('click', () => {
+            choicesEl.querySelectorAll('button').forEach(b => {
+              b.disabled = true;
+              if (b.dataset.correct === 'true') b.classList.add('diag-scenario-btn--correct');
+              else if (b === btn)               b.classList.add('diag-scenario-btn--wrong');
+            });
+            fbEl.className   = 'diag-scenario-feedback ' +
+              (choix.correct ? 'diag-scenario-feedback--ok' : 'diag-scenario-feedback--ko');
+            fbEl.textContent = (choix.correct ? '✅ ' : '❌ ') + choix.feedback;
+            fbEl.style.display = '';
+          });
+          choicesEl.appendChild(btn);
+        });
+
+        step.appendChild(label);
+        step.appendChild(desc);
+        step.appendChild(choicesEl);
+        step.appendChild(fbEl);
+        zone.appendChild(step);
+      });
+    },
+  };
+
   /* ── URL params : module présélectionné depuis cours.html ── */
   function applyURLParams() {
     const params = new URLSearchParams(location.search);
@@ -1705,6 +2296,7 @@
   /* ── Lancement ── */
   document.addEventListener('DOMContentLoaded', async () => {
     await QuizApp.init();
+    DiagApp.buildScreen();
     applyURLParams();
     if (QuizApp.selectedModules?.length) {
       const pool = QuizApp.allQuestions.filter(q => QuizApp.selectedModules.includes(q.module));
