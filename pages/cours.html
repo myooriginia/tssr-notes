@@ -697,7 +697,119 @@
     }
 
     .sidebar-overlay.active { display: block; }
+
+    /* ════════════════════════════════════════════
+       PAGE D'ACCUEIL DES COURS
+       ════════════════════════════════════════════ */
+    .cours-home {
+      padding: 32px 0 48px;
+    }
+
+    .cours-home__header {
+      margin-bottom: 28px;
+    }
+
+    .cours-home__title {
+      font-size: var(--text-2xl);
+      font-weight: 800;
+      color: var(--text);
+      margin-bottom: 6px;
+    }
+
+    .cours-home__sub {
+      font-size: var(--text-sm);
+      color: var(--text-muted);
+    }
+
+    .cours-home__grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+      gap: 16px;
+    }
+
+    .cours-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 20px;
+      cursor: pointer;
+      transition: border-color var(--transition), box-shadow var(--transition), transform var(--transition-slow);
+      display: flex;
+      flex-direction: column;
+      gap: 0;
+      text-align: left;
+      font-family: inherit;
+      color: inherit;
+      width: 100%;
+    }
+
+    .cours-card:hover {
+      border-color: var(--primary);
+      box-shadow: var(--shadow-md);
+      transform: translateY(-2px);
+    }
+
+    .cours-card:focus-visible {
+      outline: 2px solid var(--primary);
+      outline-offset: 2px;
+    }
+
+    .cours-card__emoji {
+      font-size: 2rem;
+      line-height: 1;
+      margin-bottom: 12px;
+    }
+
+    .cours-card__name {
+      font-size: var(--text-base);
+      font-weight: var(--weight-semibold);
+      color: var(--text);
+      line-height: var(--leading-snug);
+      margin-bottom: 4px;
+    }
+
+    .cours-card__meta {
+      font-size: var(--text-xs);
+      color: var(--text-muted);
+      margin-bottom: 14px;
+      flex: 1;
+    }
+
+    .cours-card__bar-track {
+      height: 4px;
+      background: var(--bg-tertiary);
+      border-radius: var(--radius-full);
+      overflow: hidden;
+      margin-bottom: 4px;
+    }
+
+    .cours-card__bar-fill {
+      height: 100%;
+      background: var(--primary);
+      border-radius: var(--radius-full);
+      transition: width 0.4s ease;
+    }
+
+    .cours-card__bar-fill--done { background: var(--success); }
+
+    .cours-card__pct {
+      font-size: var(--text-xs);
+      color: var(--text-muted);
+      text-align: right;
+    }
+
+    @media (max-width: 768px) {
+      .cours-home { padding: 20px 0 32px; }
+      .cours-home__grid { grid-template-columns: 1fr 1fr; gap: 12px; }
+    }
+
+    @media (max-width: 480px) {
+      .cours-home__grid { grid-template-columns: 1fr; }
+    }
   </style>
+  <script>
+    (function(){ var t = localStorage.getItem("tssr_theme") || "dark"; document.documentElement.setAttribute("data-theme", t); })();
+  </script>
 </head>
 
 <body class="page-wrapper" id="cours-page">
@@ -733,6 +845,7 @@
             ☰ Modules
           </button>
 
+          <button class="theme-toggle" title="Changer le thème" aria-label="Changer le thème">☀️</button>
           <button class="navbar__burger" aria-label="Menu" aria-expanded="false">
             <span></span><span></span><span></span>
           </button>
@@ -867,21 +980,73 @@
     CoursState.masteredSections = window.TSSR?.Store?.get(getMasteredKey(), {}) || {};
     CoursState.cours = MODULES_DATA.cours || [];
 
-    // Ouvrir le premier cours par défaut
-    if (CoursState.cours.length > 0) {
-      CoursState.openCours.add(CoursState.cours[0].id);
-    }
-
     renderSidebarModules();
     initSidebarSearch();
     initDomainFilters();
     initSidebarMobileToggle();
 
-    // Lire le hash de l'URL pour sélectionner le module
+    // Hash présent → ouvrir le module ciblé, sinon afficher l'accueil
     const hashId = location.hash.replace('#', '');
-    const target = findModuleById(hashId) || getAllModules()[0];
+    const target = findModuleById(hashId);
 
-    if (target) loadModule(target.id);
+    if (target) {
+      loadModule(target.id);
+    } else {
+      showCoursHome();
+    }
+  }
+
+  // ── ACCUEIL DES COURS ──
+  function showCoursHome() {
+    CoursState.currentId = null;
+    history.replaceState(null, '', location.pathname);
+
+    const localModules = window.TSSR?.getModules() || [];
+
+    const cardsHTML = CoursState.cours.map(cours => {
+      // Progression moyenne sur tous les modules du cours
+      const progresses = cours.modules.map(m => {
+        const lm = localModules.find(l => l.id === m.id);
+        return lm?.progress || 0;
+      });
+      const avg = progresses.length
+        ? Math.round(progresses.reduce((a, b) => a + b, 0) / progresses.length)
+        : 0;
+      const done = avg === 100;
+      const firstId = cours.modules[0]?.id;
+      const nbMod = cours.modules.length;
+
+      return `
+        <button class="cours-card"
+                onclick="loadModule('${firstId}')"
+                onkeydown="if(event.key==='Enter'||event.key===' ')loadModule('${firstId}')"
+                aria-label="${cours.titre} — ${nbMod} module${nbMod > 1 ? 's' : ''}">
+          <div class="cours-card__emoji" aria-hidden="true">${cours.emoji}</div>
+          <div class="cours-card__name">${cours.titre}</div>
+          <div class="cours-card__meta">${nbMod} module${nbMod > 1 ? 's' : ''}</div>
+          <div class="cours-card__bar-track" role="progressbar"
+               aria-valuenow="${avg}" aria-valuemin="0" aria-valuemax="100">
+            <div class="cours-card__bar-fill ${done ? 'cours-card__bar-fill--done' : ''}"
+                 style="width:${avg}%"></div>
+          </div>
+          <div class="cours-card__pct">${avg}%</div>
+        </button>`;
+    }).join('');
+
+    document.getElementById('cours-content').innerHTML = `
+      <div class="cours-home">
+        <div class="cours-home__header">
+          <h1 class="cours-home__title">Cours disponibles</h1>
+          <p class="cours-home__sub">${CoursState.cours.length} cours · Cliquez sur un cours pour commencer</p>
+        </div>
+        <div class="cours-home__grid">${cardsHTML}</div>
+      </div>`;
+
+    // Vider la TOC
+    document.getElementById('cours-toc').innerHTML = '';
+
+    // MAJ sidebar (aucun module actif)
+    renderSidebarModules();
   }
 
   // ── SIDEBAR ──
@@ -1198,7 +1363,8 @@
 
     switch (type) {
       case 'text':      return renderText(contenu);
-      case 'tableau':   return renderTableau(contenu);
+      case 'tableau':
+      case 'table':     return renderTableau(contenu);
       case 'code':      return renderCode(contenu);
       case 'highlight': return renderHighlight(contenu);
       case 'list':      return renderList(contenu);
@@ -1243,7 +1409,7 @@
   function renderTableau(contenu) {
     const desc = contenu.description
       ? `<p class="section-desc">${parseMarkdownInline(contenu.description)}</p>` : '';
-    const thead = `<tr>${(contenu.headers || []).map(h => `<th>${parseMarkdownInline(h)}</th>`).join('')}</tr>`;
+    const thead = `<tr>${(contenu.columns || contenu.headers || []).map(h => `<th>${parseMarkdownInline(h)}</th>`).join('')}</tr>`;
     const tbody = (contenu.rows || []).map(row =>
       `<tr>${row.map(cell => `<td>${parseMarkdownInline(cell)}</td>`).join('')}</tr>`
     ).join('');

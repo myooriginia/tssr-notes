@@ -418,11 +418,24 @@
 
     /* ── Responsive ──────────────────────────────────────────────── */
     @media (max-width: 640px) {
+      .cl-page { padding: 1rem 0.75rem 3rem; }
       .cl-cours-bars { grid-template-columns: 1fr; }
       .cl-cours-progress-wrap { display: none; }
       .cl-controls-right .btn--secondary { display: none; }
+      /* Groupe de filtres scrollable horizontalement si trop large */
+      .cl-filter-group { overflow-x: auto; -webkit-overflow-scrolling: touch; flex-wrap: nowrap; }
+      .cl-controls { gap: 0.5rem; }
+    }
+
+    @media (max-width: 480px) {
+      .cl-controls { flex-direction: column; align-items: stretch; }
+      .cl-filter-group { width: 100%; justify-content: space-between; }
+      .cl-filter-btn { flex: 1; text-align: center; }
     }
   </style>
+  <script>
+    (function(){ var t = localStorage.getItem("tssr_theme") || "dark"; document.documentElement.setAttribute("data-theme", t); })();
+  </script>
 </head>
 <body>
 
@@ -447,6 +460,7 @@
 
         <div class="navbar__actions">
           <div class="navbar__auth-slot"></div>
+          <button class="theme-toggle" title="Changer le thème" aria-label="Changer le thème">☀️</button>
           <button class="navbar__burger" aria-label="Menu" aria-expanded="false">
             <span></span><span></span><span></span>
           </button>

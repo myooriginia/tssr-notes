@@ -3,1041 +3,2330 @@ const MODULES_DATA = {
   "_comment": "TSSR Notes — Structure des cours. 18 cours, 115 modules. Sections remplies en Étape 3 depuis les fichiers .md OneDrive.",
   "cours": [
     {
-      "id": "admin-gnu-linux",
-      "titre": "Administration GNU Linux",
-      "emoji": "🐧",
-      "domain": "linux",
-      "description": "Administration système Debian/Ubuntu : installation, utilisateurs, stockage, réseau, services systemd.",
-      "tags": [
-        "Linux",
-        "Debian",
-        "systemd",
-        "LVM",
-        "Utilisateurs",
-        "Paquets",
-        "Réseau"
-      ],
-      "modules": [
-        {
-          "id": "admin-linux-installation",
-          "fichier": "Installation.md",
-          "titre": "Installation",
-          "emoji": "💿",
-          "description": "Installation d'une distribution GNU/Linux.",
-          "sections": [
-            {
-              "id": "modes-install",
-              "titre": "Supports et méthodes d'installation",
-              "type": "list",
-              "contenu": {
-                "description": "Différents supports disponibles pour installer Debian.",
-                "items": [
-                  "CD/DVD ou ISO : support classique",
-                  "Live CD Debian : système fonctionnel depuis le DVD, installation possible depuis le bureau",
-                  "DVD-ROM : installation complète sans internet",
-                  "CD-ROM Netinstall : contient le minimum, nécessite une connexion internet",
-                  "FAI (Fully Auto Installation) : installation sans interruption avec paramètres préconfigurés",
-                  "CD personnalisé avec préconfiguration",
-                  "Outils de clonage : FOG, Symantec Ghost, Clonezilla"
-                ]
-              }
-            },
-            {
-              "id": "partitions-base",
-              "titre": "Partitionnement minimal requis",
-              "type": "highlight",
-              "contenu": {
-                "items": [
-                  "2 partitions nécessaires minimum : partition racine / et une partition SWAP (échange)",
-                  "Partitionnement avec LVM recommandé pour plus de flexibilité",
-                  "Le choix du mode graphique au démarrage de l'install ne désigne pas le mode final du système",
-                  "Installation validée sur /dev/sda par défaut"
-                ]
-              }
-            },
-            {
-              "id": "etapes-install",
-              "titre": "Étapes de l'installation Debian",
-              "type": "list",
-              "contenu": {
-                "description": "Déroulement chronologique de l'installation.",
-                "items": [
-                  "Choix de la langue d'installation et de la disposition du clavier",
-                  "Nom de la machine (hostname)",
-                  "Nom de domaine DNS (peut être laissé vide, configurable plus tard)",
-                  "Mot de passe root : l'attribution d'un mdp réserve les droits admin au root uniquement",
-                  "Partitionnement des disques (avec LVM recommandé)",
-                  "Choix des packs de logiciels : environnement graphique ou serveur minimal"
-                ]
-              }
-            },
-            {
-              "id": "root-sudo",
-              "titre": "Compte root et élévation de privilèges",
-              "type": "code",
-              "contenu": {
-                "description": "Commandes pour gérer l'accès root. Si aucun mdp root défini à l'install, sudo est utilisé.",
-                "langage": "bash",
-                "code": "# Passer en root (changement complet d'identité)\nsu -\n\n# Ouvrir un shell root via sudo\nsudo -i\n\n# Exécuter une seule commande en root\nsu - -c \"commande\"\nsudo commande\n\n# Affecter un mdp au compte root\nsudo passwd root\n\n# BONNE PRATIQUE : ne pas créer un seul user avec tous les privilèges sudo"
-              }
-            }
-          ]
-        },
-        {
-          "id": "admin-linux-demarrage",
-          "fichier": "Démarrage.md",
-          "titre": "Démarrage",
-          "emoji": "🚀",
-          "description": "Séquence de démarrage Linux : BIOS/UEFI, GRUB, systemd.",
-          "sections": [
-            {
-              "id": "sequence-demarrage",
-              "titre": "Séquence de démarrage Linux",
-              "type": "list",
-              "contenu": {
-                "description": "Les 6 étapes du démarrage d'un système Linux.",
-                "items": [
-                  "1. Chargeur d'amorçage : BIOS (Legacy) ou UEFI",
-                  "2. MBR (Master Boot Record) : 512 premiers octets du disque, charge le stade suivant",
-                  "3. Boot Loader : fichiers dans /boot/grub/",
-                  "4. GRUB : lit /boot/grub/grub.cfg — NE PAS éditer directement, utiliser /etc/default/grub puis update-grub",
-                  "5. Noyau (Kernel) : vmlinuz (fichier principal) + initrd.img (config matériel spécifique, généré à chaque MàJ)",
-                  "6. SystemD (PID 1) : premier programme lancé par le noyau, orchestre tous les services"
-                ]
-              }
-            },
-            {
-              "id": "grub-config",
-              "titre": "Configuration et édition GRUB",
-              "type": "code",
-              "contenu": {
-                "description": "Appuyer sur 'e' au menu GRUB pour éditer la ligne du noyau. Ne jamais éditer grub.cfg directement.",
-                "langage": "bash",
-                "code": "# Ligne noyau dans l'éditeur GRUB :\nlinux /vmlinuzxxx root=/dev/mapper/debian--vg-root ro quiet\n# ro     : montage de la racine en lecture seule au démarrage\n# quiet  : démarrage non-verbeux\n\n# Mettre à jour GRUB après modification de /etc/default/grub :\ngrub-mkconfig -o /boot/grub/grub.cfg\nupdate-grub"
-              }
-            },
-            {
-              "id": "systemd-targets",
-              "titre": "SystemD — Cibles (targets) et gestion des services",
-              "type": "code",
-              "contenu": {
-                "description": "SystemD (PID 1) gère tous les services via des 'targets'. Commande centrale : systemctl.",
-                "langage": "bash",
-                "code": "# Afficher / changer la cible par défaut\nsystemctl get-default          # graphical.target ou multi-user.target\nsystemctl set-default multi-user.target\n\n# Basculer vers une cible immédiatement\nsystemctl isolate rescue.target\nsystemctl isolate graphical.target\n\n# Gérer les services\nsystemctl status cron.service\nsystemctl stop    cron.service\nsystemctl start   cron.service\nsystemctl restart cron.service\nsystemctl enable  networking\nsystemctl disable networking\n\n# Lister toutes les unités\nsystemctl list-units --all"
-              }
-            },
-            {
-              "id": "arret-reboot",
-              "titre": "Arrêter et redémarrer le système",
-              "type": "code",
-              "contenu": {
-                "description": "shutdown gère l'arrêt propre : fermeture des processus et démontage des systèmes de fichiers.",
-                "langage": "bash",
-                "code": "# Syntaxe : shutdown [-rhc] <heure> <message>\n# -h : arrêt  -r : redémarrage  -c : annuler un shutdown en attente\n\nshutdown -h now                       # Arrêt immédiat\nshutdown -h +10 \"Arrêt dans 10 mn !\" # Arrêt dans 10 minutes\nshutdown -r now                       # Redémarrage immédiat\nreboot                                # Alias de shutdown -r now\nshutdown -r 16:30 \"Reboot à 16h30\""
-              }
-            }
-          ]
-        },
-        {
-          "id": "admin-linux-droits",
-          "fichier": "Droits sur les fichiers et répertoires.md",
-          "titre": "Droits sur les fichiers et répertoires",
-          "emoji": "🔐",
-          "description": "Permissions Unix : chmod, chown, SUID/SGID/sticky bit.",
-          "sections": [
-            {
-              "id": "types-droits",
-              "titre": "Types de droits Unix (UGO)",
-              "type": "mixed",
-              "contenu": {
-                "blocks": [
-                  {
-                    "type": "text",
-                    "paragraphs": [
-                      "Les droits Unix sont inscrits dans l'inode des fichiers. Ils sont découpés en 3 groupes de 3 droits : User propriétaire (U), Groupe propriétaire (G), Autres (O). Chaque groupe contient : r (lecture=4), w (écriture=2), x (exécution=1). Le droit x est indispensable pour se déplacer dans un répertoire."
-                    ]
-                  },
-                  {
-                    "type": "tableau",
-                    "headers": [
-                      "Symbolique",
-                      "Octal",
-                      "Signification"
-                    ],
-                    "rows": [
-                      [
-                        "rwxrwxr-x",
-                        "775",
-                        "User/Groupe : tout, Autres : lecture+exécution"
-                      ],
-                      [
-                        "rwxr-x---",
-                        "750",
-                        "User : tout, Groupe : lecture+exécution, Autres : rien"
-                      ],
-                      [
-                        "rw-rw-r--",
-                        "664",
-                        "User/Groupe : lecture+écriture, Autres : lecture seule"
-                      ],
-                      [
-                        "rwx------",
-                        "700",
-                        "User : tout, Groupe/Autres : aucun droit"
+          "id": "admin-gnu-linux",
+          "titre": "Administration GNU Linux",
+          "emoji": "🐧",
+          "domain": "linux",
+          "description": "Administration système Debian/Ubuntu : installation, utilisateurs, stockage, réseau, services systemd.",
+          "tags": [
+                "Linux",
+                "Debian",
+                "systemd",
+                "LVM",
+                "Utilisateurs",
+                "Paquets",
+                "Réseau"
+          ],
+          "modules": [
+                {
+                      "id": "admin-linux-m01",
+                      "fichier": "M01 - Historique, valeurs & versions.md",
+                      "titre": "Historique, valeurs & versions",
+                      "emoji": "📜",
+                      "description": "Origine de Debian, contrat social, branches et versions.",
+                      "sections": [
+                            {
+                                  "id": "m01-notions",
+                                  "titre": "Notions essentielles à retenir",
+                                  "type": "highlight",
+                                  "contenu": {
+                                        "items": [
+                                              "Debian créée en août 1993 — qualité + non commercial sont ses deux valeurs fondatrices. La date de 1993 et ces deux valeurs sont des classiques de QCM.",
+                                              "Contrat social Debian — 5 engagements : (1) Debian restera totalement libre ; (2) les travaux sont reversés à la communauté ; (3) les problèmes ne sont pas dissimulés (transparence totale) ; (4) priorité aux utilisateurs et au logiciel libre ; (5) les logiciels non libres peuvent exister dans des sections séparées.",
+                                              "Le point 5 explique pourquoi certains paquets (drivers propriétaires, firmwares) ne sont pas disponibles par défaut et nécessitent d'activer des dépôts non-free ou contrib.",
+                                              "Redistribution libre : Debian peut être distribuée sans restriction. Code source disponible et modifiable sous condition de reverser les modifications à la communauté.",
+                                              "Nommage des versions : chaque version porte un numéro ET un nom tiré des personnages de Toy Story.",
+                                              "Debian est conçue dès l'origine pour les environnements serveurs, avec des cycles LTS — au détriment de l'ergonomie desktop. Ubuntu / Linux Mint pour les postes utilisateurs.",
+                                              "Syntaxe commande : identifier la commande (verbe), les options (précédées de - ou --), les arguments (cibles). Ne jamais saisir les crochets [] ni les chevrons <> — ce sont des marqueurs de documentation. Respecter les espaces comme séparateurs.",
+                                              "Sid est TOUJOURS le nom de la branche unstable, quel que soit le cycle — piège classique."
+                                        ]
+                                  }
+                            },
+                            {
+                                  "id": "m01-versions",
+                                  "titre": "Versions majeures de Debian",
+                                  "type": "table",
+                                  "contenu": {
+                                        "columns": [
+                                              "Version",
+                                              "Nom",
+                                              "Statut"
+                                        ],
+                                        "rows": [
+                                              [
+                                                    "Debian 12",
+                                                    "Bookworm",
+                                                    "✅ Stable actuelle"
+                                              ],
+                                              [
+                                                    "Debian 11",
+                                                    "Bullseye",
+                                                    "Oldstable"
+                                              ],
+                                              [
+                                                    "Debian 10",
+                                                    "Buster",
+                                                    "Ancienne LTS"
+                                              ],
+                                              [
+                                                    "Debian 9",
+                                                    "Stretch",
+                                                    "En fin de vie"
+                                              ],
+                                              [
+                                                    "Debian 8",
+                                                    "Jessie",
+                                                    "Obsolète (rare en prod)"
+                                              ],
+                                              [
+                                                    "Debian 1.1",
+                                                    "Buzz",
+                                                    "Historique (1993)"
+                                              ]
+                                        ]
+                                  }
+                            },
+                            {
+                                  "id": "m01-branches",
+                                  "titre": "Les trois branches de Debian",
+                                  "type": "table",
+                                  "contenu": {
+                                        "columns": [
+                                              "Branche",
+                                              "Alias",
+                                              "Description",
+                                              "Usage recommandé"
+                                        ],
+                                        "rows": [
+                                              [
+                                                    "stable",
+                                                    "Ex. : Bookworm",
+                                                    "Figée — correctifs sécu uniquement",
+                                                    "✅ Production"
+                                              ],
+                                              [
+                                                    "testing",
+                                                    "Ex. : Trixie",
+                                                    "Future stable en maturation",
+                                                    "Tests / préproduction"
+                                              ],
+                                              [
+                                                    "unstable",
+                                                    "Sid (toujours)",
+                                                    "Alimentation continue, jamais figée",
+                                                    "Développement / bleeding edge"
+                                              ]
+                                        ]
+                                  }
+                            },
+                            {
+                                  "id": "m01-commandes",
+                                  "titre": "Commandes utiles",
+                                  "type": "table",
+                                  "contenu": {
+                                        "columns": [
+                                              "Commande",
+                                              "Description"
+                                        ],
+                                        "rows": [
+                                              [
+                                                    "ls -l /chemin",
+                                                    "Liste le contenu d'un répertoire en format détaillé"
+                                              ],
+                                              [
+                                                    "uname -a",
+                                                    "Affiche la version du noyau Linux en cours d'exécution"
+                                              ],
+                                              [
+                                                    "cat /etc/debian_version",
+                                                    "Affiche la version Debian installée"
+                                              ],
+                                              [
+                                                    "lsb_release -a",
+                                                    "Affiche les informations complètes de la distribution"
+                                              ]
+                                        ]
+                                  }
+                            },
+                            {
+                                  "id": "m01-tldr",
+                                  "titre": "TL;DR — 10 points essentiels",
+                                  "type": "list",
+                                  "contenu": {
+                                        "items": [
+                                              "Debian créée en août 1993 — une des toutes premières distributions Linux",
+                                              "Valeurs fondatrices : qualité + non commercial",
+                                              "Contrat social = 5 engagements dont transparence, liberté et reversement à la communauté",
+                                              "Noms de versions = personnages de Toy Story (Bookworm, Bullseye, Buster…)",
+                                              "Version stable actuelle = Debian 12 Bookworm",
+                                              "3 branches : stable (prod), testing (préparation), unstable/Sid (flux continu)",
+                                              "Sid = nom permanent de la branche unstable, jamais un nom de release",
+                                              "Debian est conçue pour les serveurs — LTS, stable, peu évolutive côté UI",
+                                              "Logiciels non libres → sections non-free / contrib à activer manuellement",
+                                              "Syntaxe commande : commande [options] <argument> — ne jamais taper [] ou <>"
+                                        ]
+                                  }
+                            }
                       ]
-                    ]
-                  }
-                ]
-              }
-            },
-            {
-              "id": "chmod",
-              "titre": "Modifier les droits — chmod",
-              "type": "code",
-              "contenu": {
-                "description": "chmod modifie les droits. Mode absolu (octal ou = symbolique) ou relatif (+ ou -). L'option -R est récursive.",
-                "langage": "bash",
-                "code": "# Notation symbolique relative\nchmod g+w,o-rx /data/commun\n\n# Notation octale (absolue)\nchmod 770 /data/commun\n\n# Récursif sur répertoire et contenu\nchmod -R g+w,o-rx /data/commun\n\n# X majuscule avec -R : applique x uniquement aux répertoires (pas aux fichiers)\nchmod -R u+X /data/commun\n\n# Alternative ciblée avec find\nfind /data/commun -type f -exec chmod 640 {} \\;"
-              }
-            },
-            {
-              "id": "chown-chgrp",
-              "titre": "Modifier le propriétaire — chown / chgrp",
-              "type": "code",
-              "contenu": {
-                "description": "chown modifie l'utilisateur et/ou le groupe propriétaire d'un fichier ou répertoire.",
-                "langage": "bash",
-                "code": "# Modifier utilisateur ET groupe propriétaire\nchown penthium:users /data\n\n# Modifier uniquement le groupe (récursif)\nchown -R :users /data/commun\n\n# Syntaxe générale\nchown <-R> [user]:[group] fichier_ou_dossier\n\n# Modifier uniquement le groupe avec chgrp\nchgrp users /data/commun"
-              }
-            },
-            {
-              "id": "umask",
-              "titre": "Modèle de droits — Umask",
-              "type": "code",
-              "contenu": {
-                "description": "L'umask définit les droits RETIRÉS à la création : 0666 max pour un fichier, 0777 pour un répertoire. Debian default = 0022.",
-                "langage": "bash",
-                "code": "# Afficher le masque courant\numask\n# => 0022 signifie : fichier créé avec 0644 (rw-r--r--), dossier avec 0755 (rwxr-xr-x)\n\n# Modifier temporairement\numask 0007\n# => fichier = 0660, dossier = 0770\n\n# Rendre permanent (dans ~/.bashrc)\necho 'umask 0007' >> ~/.bashrc\n\n# IMPORTANT : conserver umask 0022 pour root et les daemon users"
-              }
-            },
-            {
-              "id": "droits-speciaux",
-              "titre": "Droits spéciaux — SUID, SGID, Sticky bit",
-              "type": "highlight",
-              "contenu": {
-                "items": [
-                  "SUID (u+s) sur un fichier : s'exécute avec les droits du propriétaire (ex: /usr/bin/passwd). En octal : 4xxx",
-                  "SGID (g+s) sur un fichier : s'exécute avec les droits du groupe propriétaire. En octal : 2xxx",
-                  "SGID sur un répertoire : les nouveaux fichiers héritent du groupe du répertoire (utile pour dossiers partagés)",
-                  "Sticky bit (o+t) sur un répertoire : seul le propriétaire peut supprimer ses propres fichiers (ex: /tmp). En octal : 1xxx",
-                  "Exemple complet : chmod 1777 /tmp (rwxrwxrwt)"
-                ]
-              }
-            }
-          ]
-        },
-        {
-          "id": "admin-linux-users-groupes",
-          "fichier": "Gestion des Users et groupes.md",
-          "titre": "Gestion des utilisateurs et groupes",
-          "emoji": "👥",
-          "description": "Création, modification et suppression d'utilisateurs et groupes.",
-          "sections": [
-            {
-              "id": "types-utilisateurs",
-              "titre": "Types d'utilisateurs et identifiants",
-              "type": "tableau",
-              "contenu": {
-                "description": "Chaque utilisateur possède un UID (unique) et un GID (groupe principal). Plusieurs groupes secondaires possibles.",
-                "headers": [
-                  "Type",
-                  "UID / GID",
-                  "Rôle"
-                ],
-                "rows": [
-                  [
-                    "root",
-                    "UID=0, GID=0",
-                    "Super-utilisateur, droits absolus. Préférer su - ou sudo."
-                  ],
-                  [
-                    "Daemon (applicatif)",
-                    "UID 1–999, GID 1–999",
-                    "Utilisateurs de services système, pour la sécurité."
-                  ],
-                  [
-                    "Utilisateur standard",
-                    "UID > 1000, GID > 1000",
-                    "Comptes humains créés après l'installation."
-                  ]
-                ]
-              }
-            },
-            {
-              "id": "fichiers-groupes",
-              "titre": "Fichiers de gestion des groupes",
-              "type": "mixed",
-              "contenu": {
-                "blocks": [
-                  {
-                    "type": "text",
-                    "paragraphs": [
-                      "/etc/group et /etc/gshadow contiennent les infos sur les groupes. Ne jamais éditer directement — utiliser les commandes dédiées."
-                    ]
-                  },
-                  {
-                    "type": "code",
-                    "description": "Format du fichier /etc/group",
-                    "langage": "bash",
-                    "code": "# /etc/group : nomgroupe:motdepasse:GID:liste,des,membres\nex: informatique:x:1500:jpartin,abenabel\n# x = mdp dans /etc/gshadow\n# Liste = membres secondaires du groupe\n\n# /etc/gshadow : infos cachées\n# mdp = ! ou * => les users ne peuvent pas utiliser le mdp pour accéder au groupe\n# Champ vide => seuls les membres du groupe obtiennent les permissions"
-                  }
-                ]
-              }
-            },
-            {
-              "id": "commandes-groupes",
-              "titre": "Commandes de gestion des groupes",
-              "type": "code",
-              "contenu": {
-                "description": "Commandes pour créer, modifier, supprimer des groupes et gérer leurs membres.",
-                "langage": "bash",
-                "code": "# Créer un groupe (-g pour spécifier le GID)\ngroupadd -g 1500 informatique\n\n# Modifier un groupe existant\ngroupmod -g 1501 informatique   # changer le GID\ngroupmod -n dev informatique     # renommer le groupe\n\n# Supprimer un groupe (doit être vide)\ngroupdel informatique\n\n# Ajouter / supprimer un user dans un groupe\ngpasswd -a utilisateur informatique   # ajouter\ngpasswd -d utilisateur informatique   # supprimer"
-              }
-            },
-            {
-              "id": "fichiers-users",
-              "titre": "Fichiers de gestion des utilisateurs",
-              "type": "mixed",
-              "contenu": {
-                "blocks": [
-                  {
-                    "type": "code",
-                    "description": "Format du fichier /etc/passwd (prise d'info uniquement, jamais de modif directe)",
-                    "langage": "bash",
-                    "code": "# nom:mdpchiffré:UID:GID:nom_complet:/repertoire/personnel:/shell\njdupont:x:1001:1001:Jean Dupont:/home/jdupont:/bin/bash\n# x = mdp dans /etc/shadow\n# Modifier le shell : chsh\n# Modifier les infos : chfn"
-                  },
-                  {
-                    "type": "code",
-                    "description": "Format du fichier /etc/shadow (hash des mots de passe)",
-                    "langage": "bash",
-                    "code": "# user:mdp:dernier_changement:age_mini:age_max:avertissement:inactivité:fin_validité:réservé\n# Hash du mdp : $algo$sel$hash\n# $1$ = MD5  $2a$ = Blowfish  $5$ = SHA-256  $6$ = SHA-512\n# Date = nbre de jours depuis le 01/01/1970\n# Valeur 0 => force le changement de mdp à la prochaine connexion\n# Champ vide => pas de vieillissement du mdp"
-                  }
-                ]
-              }
-            },
-            {
-              "id": "commandes-users",
-              "titre": "Commandes de gestion des utilisateurs",
-              "type": "code",
-              "contenu": {
-                "description": "useradd, usermod, userdel, passwd — commandes essentielles pour gérer les comptes utilisateurs.",
-                "langage": "bash",
-                "code": "# Créer un utilisateur\nuseradd -m -d /home/jdupont -u 1001 -g users -G sudo,dev -s /bin/bash jdupont\n# -m : crée le répertoire d'accueil (copie /etc/skel)\n# -d : chemin du répertoire d'accueil\n# -u : UID  -g : GID principal  -G : groupes secondaires  -s : shell  -r : user système\n\n# Modifier un utilisateur\nusermod -G dev,admin -a jdupont  # ajouter des groupes (-a indispensable pour ne pas perdre les existants)\nusermod -L jdupont                # verrouiller le mdp (ajoute ! dans /etc/shadow)\nusermod -U jdupont                # déverrouiller\nusermod -e 2026-12-31 jdupont    # date d'expiration du compte\n\n# Supprimer un utilisateur (-r supprime aussi le répertoire d'accueil)\nuserdel -r jdupont\n\n# Gérer le mot de passe\npasswd jdupont        # changer le mdp\npasswd -e jdupont     # forcer le changement à la prochaine connexion\npasswd -l jdupont     # verrouiller  (ajoute ! dans /etc/shadow)\npasswd -u jdupont     # déverrouiller"
-              }
-            },
-            {
-              "id": "elevation-privileges",
-              "titre": "Changement d'identité et élévation de privilèges",
-              "type": "code",
-              "contenu": {
-                "description": "su et sudo permettent d'exécuter des commandes avec les droits d'un autre utilisateur.",
-                "langage": "bash",
-                "code": "# su : changer d'identité (demande le mdp du compte cible)\nsu -              # devenir root (changement complet d'identité)\nsu - jdupont      # devenir jdupont\nsu - -c \"commande\" # exécuter une commande en root\n\n# sudo : déléguer des tâches admin (demande LE MDP DU USER, pas celui de root)\n# L'utilisateur doit être dans /etc/sudoers ou dans le groupe sudo\nsudo commande\nsudo -i           # ouvrir une session root complète\n# Élévation valable 5 minutes par défaut"
-              }
-            }
-          ]
-        },
-        {
-          "id": "admin-linux-paquets",
-          "fichier": "Gestion des paquets.md",
-          "titre": "Gestion des paquets",
-          "emoji": "📦",
-          "description": "apt, dpkg, dépôts, mise à jour et gestion des paquets Debian.",
-          "sections": [
-            {
-              "id": "branches-debian",
-              "titre": "Branches (Releases) Debian",
-              "type": "tableau",
-              "contenu": {
-                "headers": [
-                  "Branche",
-                  "Description"
-                ],
-                "rows": [
-                  [
-                    "Stable",
-                    "Version de production recommandée"
-                  ],
-                  [
-                    "Testing",
-                    "Future version stable"
-                  ],
-                  [
-                    "Unstable (Sid)",
-                    "Rolling Release, en constante évolution"
-                  ],
-                  [
-                    "Old-stable",
-                    "Version de production précédente (R-1)"
-                  ],
-                  [
-                    "Old-old-stable",
-                    "Version encore antérieure (R-2)"
-                  ],
-                  [
-                    "Experimental",
-                    "Paquets en cours de développement (réservé aux devs)"
-                  ]
-                ]
-              }
-            },
-            {
-              "id": "gestion-depots",
-              "titre": "Gestion des dépôts — /etc/apt/sources.list",
-              "type": "code",
-              "contenu": {
-                "description": "Les dépôts officiels Debian sont configurés automatiquement à l'installation. Format d'une ligne de dépôt :",
-                "langage": "bash",
-                "code": "# Format : type url branche section(s)\ndeb http://ftp.fr.debian.org/debian/ bookworm main contrib non-free\n# deb       = paquets binaires (deb-src = sources)\n# http://   = téléchargement web (ftp://, file://, cdrom:[])\n# bookworm  = branche\n# main      = paquets libres officiels\n# contrib   = libres mais avec dépendances non-libres\n# non-free  = paquets sous licence non libre\n\n# Sources supplémentaires dans /etc/apt/sources.list.d/\n# Mettre à jour la liste des paquets après modification :\napt update"
-              }
-            },
-            {
-              "id": "apt-commandes",
-              "titre": "Commandes apt — Gestion courante des paquets",
-              "type": "code",
-              "contenu": {
-                "description": "apt est la commande recommandée (préférer apt à apt-get). Ne pas changer d'outil en cours de route.",
-                "langage": "bash",
-                "code": "apt update                    # MàJ de la base des paquets disponibles (pas d'install)\napt upgrade                   # MàJ de la distribution sans suppression de paquets\napt full-upgrade              # MàJ avec suppression des paquets obsolètes\napt install paquet1 paquet2   # Installer des paquets\napt remove paquet1            # Désinstaller (conserve les fichiers de config)\napt purge paquet1             # Désinstaller + supprimer les fichiers de config\napt clean                     # Nettoyer le cache des paquets téléchargés\napt search regex              # Chercher un paquet\napt show paquet               # Informations détaillées sur un paquet\n\n# Paquets spéciaux VMware :\napt install open-vm-tools-desktop  # VM client avec interface graphique\napt install open-vm-tools          # VM serveur (sans interface graphique)\ntasksel                            # Panneau de sélection des groupes de logiciels"
-              }
-            },
-            {
-              "id": "dpkg",
-              "titre": "dpkg — Gestionnaire de paquets bas niveau",
-              "type": "code",
-              "contenu": {
-                "description": "dpkg est la base du système de paquets Debian (équivalent de rpm pour RedHat). Utilisé surtout pour l'information.",
-                "langage": "bash",
-                "code": "dpkg -l \"*ftp*\"        # Lister les paquets installés contenant 'ftp'\ndpkg -L telnet         # Lister les fichiers installés pour un paquet\ndpkg -S /usr/bin/scp   # Trouver le paquet à l'origine d'un fichier\n\n# Fichiers journaux\n# apt  : /var/log/apt/history.log\n# dpkg : /var/log/dpkg.log"
-              }
-            },
-            {
-              "id": "install-sources",
-              "titre": "Installation depuis les sources",
-              "type": "list",
-              "contenu": {
-                "description": "Méthode native UNIX/Linux pour les logiciels non disponibles en paquet. Compiler dans un espace non-root.",
-                "items": [
-                  "Lire le fichier README ou INSTALL fourni avec les sources",
-                  "1. ./configure : vérifie les dépendances et génère le Makefile",
-                  "2. make : compile l'application depuis les sources en suivant le Makefile",
-                  "3. make install : installe l'application compilée (droits root nécessaires, copie dans /opt/bin par ex.)",
-                  "IMPORTANT : utiliser un espace de compilation non-root pour éviter les risques système"
-                ]
-              }
-            }
-          ]
-        },
-        {
-          "id": "admin-linux-reseau",
-          "fichier": "Gestion du réseau.md",
-          "titre": "Gestion du réseau",
-          "emoji": "🌐",
-          "description": "Configuration réseau Linux : ip, nmcli, interfaces, routing.",
-          "sections": [
-            {
-              "id": "commandes-base-reseau",
-              "titre": "Commandes de base réseau",
-              "type": "code",
-              "contenu": {
-                "description": "Commandes pour afficher et diagnostiquer la configuration réseau d'une machine Linux.",
-                "langage": "bash",
-                "code": "ip address   # ou : ip a — affiche les cartes réseau et leurs adresses IPv4/IPv6\nip route     # ou : ip r — affiche les routes (dont la passerelle par défaut)\n\n# Informations DNS\ncat /etc/resolv.conf"
-              }
-            },
-            {
-              "id": "config-sans-gui",
-              "titre": "Configuration réseau sans interface graphique",
-              "type": "code",
-              "contenu": {
-                "description": "Configuration via /etc/network/interfaces (serveurs sans GUI). Ne jamais toucher aux lignes lo.",
-                "langage": "bash",
-                "code": "# Fichier : /etc/network/interfaces\n# NE JAMAIS modifier : auto lo  et  iface lo\n\n# Config DHCP automatique :\nauto ens33\niface ens33 inet dhcp\n\n# Config statique :\nauto ens33\niface ens33 inet static\n  address 192.168.1.10\n  netmask 255.255.255.0\n  gateway 192.168.1.1\n\n# DNS statique dans /etc/resolv.conf :\nnameserver 8.8.8.8\nnameserver 8.8.4.4\n\n# Gestion du service réseau :\nsystemctl stop    networking.service\nsystemctl start   networking.service\nsystemctl restart networking.service  # à éviter"
-              }
-            },
-            {
-              "id": "config-avec-gui",
-              "titre": "Configuration réseau avec interface graphique (NetworkManager)",
-              "type": "list",
-              "contenu": {
-                "description": "Sur les postes avec interface graphique, NetworkManager gère le réseau.",
-                "items": [
-                  "1. Cliquer sur l'icône réseau dans la barre de notification",
-                  "2. Paramètres filaire → ouvre Network Manager",
-                  "3. Modifier les informations dans le panneau (IP, masque, passerelle)",
-                  "4. Pour le suffixe DNS : utiliser la commande nmtui (interface texte)",
-                  "5. Appliquer les changements : systemctl restart NetworkManager ou décocher/recocher la connexion"
-                ]
-              }
-            }
-          ]
-        },
-        {
-          "id": "admin-linux-gestion-stockage",
-          "fichier": "Gestion de stockage.md",
-          "titre": "Gestion du stockage",
-          "emoji": "💾",
-          "description": "Partitionnement, systèmes de fichiers, montage.",
-          "sections": [
-            {
-              "id": "normes-mbr-gpt",
-              "titre": "Normes de partitionnement : MBR et GPT",
-              "type": "tableau",
-              "contenu": {
-                "headers": [
-                  "Critère",
-                  "MBR (1983)",
-                  "GPT (2013)"
-                ],
-                "rows": [
-                  [
-                    "Nb partitions primaires",
-                    "4 max (+ logiques dans étendue)",
-                    "128 à 256"
-                  ],
-                  [
-                    "Taille max partition",
-                    "2,2 To",
-                    "9,4 Zo (théorique)"
-                  ],
-                  [
-                    "Boot Loader",
-                    "446 premiers octets",
-                    "Via UEFI"
-                  ],
-                  [
-                    "Partitions logiques",
-                    "Jusqu'à 56 dans l'étendue (59 total)",
-                    "Non applicable (toutes primaires)"
-                  ]
-                ]
-              }
-            },
-            {
-              "id": "nomenclature-disques",
-              "titre": "Nomenclature des disques Linux",
-              "type": "highlight",
-              "contenu": {
-                "items": [
-                  "Les disques SCSI/SATA sont dans /dev : /dev/sda (1er), /dev/sdb (2ème)...",
-                  "Partitions 1 à 4 réservées aux partitions primaires et étendue",
-                  "Les partitions logiques commencent TOUJOURS à 5, même s'il n'y a que 2 partitions primaires",
-                  "La partition étendue (ex: sdb3) est un conteneur, elle n'est pas utilisable directement"
-                ]
-              }
-            },
-            {
-              "id": "fdisk",
-              "titre": "Partitionner avec fdisk",
-              "type": "code",
-              "contenu": {
-                "description": "fdisk est l'outil interactif principal pour gérer les partitions (aussi : parted, GParted, cfdisk).",
-                "langage": "bash",
-                "code": "fdisk -l /dev/sda   # Afficher la table de partition\nfdisk /dev/sdb      # Entrer dans fdisk interactif\n\n# Commandes interactives fdisk :\n# m : aide\n# n : nouvelle partition\n# p : afficher la table en cours\n# t : changer le type de partition (8E = Linux LVM, 82 = SWAP, 83 = Linux)\n# w : enregistrer et quitter\n# q : quitter SANS enregistrer\n\n# Pour la taille : laisser le 1er secteur par défaut, préciser +20G pour la taille"
-              }
-            },
-            {
-              "id": "detection-disque",
-              "titre": "Détection d'un nouveau disque à chaud",
-              "type": "code",
-              "contenu": {
-                "description": "Procédure pour détecter un disque ajouté physiquement (via VM ou serveur) sans redémarrage.",
-                "langage": "bash",
-                "code": "# Trouver le bus SCSI du périphérique existant\nudevadm info --query=path --name=sda\n# Exemple de résultat : ...host2...\n\n# Rescanner le bus pour détecter le nouveau disque\necho \"- - -\" > /sys/class/scsi_host/host2/scan\n\n# Vérifier la détection\nlsblk\n\n# Partitionner le nouveau disque\nfdisk /dev/sdb"
-              }
-            }
-          ]
-        },
-        {
-          "id": "admin-linux-stockage-fs",
-          "fichier": "Gestion Stockage - File System.md",
-          "titre": "Gestion Stockage — File System",
-          "emoji": "🗂️",
-          "description": "Systèmes de fichiers Linux : ext4, xfs, btrfs, montage persistant.",
-          "sections": [
-            {
-              "id": "structure-fs",
-              "titre": "Structure interne d'un File System",
-              "type": "mixed",
-              "contenu": {
-                "blocks": [
-                  {
-                    "type": "text",
-                    "paragraphs": [
-                      "Un FS est segmenté en blocs de 4 Ko par défaut. Chaque bloc peut avoir différentes structures : Superbloc (infos vitales, dupliqué), Inodes (128 octets chacune, métadonnées des fichiers) et blocs de données. ATTENTION : l'inode ne contient PAS le nom du fichier."
-                    ]
-                  },
-                  {
-                    "type": "tableau",
-                    "headers": [
-                      "Structure",
-                      "Contenu"
-                    ],
-                    "rows": [
-                      [
-                        "Superbloc",
-                        "Taille des blocs, taille du FS, nbre de montages, date dernier montage, pointeur vers l'inode racine"
-                      ],
-                      [
-                        "Inode",
-                        "Type fichier (-, d, b, c, l, p, s), droits (octal), nbre de liens, UID/GID, taille, dates atime/ctime/mtime, 15 adresses vers blocs de données"
+                },
+                {
+                      "id": "admin-linux-m02",
+                      "fichier": "M02 - Installation de Debian.md",
+                      "titre": "Installation de Debian",
+                      "emoji": "💿",
+                      "description": "Partitionnement, étapes d'installation, GRUB, modes d'accès root.",
+                      "sections": [
+                            {
+                                  "id": "m02-notions",
+                                  "titre": "Notions essentielles à retenir",
+                                  "type": "highlight",
+                                  "contenu": {
+                                        "items": [
+                                              "Partitionnement minimal obligatoire : 2 partitions minimum — / (racine) et swap. En prod : partitions dédiées /home, /var, /tmp pour isoler les données.",
+                                              "Taille du swap : recommandation, pas règle absolue. 2 Go minimum est la norme actuelle sur la majorité des serveurs.",
+                                              "Mode d'installation ≠ mode d'utilisation finale : 'Graphical Install' = confort de l'installateur, pas le système final. Le résultat dépend des paquets sélectionnés.",
+                                              "En production : system en anglais + clavier AZERTY français (messages d'erreur en anglais = résultats plus pertinents sur Internet).",
+                                              "Nom d'hôte identifie la machine sur le réseau. Domaine DNS peut être laissé vide. Attention : domaine DNS ≠ domaine Windows (Active Directory).",
+                                              "su - (avec tiret) = chargement complet de l'environnement root — le tiret est OBLIGATOIRE. Sans tiret : PATH incomplet.",
+                                              "Pas de mot de passe root à l'installation → premier utilisateur = sudoer (sudo -i ou sudo -s).",
+                                              "LVM recommandé : partitionnement MBR (BIOS) ou GPT (UEFI) en amont.",
+                                              "Toujours installer GRUB sur /dev/sda — sans cela, la machine ne démarre pas."
+                                        ]
+                                  }
+                            },
+                            {
+                                  "id": "m02-etapes",
+                                  "titre": "Étapes d'installation de Debian (ordre à connaître)",
+                                  "type": "list",
+                                  "contenu": {
+                                        "items": [
+                                              "1. Choisir le mode d'installation (Graphical Install ou Install — indifférent pour le résultat)",
+                                              "2. Sélectionner la langue du système et la disposition du clavier",
+                                              "3. Saisir le nom d'hôte (hostname) de la machine",
+                                              "4. Saisir le domaine DNS (optionnel, peut être laissé vide)",
+                                              "5. Définir le mot de passe root (ou laisser vide pour activer sudo)",
+                                              "6. Créer le premier utilisateur standard",
+                                              "7. Partitionner les disques (mode assisté ou manuel, avec ou sans LVM)",
+                                              "8. Sélectionner les paquets logiciels à installer (environnement bureau, serveur, utilitaires SSH…)",
+                                              "9. Installer le bootloader GRUB sur /dev/sda",
+                                              "10. Redémarrer et retirer le média d'installation"
+                                        ]
+                                  }
+                            },
+                            {
+                                  "id": "m02-modes",
+                                  "titre": "Modes d'installation Debian",
+                                  "type": "table",
+                                  "contenu": {
+                                        "columns": [
+                                              "Mode",
+                                              "Support",
+                                              "Avantages",
+                                              "Inconvénients"
+                                        ],
+                                        "rows": [
+                                              [
+                                                    "DVD complet",
+                                                    "ISO DVD (~4 Go)",
+                                                    "Tous les paquets disponibles hors ligne",
+                                                    "Téléchargement lourd, paquets potentiellement anciens"
+                                              ],
+                                              [
+                                                    "NetInstall",
+                                                    "ISO légère (~400 Mo)",
+                                                    "Paquets récents, installation minimale",
+                                                    "Nécessite une connexion Internet"
+                                              ],
+                                              [
+                                                    "Debian Live",
+                                                    "CD/USB",
+                                                    "Test sans installation, vérification matériel",
+                                                    "Non permanent par défaut"
+                                              ],
+                                              [
+                                                    "USB (Rufus, Ventoy…)",
+                                                    "Clé USB",
+                                                    "Rapide, remplace les lecteurs optiques",
+                                                    "Nécessite un outil de création"
+                                              ],
+                                              [
+                                                    "Boot PXE",
+                                                    "Réseau",
+                                                    "Déploiement centralisé, sans média",
+                                                    "Infrastructure DHCP/TFTP requise"
+                                              ],
+                                              [
+                                                    "FAI / Préconfiguration",
+                                                    "Réseau/CD",
+                                                    "Déploiement automatisé en masse",
+                                                    "Configuration initiale complexe"
+                                              ]
+                                        ]
+                                  }
+                            },
+                            {
+                                  "id": "m02-partitions",
+                                  "titre": "Schéma de partitionnement recommandé",
+                                  "type": "table",
+                                  "contenu": {
+                                        "columns": [
+                                              "Partition",
+                                              "Rôle"
+                                        ],
+                                        "rows": [
+                                              [
+                                                    "/",
+                                                    "Racine du système"
+                                              ],
+                                              [
+                                                    "/home",
+                                                    "Données utilisateurs (isolées)"
+                                              ],
+                                              [
+                                                    "/var",
+                                                    "Logs, bases de données, fichiers variables"
+                                              ],
+                                              [
+                                                    "/tmp",
+                                                    "Fichiers temporaires (isolés pour éviter saturation)"
+                                              ],
+                                              [
+                                                    "swap",
+                                                    "Partition d'échange"
+                                              ]
+                                        ]
+                                  }
+                            },
+                            {
+                                  "id": "m02-commandes",
+                                  "titre": "Commandes utiles",
+                                  "type": "table",
+                                  "contenu": {
+                                        "columns": [
+                                              "Commande",
+                                              "Description"
+                                        ],
+                                        "rows": [
+                                              [
+                                                    "su -",
+                                                    "Bascule vers le compte root en chargeant TOUT son environnement"
+                                              ],
+                                              [
+                                                    "su",
+                                                    "Bascule vers root SANS charger l'environnement complet (à éviter)"
+                                              ],
+                                              [
+                                                    "sudo commande",
+                                                    "Exécute une commande avec les droits root (utilisateur sudoer)"
+                                              ],
+                                              [
+                                                    "sudo -i",
+                                                    "Ouvre un shell root interactif complet (équivalent su -)"
+                                              ],
+                                              [
+                                                    "sudo -s",
+                                                    "Ouvre un shell root sans charger le profil complet de root"
+                                              ],
+                                              [
+                                                    "whoami",
+                                                    "Affiche l'utilisateur courant (vérification rapide)"
+                                              ],
+                                              [
+                                                    "lsblk",
+                                                    "Liste les disques et partitions disponibles"
+                                              ],
+                                              [
+                                                    "fdisk -l",
+                                                    "Affiche les informations de partitionnement des disques"
+                                              ]
+                                        ]
+                                  }
+                            },
+                            {
+                                  "id": "m02-tldr",
+                                  "titre": "TL;DR — 10 points essentiels",
+                                  "type": "list",
+                                  "contenu": {
+                                        "items": [
+                                              "Installation minimale = 2 partitions : / (racine) + swap",
+                                              "'Graphical Install' = confort visuel de l'installateur — aucun impact sur le système final",
+                                              "En prod, système souvent installé en anglais + clavier AZERTY",
+                                              "su - (avec tiret) = chargement complet de l'environnement root — le tiret est obligatoire",
+                                              "Pas de mot de passe root à l'install → premier utilisateur = sudoer (sudo -i ou sudo -s)",
+                                              "Toujours installer GRUB sur /dev/sda — sans cela, la machine ne démarre pas",
+                                              "Recommandation : partitions séparées pour /home, /var, /tmp en plus de / et swap",
+                                              "LVM recommandé pour la flexibilité de gestion des disques en prod",
+                                              "NetInstall = image légère + paquets récents depuis Internet ; DVD = tout en local mais volumieux",
+                                              "PXE / FAI = solutions pour déployer un grand nombre de machines automatiquement"
+                                        ]
+                                  }
+                            }
                       ]
-                    ]
-                  }
-                ]
-              }
-            },
-            {
-              "id": "fs-linux",
-              "titre": "Systèmes de fichiers Linux",
-              "type": "highlight",
-              "contenu": {
-                "items": [
-                  "ext4 : FS par défaut sur Debian 10+. Préallocation des blocs contigus → peu de fragmentation. Taille max fichier : 16 To, nbre max fichiers : 4 milliards.",
-                  "ext3 : apporte la journalisation par rapport à ext2 (meilleure récupération après crash)",
-                  "NTFS, FAT32 : supportés sous Linux (utilisez noexec dans les options de montage)",
-                  "XFS, Btrfs : disponibles en installation supplémentaire"
-                ]
-              }
-            },
-            {
-              "id": "outils-fs",
-              "titre": "Outils de gestion des FS",
-              "type": "code",
-              "contenu": {
-                "description": "Commandes pour créer, modifier, vérifier et obtenir des informations sur les systèmes de fichiers.",
-                "langage": "bash",
-                "code": "# Créer un FS (formater une partition ou un LV)\nmkfs.ext4 -L \"etiquette\" /dev/sdc1\nmkfs.ext4 /dev/vgsystem/lvhome\n\n# Modifier les options d'un FS ext4\ntune2fs -L \"nouvelle_etiquette\" /dev/sdc1   # modifier l'étiquette\ntune2fs -l /dev/sdc1                         # afficher les infos du superbloc\ntune2fs -c 30 /dev/sdc1                      # nbre max de montages avant vérif\n\n# Étendre un FS (après lvextend sans -r)\nresize2fs /dev/vgsystem/lvhome\n\n# Vérifier l'intégrité (ne pas faire sur un FS monté !)\nfsck.ext4 /dev/sdc1\n\n# Informations sur les périphériques\nblkid                   # UUID et labels de tous les périphériques formatés\nlsblk                   # Arborescence des périphériques\nlsblk -f                # Avec UUID et labels"
-              }
-            },
-            {
-              "id": "montage-manuel",
-              "titre": "Montage manuel — mount / umount",
-              "type": "code",
-              "contenu": {
-                "description": "Rendre disponible un FS dans un répertoire (point de montage). Utiliser /mnt pour les montages temporaires.",
-                "langage": "bash",
-                "code": "# Montage manuel\nmount -t ext4 /dev/sdc1 /mnt\nmount -t ext4 -o ro /dev/sdc1 /mnt   # en lecture seule\n\n# Options de montage (-o) :\n# exec/noexec : autoriser l'exécution de binaires (noexec pour NTFS, FAT, CD-ROM)\n# ro/rw : lecture seule / lecture-écriture (défaut : rw)\n# suid/nosuid : autoriser l'interprétation du SUID\n# remount : changer les options sans démonter\n# sync/async : écriture synchrone/asynchrone (défaut : async)\n\n# Informations sur les montages\nmount              # liste tous les montages (peu lisible)\nfindmnt            # affichage hiérarchisé des FS montés\nfindmnt /dev/sdc1  # infos sur un montage précis\n\n# Démonter (aucun processus ne doit utiliser le volume)\numount /dev/sdc1\numount /mnt"
-              }
-            },
-            {
-              "id": "fstab",
-              "titre": "Montage automatique — /etc/fstab",
-              "type": "mixed",
-              "contenu": {
-                "blocks": [
-                  {
-                    "type": "text",
-                    "paragraphs": [
-                      "Les montages automatiques sont déclarés dans /etc/fstab et effectués par systemd au démarrage. Toujours faire une copie avant modification et tester avant de redémarrer."
-                    ]
-                  },
-                  {
-                    "type": "tableau",
-                    "headers": [
-                      "Colonne",
-                      "Rôle",
-                      "Exemple"
-                    ],
-                    "rows": [
-                      [
-                        "Filesystem",
-                        "Périphérique à monter (UUID recommandé, LABEL, ou chemin LVM)",
-                        "UUID=xxxx ou /dev/vgsys/lvhome"
-                      ],
-                      [
-                        "Mount point",
-                        "Répertoire de montage",
-                        "/srv/data"
-                      ],
-                      [
-                        "Type",
-                        "Type de FS (auto possible mais ralentit)",
-                        "ext4"
-                      ],
-                      [
-                        "Options",
-                        "Options de montage (defaults = async, nouser, exec, rw, auto, suid)",
-                        "defaults ou ro,noexec"
-                      ],
-                      [
-                        "Dump",
-                        "Paramètres de sauvegarde dump (peu utilisé)",
-                        "0"
-                      ],
-                      [
-                        "Pass",
-                        "Vérification fsck au démarrage (0=non, 1=racine, 2=autres)",
-                        "2"
+                },
+                {
+                      "id": "admin-linux-m03",
+                      "fichier": "M03 - Démarrage, GRUB, Systemd et Arrêt système.md",
+                      "titre": "Démarrage, GRUB, Systemd et Arrêt système",
+                      "emoji": "⚙️",
+                      "description": "Séquence de démarrage, GRUB, Systemd, targets et commandes d'arrêt.",
+                      "sections": [
+                            {
+                                  "id": "m03-notions",
+                                  "titre": "Notions essentielles à retenir",
+                                  "type": "highlight",
+                                  "contenu": {
+                                        "items": [
+                                              "Séquence de démarrage : BIOS/UEFI → GRUB Stage 1 (MBR, 512 octets) → GRUB Stage 2 (/boot/grub) → Noyau (vmlinuz) → initrd → Systemd (PID 1)",
+                                              "GRUB Stage 1 logé dans le MBR (512 premiers octets du disque). Son unique rôle : charger le Stage 2.",
+                                              "vmlinuz = image compressée du noyau Linux. initrd = système de fichiers temporaire en RAM — charge les modules matériels au démarrage.",
+                                              "Ne jamais éditer /boot/grub/grub.cfg directement — généré automatiquement par grub-mkconfig. Modifier /etc/default/grub puis update-grub.",
+                                              "update-grub est spécifique à Debian/Ubuntu. Universel : grub-mkconfig -o /boot/grub/grub.cfg.",
+                                              "Paramètre ro (read-only) dans la ligne de démarrage du noyau : OBLIGATOIRE — permet les vérifications d'intégrité. Ne jamais remplacer par rw.",
+                                              "Systemd = PID 1 — premier processus lancé par le noyau. Remplace SysVinit depuis Debian 8.",
+                                              "systemctl = commande de contrôle de Systemd. Ne pas confondre avec systemd.",
+                                              "start/stop = effet MAINTENANT. enable/disable = effet au PROCHAIN démarrage.",
+                                              "Cible par défaut sous Debian 10 = graphical.target, même sur un serveur sans GUI installé."
+                                        ]
+                                  }
+                            },
+                            {
+                                  "id": "m03-targets",
+                                  "titre": "Cibles Systemd (targets)",
+                                  "type": "table",
+                                  "contenu": {
+                                        "columns": [
+                                              "Cible",
+                                              "Équivalent SysV",
+                                              "Description"
+                                        ],
+                                        "rows": [
+                                              [
+                                                    "poweroff.target",
+                                                    "Runlevel 0",
+                                                    "Extinction"
+                                              ],
+                                              [
+                                                    "rescue.target",
+                                                    "Runlevel 1",
+                                                    "Mode maintenance (mono-utilisateur)"
+                                              ],
+                                              [
+                                                    "multi-user.target",
+                                                    "Runlevel 3",
+                                                    "Multi-utilisateur sans interface graphique"
+                                              ],
+                                              [
+                                                    "graphical.target",
+                                                    "Runlevel 5",
+                                                    "Multi-utilisateur avec interface graphique"
+                                              ],
+                                              [
+                                                    "reboot.target",
+                                                    "Runlevel 6",
+                                                    "Redémarrage"
+                                              ]
+                                        ]
+                                  }
+                            },
+                            {
+                                  "id": "m03-fichiers",
+                                  "titre": "Fichiers clés du démarrage",
+                                  "type": "table",
+                                  "contenu": {
+                                        "columns": [
+                                              "Fichier / Répertoire",
+                                              "Rôle"
+                                        ],
+                                        "rows": [
+                                              [
+                                                    "/boot/grub/grub.cfg",
+                                                    "Config GRUB générée automatiquement — lecture seule"
+                                              ],
+                                              [
+                                                    "/etc/default/grub",
+                                                    "Paramètres GRUB à modifier"
+                                              ],
+                                              [
+                                                    "/etc/grub.d/",
+                                                    "Scripts utilisés par grub-mkconfig pour générer grub.cfg"
+                                              ],
+                                              [
+                                                    "/boot/vmlinuz-*",
+                                                    "Image(s) du noyau Linux"
+                                              ],
+                                              [
+                                                    "/boot/initrd.img-*",
+                                                    "Modules matériels temporaires au démarrage"
+                                              ],
+                                              [
+                                                    "/lib/systemd/system/",
+                                                    "Fichiers d'unités Systemd (services, targets…)"
+                                              ]
+                                        ]
+                                  }
+                            },
+                            {
+                                  "id": "m03-commandes-grub",
+                                  "titre": "Commandes GRUB et systemctl",
+                                  "type": "table",
+                                  "contenu": {
+                                        "columns": [
+                                              "Commande",
+                                              "Description"
+                                        ],
+                                        "rows": [
+                                              [
+                                                    "cat /boot/grub/grub.cfg",
+                                                    "Afficher (sans modifier) la config GRUB générée"
+                                              ],
+                                              [
+                                                    "vi /etc/default/grub",
+                                                    "Modifier les paramètres GRUB (fichier source)"
+                                              ],
+                                              [
+                                                    "update-grub",
+                                                    "Régénérer grub.cfg depuis /etc/default/grub (spécifique Debian)"
+                                              ],
+                                              [
+                                                    "grub-mkconfig -o /boot/grub/grub.cfg",
+                                                    "Équivalent universel de update-grub"
+                                              ],
+                                              [
+                                                    "systemctl get-default",
+                                                    "Afficher la cible de démarrage par défaut"
+                                              ],
+                                              [
+                                                    "systemctl set-default multi-user.target",
+                                                    "Définir la cible par défaut (sans GUI)"
+                                              ],
+                                              [
+                                                    "systemctl isolate rescue.target",
+                                                    "Basculer immédiatement en mode maintenance"
+                                              ],
+                                              [
+                                                    "systemctl list-units --all",
+                                                    "Lister toutes les unités (actives ET inactives)"
+                                              ],
+                                              [
+                                                    "systemctl status sshd",
+                                                    "Statut du service SSH"
+                                              ],
+                                              [
+                                                    "systemctl start|stop|restart sshd",
+                                                    "Démarrer / arrêter / redémarrer SSH"
+                                              ],
+                                              [
+                                                    "systemctl enable|disable sshd",
+                                                    "Activer / désactiver SSH au démarrage"
+                                              ],
+                                              [
+                                                    "shutdown -h now",
+                                                    "Extinction immédiate"
+                                              ],
+                                              [
+                                                    "shutdown -h +10 \"message\"",
+                                                    "Extinction dans 10 minutes avec message"
+                                              ],
+                                              [
+                                                    "shutdown -r 16:30",
+                                                    "Redémarrage programmé à 16h30"
+                                              ],
+                                              [
+                                                    "shutdown -c",
+                                                    "Annuler un arrêt/redémarrage programmé"
+                                              ],
+                                              [
+                                                    "reboot",
+                                                    "Redémarrage immédiat"
+                                              ]
+                                        ]
+                                  }
+                            },
+                            {
+                                  "id": "m03-tldr",
+                                  "titre": "TL;DR — 10 points essentiels",
+                                  "type": "list",
+                                  "contenu": {
+                                        "items": [
+                                              "Séquence de boot : BIOS → GRUB (MBR) → GRUB (/boot/grub) → noyau → Systemd",
+                                              "Ne jamais éditer /boot/grub/grub.cfg — modifier /etc/default/grub + update-grub",
+                                              "update-grub = Debian uniquement ; universel = grub-mkconfig -o /boot/grub/grub.cfg",
+                                              "vmlinuz = noyau / initrd = modules matériels temporaires — les deux sont indispensables",
+                                              "Systemd = PID 1 — remplace SysVinit depuis Debian 8",
+                                              "La commande de contrôle Systemd = systemctl (pas systemd)",
+                                              "Cible par défaut sous Debian 10 = graphical.target, même sur un serveur sans GUI",
+                                              "start/stop = maintenant ; enable/disable = au prochain démarrage",
+                                              "Pour le mode maintenance immédiat : systemctl isolate rescue.target",
+                                              "Arrêt propre = shutdown -h now ; annulation = shutdown -c"
+                                        ]
+                                  }
+                            }
                       ]
-                    ]
-                  },
-                  {
-                    "type": "code",
-                    "description": "Tester une ligne fstab AVANT de redémarrer",
-                    "langage": "bash",
-                    "code": "# Tester sans redémarrer (si /srv/data est dans fstab)\nmount /srv/data\n# Pas de message = OK, message d'erreur = problème à corriger\n# Ne pas utiliser mount -a (effets de bord possibles)"
-                  }
-                ]
-              }
-            },
-            {
-              "id": "commandes-info-fs",
-              "titre": "Commandes d'information sur les FS",
-              "type": "code",
-              "contenu": {
-                "description": "Commandes pour connaître l'espace disque, les inodes et l'usage des répertoires.",
-                "langage": "bash",
-                "code": "df -h              # Espace disque des FS montés (puissance 1024)\ndf -i              # Informations sur les inodes\ndf -h .            # FS du répertoire courant\n\ndu -sh /root       # Taille d'un répertoire (-s : sans sous-répertoires, -h : lisible)\n\nfindmnt            # FS montés, affiché en hiérarchie\nblkid              # UUID et labels\nlsblk              # Arborescence périphériques/partitions/FS\nlsof /root         # Fichiers ouverts dans un répertoire (utile avant umount)"
-              }
-            }
+                },
+                {
+                      "id": "admin-linux-m04",
+                      "fichier": "M04 - Mode maintenance et récupération système.md",
+                      "titre": "Mode maintenance et récupération système",
+                      "emoji": "🛠️",
+                      "description": "Trois méthodes de mode maintenance, récupération de mot de passe root, CD Rescue.",
+                      "sections": [
+                            {
+                                  "id": "m04-notions",
+                                  "titre": "Notions essentielles à retenir",
+                                  "type": "highlight",
+                                  "contenu": {
+                                        "items": [
+                                              "Cas d'usage du mode maintenance : mot de passe root perdu, mise à jour cassée, récupération de données, réparation GRUB ou système de fichiers.",
+                                              "3 méthodes selon le contexte : GRUB single (MDP root requis), GRUB init=/bin/bash (sans MDP), CD-ROM Rescue Mode (le plus propre).",
+                                              "Le clavier passe en QWERTY (en_US) en mode maintenance GRUB — prévoir feuille de référence. Option keyboard=fr possible.",
+                                              "En mode init=/bin/bash : système de fichiers monté en lecture seule (ro). Obligatoire de remonter en rw avant modification : mount -o remount,rw /",
+                                              "En mode init=/bin/bash : reboot et shutdown NE FONCTIONNENT PAS. Extinction forcée uniquement. Toujours exécuter sync avant.",
+                                              "CD Rescue = méthode la plus propre : langue FR disponible, pas de MDP requis, arrêt propre possible, accès /boot pour reconstruire GRUB.",
+                                              "LVM facilite l'identification des partitions en mode rescue (noms explicites LVRoot, LVHome… vs /dev/sda1, /dev/sda2)."
+                                        ]
+                                  }
+                            },
+                            {
+                                  "id": "m04-comparatif",
+                                  "titre": "Comparatif des 3 méthodes",
+                                  "type": "table",
+                                  "contenu": {
+                                        "columns": [
+                                              "Critère",
+                                              "single",
+                                              "init=/bin/bash",
+                                              "CD Rescue"
+                                        ],
+                                        "rows": [
+                                              [
+                                                    "Mot de passe root requis",
+                                                    "✅ Oui",
+                                                    "❌ Non",
+                                                    "❌ Non"
+                                              ],
+                                              [
+                                                    "Matériel requis",
+                                                    "❌ Non",
+                                                    "❌ Non",
+                                                    "✅ CD/ISO/USB"
+                                              ],
+                                              [
+                                                    "Clavier QWERTY forcé",
+                                                    "✅ Oui",
+                                                    "✅ Oui",
+                                                    "❌ Non (FR dispo)"
+                                              ],
+                                              [
+                                                    "Remontage rw nécessaire",
+                                                    "❌ Non",
+                                                    "✅ Oui",
+                                                    "❌ Non"
+                                              ],
+                                              [
+                                                    "Arrêt propre possible",
+                                                    "✅ Oui",
+                                                    "❌ Non",
+                                                    "✅ Oui"
+                                              ],
+                                              [
+                                                    "Difficulté",
+                                                    "Faible",
+                                                    "Moyenne",
+                                                    "Moyenne"
+                                              ]
+                                        ]
+                                  }
+                            },
+                            {
+                                  "id": "m04-modification-grub",
+                                  "titre": "Modification de la ligne GRUB selon la méthode",
+                                  "type": "table",
+                                  "contenu": {
+                                        "columns": [
+                                              "Méthode",
+                                              "Ligne originale",
+                                              "Remplacement"
+                                        ],
+                                        "rows": [
+                                              [
+                                                    "single",
+                                                    "... ro quiet",
+                                                    "... ro single"
+                                              ],
+                                              [
+                                                    "init=/bin/bash",
+                                                    "... ro quiet",
+                                                    "... ro init=/bin/bash"
+                                              ],
+                                              [
+                                                    "Option clavier FR",
+                                                    "... ro single",
+                                                    "... ro single keyboard=fr"
+                                              ]
+                                        ]
+                                  }
+                            },
+                            {
+                                  "id": "m04-procedure-init",
+                                  "titre": "Méthode init=/bin/bash — procédure complète",
+                                  "type": "code",
+                                  "contenu": {
+                                        "description": "Accès root sans mot de passe via init=/bin/bash. Dans GRUB : e → ligne linux → remplacer quiet par init=/bin/bash → Ctrl+X.",
+                                        "langage": "bash",
+                                        "code": "# 1. Remonter la racine en lecture/écriture (obligatoire)\nmount -o remount,rw /\n\n# 2. Effectuer les modifications nécessaires (ex. : changer le mot de passe root)\npasswd\n\n# 3. Synchroniser les données sur disque (OBLIGATOIRE avant extinction)\nsync\n\n# 4. Éteindre de manière forcée (bouton alimentation ou VMware)\n# ATTENTION : reboot et shutdown ne fonctionnent PAS dans ce mode"
+                                  }
+                            },
+                            {
+                                  "id": "m04-commandes",
+                                  "titre": "Commandes utiles",
+                                  "type": "table",
+                                  "contenu": {
+                                        "columns": [
+                                              "Commande",
+                                              "Contexte",
+                                              "Description"
+                                        ],
+                                        "rows": [
+                                              [
+                                                    "passwd",
+                                                    "Mode maintenance",
+                                                    "Modifier le mot de passe de l'utilisateur courant (root)"
+                                              ],
+                                              [
+                                                    "passwd [user]",
+                                                    "Mode maintenance",
+                                                    "Modifier le mot de passe d'un utilisateur spécifique"
+                                              ],
+                                              [
+                                                    "mount -o remount,rw /",
+                                                    "Méthode init=/bin/bash",
+                                                    "Remonter la racine en lecture/écriture"
+                                              ],
+                                              [
+                                                    "sync",
+                                                    "Méthode init=/bin/bash",
+                                                    "Forcer l'écriture des données en mémoire sur le disque"
+                                              ],
+                                              [
+                                                    "reboot",
+                                                    "Méthode single",
+                                                    "Redémarrage propre après maintenance"
+                                              ],
+                                              [
+                                                    "Ctrl+D",
+                                                    "Méthode single",
+                                                    "Continuer le chargement vers rescue.target"
+                                              ]
+                                        ]
+                                  }
+                            },
+                            {
+                                  "id": "m04-tldr",
+                                  "titre": "TL;DR — 10 points essentiels",
+                                  "type": "list",
+                                  "contenu": {
+                                        "items": [
+                                              "3 méthodes : single (MDP requis), init=/bin/bash (sans MDP), CD Rescue (le plus propre)",
+                                              "Dans GRUB → e pour éditer → trouver la ligne linux → remplacer quiet",
+                                              "Méthode single : remplacer quiet par single → valider F10 → saisir MDP root",
+                                              "Méthode init=/bin/bash : remplacer quiet par init=/bin/bash → accès root direct",
+                                              "En mode init=/bin/bash : TOUJOURS faire mount -o remount,rw / avant modification",
+                                              "sync OBLIGATOIRE avant extinction forcée en mode init=/bin/bash",
+                                              "reboot et shutdown INDISPONIBLES en mode init=/bin/bash → extinction forcée uniquement",
+                                              "Clavier QWERTY (en_US) en mode maintenance GRUB — prévoir feuille de référence",
+                                              "CD Rescue = méthode la plus propre : FR disponible, pas de MDP, arrêt propre, accès /boot",
+                                              "Après réparation via CD : retirer le média ou remettre le disque en premier dans l'ordre de boot"
+                                        ]
+                                  }
+                            }
+                      ]
+                },
+                {
+                      "id": "admin-linux-m05",
+                      "fichier": "M05 - Configuration réseau.md",
+                      "titre": "Configuration réseau",
+                      "emoji": "🌐",
+                      "description": "Paramètres réseau, interfaces, networking vs NetworkManager, fstab réseau.",
+                      "sections": [
+                            {
+                                  "id": "m05-notions",
+                                  "titre": "Notions essentielles à retenir",
+                                  "type": "highlight",
+                                  "contenu": {
+                                        "items": [
+                                              "4 paramètres réseau indispensables : adresse IP, masque de sous-réseau, passerelle (gateway), serveur DNS. Sans passerelle = pas d'accès externe. Sans DNS = pas de résolution de noms.",
+                                              "Interface lo (loopback) : toujours 127.0.0.1/8 (IPv4) et ::1/128 (IPv6) — indispensable au fonctionnement interne. Sa suppression casse le système.",
+                                              "2 services réseau distincts : networking (serveur sans GUI → /etc/network/interfaces) et NetworkManager (machine avec GUI → interface graphique / nmtui). Ne pas les faire gérer la même interface simultanément.",
+                                              "auto ens33 = active l'interface à chaque démarrage du service réseau. allow-hotplug ens33 = active uniquement au démarrage machine ou connexion physique du câble.",
+                                              "/etc/resolv.conf : généré automatiquement par NetworkManager sur les systèmes avec GUI — ne pas modifier manuellement sur ces systèmes.",
+                                              "Notation CIDR : 10.1.1.10/24 au lieu de address + netmask. /24 = 255.255.255.0 / /16 = 255.255.0.0 / /8 = 255.0.0.0.",
+                                              "ping sous Linux = infini par défaut (contrairement à Windows). Arrêt avec Ctrl+C."
+                                        ]
+                                  }
+                            },
+                            {
+                                  "id": "m05-config-statique",
+                                  "titre": "Configurer une IP statique sur un serveur (sans GUI)",
+                                  "type": "code",
+                                  "contenu": {
+                                        "description": "Édition de /etc/network/interfaces pour IP statique",
+                                        "langage": "bash",
+                                        "code": "# 1. Éditer le fichier de configuration réseau\nvi /etc/network/interfaces\n\n# Structure du fichier (ne pas modifier les lignes lo) :\n# Interface loopback — NE JAMAIS SUPPRIMER\nauto lo\niface lo inet loopback\n\n# Interface réseau principale\nauto ens33\niface ens33 inet static\n    address 192.168.100.1\n    netmask 255.255.255.0\n    gateway 192.168.100.254\n\n# 2. Redémarrer le service réseau\nsystemctl stop networking && systemctl start networking\n\n# 3. Vérifier la configuration\nip a\nip r"
+                                  }
+                            },
+                            {
+                                  "id": "m05-config-dns",
+                                  "titre": "Configurer le DNS (serveur sans GUI)",
+                                  "type": "code",
+                                  "contenu": {
+                                        "description": "Edition de /etc/resolv.conf — prise en compte immédiate, sans redémarrage",
+                                        "langage": "bash",
+                                        "code": "vi /etc/resolv.conf\n\n# Ajouter les directives :\nnameserver 192.168.0.254\nnameserver 9.9.9.9\nsearch mon.domaine.local\n\n# Aucun redémarrage de service nécessaire — prise en compte immédiate"
+                                  }
+                            },
+                            {
+                                  "id": "m05-commandes",
+                                  "titre": "Commandes utiles",
+                                  "type": "table",
+                                  "contenu": {
+                                        "columns": [
+                                              "Commande",
+                                              "Description"
+                                        ],
+                                        "rows": [
+                                              [
+                                                    "ip a",
+                                                    "Afficher toutes les interfaces réseau et leurs adresses"
+                                              ],
+                                              [
+                                                    "ip r",
+                                                    "Afficher la table de routage (dont la passerelle par défaut)"
+                                              ],
+                                              [
+                                                    "cat /etc/resolv.conf",
+                                                    "Afficher la configuration DNS"
+                                              ],
+                                              [
+                                                    "ping 8.8.8.8",
+                                                    "Tester la connectivité Internet sans DNS"
+                                              ],
+                                              [
+                                                    "ping kernel.org",
+                                                    "Tester la résolution DNS + connectivité"
+                                              ],
+                                              [
+                                                    "Ctrl+C",
+                                                    "Arrêter le ping sous Linux"
+                                              ],
+                                              [
+                                                    "systemctl stop networking && systemctl start networking",
+                                                    "Redémarrer le service réseau (à préférer à restart)"
+                                              ],
+                                              [
+                                                    "systemctl restart NetworkManager",
+                                                    "Redémarrer NetworkManager (machine avec GUI)"
+                                              ]
+                                        ]
+                                  }
+                            },
+                            {
+                                  "id": "m05-fichiers",
+                                  "titre": "Fichiers réseau clés",
+                                  "type": "table",
+                                  "contenu": {
+                                        "columns": [
+                                              "Fichier",
+                                              "Rôle",
+                                              "Contexte"
+                                        ],
+                                        "rows": [
+                                              [
+                                                    "/etc/network/interfaces",
+                                                    "Config IP statique/DHCP",
+                                                    "Serveur sans GUI"
+                                              ],
+                                              [
+                                                    "/etc/resolv.conf",
+                                                    "Serveurs DNS et suffixe de recherche",
+                                                    "Tous systèmes"
+                                              ],
+                                              [
+                                                    "/etc/hostname",
+                                                    "Nom d'hôte de la machine",
+                                                    "Tous systèmes"
+                                              ],
+                                              [
+                                                    "/etc/hosts",
+                                                    "Résolution DNS locale (sans serveur DNS)",
+                                                    "Tous systèmes"
+                                              ]
+                                        ]
+                                  }
+                            },
+                            {
+                                  "id": "m05-cidr",
+                                  "titre": "Correspondance CIDR / masque et adresses particulières",
+                                  "type": "table",
+                                  "contenu": {
+                                        "columns": [
+                                              "Notation CIDR",
+                                              "Masque décimal",
+                                              "Nb d'hôtes"
+                                        ],
+                                        "rows": [
+                                              [
+                                                    "/8",
+                                                    "255.0.0.0",
+                                                    "~16 millions"
+                                              ],
+                                              [
+                                                    "/16",
+                                                    "255.255.0.0",
+                                                    "~65 000"
+                                              ],
+                                              [
+                                                    "/24",
+                                                    "255.255.255.0",
+                                                    "254"
+                                              ],
+                                              [
+                                                    "/25",
+                                                    "255.255.255.128",
+                                                    "126"
+                                              ],
+                                              [
+                                                    "/30",
+                                                    "255.255.255.252",
+                                                    "2"
+                                              ]
+                                        ]
+                                  }
+                            },
+                            {
+                                  "id": "m05-tldr",
+                                  "titre": "TL;DR — 10 points essentiels",
+                                  "type": "list",
+                                  "contenu": {
+                                        "items": [
+                                              "4 paramètres réseau : adresse IP, masque, passerelle, DNS — tous indispensables",
+                                              "lo = 127.0.0.1 = loopback — jamais à supprimer ni désactiver",
+                                              "Serveur sans GUI → service networking → fichier /etc/network/interfaces",
+                                              "Machine avec GUI → service NetworkManager → interface GNOME ou nmtui",
+                                              "Config IP statique : remplacer dhcp par static + ajouter address, netmask, gateway",
+                                              "DNS → fichier /etc/resolv.conf → directive nameserver → modification immédiate",
+                                              "Sur système avec GUI : ne pas éditer resolv.conf manuellement — regénéré par NetworkManager",
+                                              "ip a = interfaces et adresses / ip r = table de routage — remplacent ifconfig et route (obsolètes)",
+                                              "ping Linux = infini par défaut → Ctrl+C pour arrêter",
+                                              "Diagnostic en séquence : ip a → ip r → resolv.conf → ping IP → ping nom"
+                                        ]
+                                  }
+                            }
+                      ]
+                },
+                {
+                      "id": "admin-linux-m06",
+                      "fichier": "M06 - Gestion des paquets et dépôt APT.md",
+                      "titre": "Gestion des paquets et dépôt APT",
+                      "emoji": "📦",
+                      "description": "Dépôts, sections, apt vs apt-get, dpkg, installation depuis les sources.",
+                      "sections": [
+                            {
+                                  "id": "m06-notions",
+                                  "titre": "Notions essentielles à retenir",
+                                  "type": "highlight",
+                                  "contenu": {
+                                        "items": [
+                                              "Un dépôt est un serveur hébergeant un catalogue de paquets. APT résout les dépendances et télécharge depuis ces dépôts.",
+                                              "4 sections d'un dépôt Debian : main (100% libres — actif par défaut), contrib (libres mais dépendant de non-libres), non-free (logiciels non libres), non-free-firmware (firmwares non libres — ajouté en Debian 12).",
+                                              "apt vs apt-get : solvers différents — ne jamais les mélanger sur un même système. apt = usage quotidien interactif. apt-get = scripts et tâches avancées. aptitude = plus installé par défaut depuis Debian 10.",
+                                              "apt upgrade = met à jour sans supprimer quoi que ce soit. apt full-upgrade = met à jour ET supprime les paquets obsolètes.",
+                                              "apt remove = désinstalle mais conserve les fichiers de config. apt purge = désinstalle ET supprime tous ses fichiers de config. Toujours utiliser purge pour une désinstallation propre.",
+                                              "dpkg = couche basse d'APT, sans gestion de dépôts ni dépendances. Surtout utilisé pour interroger les paquets installés.",
+                                              "Installation depuis les sources — 3 étapes : ./configure (vérif dépendances, utilisateur standard) → make (compilation, utilisateur standard) → make install (installation, root requis)."
+                                        ]
+                                  }
+                            },
+                            {
+                                  "id": "m06-workflow",
+                                  "titre": "Workflow de mise à jour complet",
+                                  "type": "code",
+                                  "contenu": {
+                                        "description": "À connaître par cœur — séquence complète de mise à jour",
+                                        "langage": "bash",
+                                        "code": "apt update          # 1. Rafraîchir le catalogue des paquets disponibles\napt full-upgrade    # 2. Mettre à jour + nettoyer les paquets obsolètes\napt autoremove      # 3. Supprimer les dépendances devenues inutiles\napt clean           # 4. Vider le cache local des paquets téléchargés"
+                                  }
+                            },
+                            {
+                                  "id": "m06-sources-list",
+                                  "titre": "Structure sources.list — Exemple Debian 12 Bookworm",
+                                  "type": "code",
+                                  "contenu": {
+                                        "description": "Structure d'une ligne : type  URL  branche  sections. Ajouter contrib non-free non-free-firmware pour tous les paquets.",
+                                        "langage": "bash",
+                                        "code": "# /etc/apt/sources.list — Debian 12 Bookworm complet\ndeb http://ftp.fr.debian.org/debian/ bookworm main contrib non-free non-free-firmware\ndeb-src http://ftp.fr.debian.org/debian/ bookworm main contrib non-free non-free-firmware\n\ndeb http://security.debian.org/debian-security bookworm-security main contrib non-free non-free-firmware\ndeb-src http://security.debian.org/debian-security bookworm-security main contrib non-free non-free-firmware\n\ndeb http://ftp.fr.debian.org/debian/ bookworm-updates main contrib non-free non-free-firmware\ndeb-src http://ftp.fr.debian.org/debian/ bookworm-updates main contrib non-free non-free-firmware"
+                                  }
+                            },
+                            {
+                                  "id": "m06-commandes-apt",
+                                  "titre": "Commandes apt et dpkg",
+                                  "type": "table",
+                                  "contenu": {
+                                        "columns": [
+                                              "Commande",
+                                              "Description"
+                                        ],
+                                        "rows": [
+                                              [
+                                                    "apt update",
+                                                    "Rafraîchir le catalogue des paquets (ne met rien à jour)"
+                                              ],
+                                              [
+                                                    "apt install vim",
+                                                    "Installer le paquet vim"
+                                              ],
+                                              [
+                                                    "apt install vim terminator",
+                                                    "Installer plusieurs paquets en une commande"
+                                              ],
+                                              [
+                                                    "apt remove vim",
+                                                    "Désinstaller vim (conserve la config)"
+                                              ],
+                                              [
+                                                    "apt purge vim",
+                                                    "Désinstaller vim + supprimer les fichiers de config"
+                                              ],
+                                              [
+                                                    "apt upgrade",
+                                                    "Mettre à jour les paquets (sans suppression)"
+                                              ],
+                                              [
+                                                    "apt full-upgrade",
+                                                    "Mettre à jour + supprimer les paquets obsolètes"
+                                              ],
+                                              [
+                                                    "apt autoremove",
+                                                    "Supprimer les dépendances devenues inutiles"
+                                              ],
+                                              [
+                                                    "apt clean",
+                                                    "Vider le cache local des paquets téléchargés"
+                                              ],
+                                              [
+                                                    "apt search vim",
+                                                    "Rechercher un paquet dans les dépôts"
+                                              ],
+                                              [
+                                                    "apt show vim",
+                                                    "Afficher les informations détaillées d'un paquet"
+                                              ],
+                                              [
+                                                    "dpkg -l",
+                                                    "Lister tous les paquets installés"
+                                              ],
+                                              [
+                                                    "dpkg -l vim",
+                                                    "Vérifier si vim est installé"
+                                              ],
+                                              [
+                                                    "dpkg -i paquet.deb",
+                                                    "Installer un fichier .deb local"
+                                              ],
+                                              [
+                                                    "dpkg -r vim",
+                                                    "Désinstaller vim via dpkg (sans gestion des dépendances)"
+                                              ]
+                                        ]
+                                  }
+                            },
+                            {
+                                  "id": "m06-comparatif",
+                                  "titre": "Comparatif apt / apt-get / dpkg",
+                                  "type": "table",
+                                  "contenu": {
+                                        "columns": [
+                                              "Outil",
+                                              "Gère les dépôts",
+                                              "Gère les dépendances",
+                                              "Usage recommandé"
+                                        ],
+                                        "rows": [
+                                              [
+                                                    "apt",
+                                                    "✅",
+                                                    "✅",
+                                                    "Usage quotidien interactif"
+                                              ],
+                                              [
+                                                    "apt-get",
+                                                    "✅",
+                                                    "✅",
+                                                    "Scripts, automatisation"
+                                              ],
+                                              [
+                                                    "dpkg",
+                                                    "❌",
+                                                    "❌",
+                                                    "Interrogation, fichiers .deb locaux"
+                                              ]
+                                        ]
+                                  }
+                            },
+                            {
+                                  "id": "m06-tldr",
+                                  "titre": "TL;DR — 10 points essentiels",
+                                  "type": "list",
+                                  "contenu": {
+                                        "items": [
+                                              "Les dépôts = catalogues de paquets — configurés dans /etc/apt/sources.list",
+                                              "4 sections : main (libre) / contrib / non-free / non-free-firmware — seul main est actif par défaut",
+                                              "Toujours faire apt update avant d'installer ou de mettre à jour (rafraîchit le catalogue)",
+                                              "apt upgrade = conservatif / apt full-upgrade = met à jour ET nettoie les obsolètes",
+                                              "apt remove = garde la config / apt purge = supprime tout → préférer purge",
+                                              "Ne jamais mélanger apt et apt-get — solvers différents",
+                                              "aptitude = plus installé par défaut depuis Debian 10",
+                                              "dpkg = couche basse, sans gestion de dépôts ni dépendances — surtout pour interroger",
+                                              "Logs : /var/log/apt/history.log (apt) et /var/log/dpkg.log (dpkg)",
+                                              "Installation depuis les sources : ./configure (vérif dépendances) → make (compilation) → make install (root)"
+                                        ]
+                                  }
+                            }
+                      ]
+                },
+                {
+                      "id": "admin-linux-m07",
+                      "fichier": "M07 - Partitionnement des disques avec fdisk.md",
+                      "titre": "Partitionnement des disques avec fdisk",
+                      "emoji": "💾",
+                      "description": "MBR, GPT, nomenclature Linux, fdisk — création et gestion des partitions.",
+                      "sections": [
+                            {
+                                  "id": "m07-notions",
+                                  "titre": "Notions essentielles à retenir",
+                                  "type": "highlight",
+                                  "contenu": {
+                                        "items": [
+                                              "MBR (1983) : 512 premiers octets du disque — 446 octets chargeur GRUB, 64 octets table partitions, 2 octets signature. Max 4 partitions primaires, max 2,2 To.",
+                                              "La 4ème partition MBR peut être remplacée par une partition étendue contenant jusqu'à 56 partitions logiques → max 59 partitions au total.",
+                                              "GPT (1993) : jusqu'à 128 partitions (toutes primaires), limite théorique 9,44 Zo, pas de limite à 2,2 To. Associé à UEFI.",
+                                              "Nomenclature : /dev/sda (1er disque SCSI/SATA), /dev/sdb (2ème), /dev/sda1 (1ère partition du 1er disque).",
+                                              "Numérotation MBR : 1-4 = primaires/étendue. 5 et + = logiques — TOUJOURS à partir de 5, même si les numéros 1-4 ne sont pas tous utilisés.",
+                                              "La partition étendue (type e dans fdisk) = conteneur uniquement — ne peut pas être formatée ni montée directement.",
+                                              "Types de partitions courants : 83 (Linux standard), 8e (Linux LVM), 82 (Linux swap), fd (Linux RAID).",
+                                              "Aucun changement n'est écrit avant w. On peut tout annuler avec q (quit sans enregistrer).",
+                                              "Pour les disques GPT ou > 2,2 To → utiliser gdisk ou parted au lieu de fdisk."
+                                        ]
+                                  }
+                            },
+                            {
+                                  "id": "m07-mbr-gpt",
+                                  "titre": "MBR vs GPT",
+                                  "type": "table",
+                                  "contenu": {
+                                        "columns": [
+                                              "Critère",
+                                              "MBR",
+                                              "GPT"
+                                        ],
+                                        "rows": [
+                                              [
+                                                    "Année",
+                                                    "1983",
+                                                    "1993"
+                                              ],
+                                              [
+                                                    "Firmware compatible",
+                                                    "BIOS",
+                                                    "UEFI (aussi BIOS en mode hybride)"
+                                              ],
+                                              [
+                                                    "Partitions primaires max",
+                                                    "4",
+                                                    "128 (voire 256)"
+                                              ],
+                                              [
+                                                    "Taille max disque",
+                                                    "2,2 To",
+                                                    "9,44 Zo (théorique)"
+                                              ],
+                                              [
+                                                    "Adressage",
+                                                    "32 bits",
+                                                    "64 bits"
+                                              ],
+                                              [
+                                                    "Partition étendue/logique",
+                                                    "✅ Oui",
+                                                    "❌ Non (toutes primaires)"
+                                              ],
+                                              [
+                                                    "Redondance table partitions",
+                                                    "❌ Non",
+                                                    "✅ Oui (copie en fin de disque)"
+                                              ]
+                                        ]
+                                  }
+                            },
+                            {
+                                  "id": "m07-procedure-fdisk",
+                                  "titre": "Créer des partitions avec fdisk — procédure complète",
+                                  "type": "code",
+                                  "contenu": {
+                                        "description": "Procédure de partitionnement avec fdisk. Rien n'est écrit avant w.",
+                                        "langage": "bash",
+                                        "code": "# 1. Détecter le nouveau disque (si ajouté à chaud en VM)\necho \"- - -\" > /sys/class/scsi_host/host2/scan\nfdisk -l   # vérifier la présence de /dev/sdb\n\n# 2. Entrer dans fdisk\nfdisk /dev/sdb\n\n# Commandes internes :\n# m → aide\n# p → afficher la table actuelle\n# n → créer partition : type p/e → numéro → secteur début → taille (+5G)\n# t → modifier le type (ex. 8e pour LVM, 82 pour swap)\n# l → lister les types disponibles\n# w → ÉCRIRE et quitter (irréversible)\n# q → quitter SANS enregistrer\n\n# 3. Vérifier après sortie\nfdisk -l /dev/sdb"
+                                  }
+                            },
+                            {
+                                  "id": "m07-types-partitions",
+                                  "titre": "Types de partitions courants dans fdisk",
+                                  "type": "table",
+                                  "contenu": {
+                                        "columns": [
+                                              "Code",
+                                              "Type",
+                                              "Usage"
+                                        ],
+                                        "rows": [
+                                              [
+                                                    "83",
+                                                    "Linux",
+                                                    "Partition Linux standard (ext4, xfs…)"
+                                              ],
+                                              [
+                                                    "8e",
+                                                    "Linux LVM",
+                                                    "Volume pour LVM"
+                                              ],
+                                              [
+                                                    "82",
+                                                    "Linux swap",
+                                                    "Partition d'échange"
+                                              ],
+                                              [
+                                                    "fd",
+                                                    "Linux RAID",
+                                                    "Partition pour RAID logiciel"
+                                              ]
+                                        ]
+                                  }
+                            },
+                            {
+                                  "id": "m07-commandes",
+                                  "titre": "Commandes utiles",
+                                  "type": "table",
+                                  "contenu": {
+                                        "columns": [
+                                              "Commande",
+                                              "Description"
+                                        ],
+                                        "rows": [
+                                              [
+                                                    "fdisk -l",
+                                                    "Lister tous les disques et leurs partitions"
+                                              ],
+                                              [
+                                                    "fdisk -l /dev/sda",
+                                                    "Lister les partitions d'un disque spécifique"
+                                              ],
+                                              [
+                                                    "fdisk /dev/sdb",
+                                                    "Entrer en mode édition du disque /dev/sdb"
+                                              ],
+                                              [
+                                                    "lsblk",
+                                                    "Afficher l'arborescence des disques et partitions"
+                                              ],
+                                              [
+                                                    "lsblk -f",
+                                                    "Afficher l'arborescence avec les systèmes de fichiers"
+                                              ],
+                                              [
+                                                    "blkid",
+                                                    "Afficher les UUID et types de systèmes de fichiers"
+                                              ],
+                                              [
+                                                    "echo \"- - -\" > /sys/class/scsi_host/host2/scan",
+                                                    "Rescanner le bus SCSI sans redémarrage"
+                                              ],
+                                              [
+                                                    "parted -l",
+                                                    "Alternative à fdisk -l (outil parted)"
+                                              ]
+                                        ]
+                                  }
+                            },
+                            {
+                                  "id": "m07-tldr",
+                                  "titre": "TL;DR — 10 points essentiels",
+                                  "type": "list",
+                                  "contenu": {
+                                        "items": [
+                                              "MBR (1983) : 512 octets, max 4 primaires, max 2,2 To — BIOS",
+                                              "GPT (1993) : max 128 partitions, pas de limite pratique de taille — UEFI",
+                                              "Disques Linux : /dev/sda, /dev/sdb… — partitions : /dev/sda1, /dev/sda2…",
+                                              "Numéros 1-4 = primaires/étendue — numéros 5+ = logiques (toujours)",
+                                              "La partition étendue = conteneur uniquement — jamais utilisable directement",
+                                              "fdisk /dev/sdb pour éditer — rien n'est écrit avant w",
+                                              "Dans fdisk : n (créer) / d (supprimer) / t (type) / p (afficher) / w (écrire) / q (quitter sans sauvegarder)",
+                                              "Types : 83 = Linux / 8e = LVM / 82 = swap",
+                                              "Disque non détecté après ajout à chaud → rescanner : echo \"- - -\" > /sys/class/scsi_host/host2/scan",
+                                              "Pour les disques GPT ou > 2,2 To → utiliser gdisk ou parted au lieu de fdisk"
+                                        ]
+                                  }
+                            }
+                      ]
+                },
+                {
+                      "id": "admin-linux-m08",
+                      "fichier": "M08 - LVM — Gestion des volumes logiques.md",
+                      "titre": "LVM — Gestion des volumes logiques",
+                      "emoji": "🗄️",
+                      "description": "Architecture LVM en 3 niveaux, création, extension de PV/VG/LV.",
+                      "sections": [
+                            {
+                                  "id": "m08-notions",
+                                  "titre": "Notions essentielles à retenir",
+                                  "type": "highlight",
+                                  "contenu": {
+                                        "items": [
+                                              "LVM = 3 niveaux : PV (Physical Volume) → VG (Volume Group) → LV (Logical Volume). La hiérarchie est le fondement de LVM — à connaître dans l'ordre et par cœur.",
+                                              "Avant pvcreate : typer la partition 8e (Linux LVM) dans fdisk — étape préalable indispensable.",
+                                              "Un PV ne peut appartenir qu'à un seul VG.",
+                                              "Deux chemins d'accès aux LV : /dev/vgSystem/LvHome (simplifié) et /dev/mapper/vgSystem-LvHome (device mapper). Les deux sont valides.",
+                                              "lvextend -L +512M : ajoute une taille fixe. -L 25G : taille absolue. -l +100%FREE : tout l'espace libre.",
+                                              "lvextend -r : appelle automatiquement resize2fs pour étendre le FS ext3/ext4. Sans -r, le LV est agrandi mais le FS ne voit pas le nouvel espace.",
+                                              "lvreduce : dangereux — à éviter. Données peuvent être perdues si la réduction est mal exécutée. Sauvegarder avant, réduire d'abord le FS.",
+                                              "Conventions de nommage : VG = préfixe vg (vgdata, vgsystem), LV = préfixe lv (lvroot, lvhome, lvweb)."
+                                        ]
+                                  }
+                            },
+                            {
+                                  "id": "m08-architecture",
+                                  "titre": "Architecture LVM en 3 niveaux",
+                                  "type": "table",
+                                  "contenu": {
+                                        "columns": [
+                                              "Niveau",
+                                              "Nom complet",
+                                              "Rôle",
+                                              "Commandes"
+                                        ],
+                                        "rows": [
+                                              [
+                                                    "PV",
+                                                    "Physical Volume",
+                                                    "Déclare une partition/disque pour LVM",
+                                                    "pvcreate"
+                                              ],
+                                              [
+                                                    "VG",
+                                                    "Volume Group",
+                                                    "Regroupe plusieurs PV en un pool commun",
+                                                    "vgcreate, vgextend"
+                                              ],
+                                              [
+                                                    "LV",
+                                                    "Logical Volume",
+                                                    "Découpe le VG en volumes utilisables",
+                                                    "lvcreate, lvextend"
+                                              ]
+                                        ]
+                                  }
+                            },
+                            {
+                                  "id": "m08-creation",
+                                  "titre": "Créer une infrastructure LVM complète",
+                                  "type": "code",
+                                  "contenu": {
+                                        "description": "Procédure de référence — 5 étapes : fdisk → pvcreate → vgcreate → lvcreate → mkfs + mount",
+                                        "langage": "bash",
+                                        "code": "# Étape 1 — Préparer la partition avec fdisk\nfdisk /dev/sdb\n# n → p → 1 → Entrée → Entrée (tout le disque)\n# t → 8e (Linux LVM)\n# w\n\n# Étape 2 — Créer le volume physique\npvcreate /dev/sdb1\n\n# Étape 3 — Créer le groupe de volumes\nvgcreate vgdata /dev/sdb1\n\n# Étape 4 — Créer les volumes logiques\nlvcreate -n lvweb -L 2G vgdata\nlvcreate -n lvbdd -L 5G vgdata\n\n# Étape 5 — Formater et monter\nmkfs.ext4 /dev/vgdata/lvweb\nmount /dev/vgdata/lvweb /var/www"
+                                  }
+                            },
+                            {
+                                  "id": "m08-extension",
+                                  "titre": "Étendre un VG et un LV",
+                                  "type": "code",
+                                  "contenu": {
+                                        "description": "Ajouter un nouveau disque au VG puis étendre un LV avec redimensionnement automatique du FS",
+                                        "langage": "bash",
+                                        "code": "# Étendre le VG avec un nouveau disque\necho \"- - -\" > /sys/class/scsi_host/host2/scan   # détecter le nouveau disque\nfdisk /dev/sdc   # n → p → 1 → Entrée → Entrée → t → 8e → w\npvcreate /dev/sdc1\nvgextend vgdata /dev/sdc1\n\n# Étendre un LV (avec redimensionnement automatique du FS)\nlvextend -r -L +3G /dev/vgdata/lvweb          # ajouter 3 Go\nlvextend -r -L 25G /dev/vgdata/lvbdd          # fixer à 25 Go\nlvextend -r -l +100%FREE /dev/vgdata/lvweb    # tout l'espace libre"
+                                  }
+                            },
+                            {
+                                  "id": "m08-commandes",
+                                  "titre": "Commandes LVM",
+                                  "type": "table",
+                                  "contenu": {
+                                        "columns": [
+                                              "Commande",
+                                              "Description"
+                                        ],
+                                        "rows": [
+                                              [
+                                                    "pvcreate /dev/sdb1",
+                                                    "Déclarer une partition comme volume physique"
+                                              ],
+                                              [
+                                                    "vgcreate vgdata /dev/sdb1",
+                                                    "Créer un groupe de volumes"
+                                              ],
+                                              [
+                                                    "vgcreate vgdata /dev/sdb1 /dev/sdc1",
+                                                    "Créer un VG avec plusieurs PV"
+                                              ],
+                                              [
+                                                    "lvcreate -n lvweb -L 2G vgdata",
+                                                    "Créer un LV de 2 Go dans vgdata"
+                                              ],
+                                              [
+                                                    "vgextend vgdata /dev/sdc1",
+                                                    "Ajouter un PV à un VG existant"
+                                              ],
+                                              [
+                                                    "lvextend -r -L +512M /dev/vgdata/lvweb",
+                                                    "Étendre un LV de 512 Mo (+ FS)"
+                                              ],
+                                              [
+                                                    "lvextend -r -L 25G /dev/vgdata/lvbdd",
+                                                    "Fixer la taille d'un LV à 25 Go (+ FS)"
+                                              ],
+                                              [
+                                                    "lvextend -r -l +100%FREE /dev/vgdata/lvweb",
+                                                    "Utiliser tout l'espace libre du VG"
+                                              ],
+                                              [
+                                                    "pvs",
+                                                    "Résumé de tous les volumes physiques"
+                                              ],
+                                              [
+                                                    "vgs",
+                                                    "Résumé de tous les groupes de volumes"
+                                              ],
+                                              [
+                                                    "lvs",
+                                                    "Résumé de tous les volumes logiques"
+                                              ],
+                                              [
+                                                    "pvdisplay /dev/sdb1",
+                                                    "Détails d'un PV spécifique"
+                                              ],
+                                              [
+                                                    "vgdisplay vgdata",
+                                                    "Détails d'un VG spécifique"
+                                              ],
+                                              [
+                                                    "lvdisplay /dev/vgdata/lvweb",
+                                                    "Détails d'un LV spécifique"
+                                              ],
+                                              [
+                                                    "lvm",
+                                                    "Ouvrir le shell interactif LVM"
+                                              ]
+                                        ]
+                                  }
+                            },
+                            {
+                                  "id": "m08-tldr",
+                                  "titre": "TL;DR — 10 points essentiels",
+                                  "type": "list",
+                                  "contenu": {
+                                        "items": [
+                                              "LVM = 3 niveaux : PV (physique) → VG (pool) → LV (utilisable)",
+                                              "Avant pvcreate : typer la partition 8e dans fdisk",
+                                              "Séquence de création : pvcreate → vgcreate → lvcreate",
+                                              "Un PV ne peut appartenir qu'à un seul VG",
+                                              "Étendre un VG : nouveau disque → pvcreate → vgextend",
+                                              "lvextend -r = étend le LV ET redimensionne le FS automatiquement",
+                                              "-L +3G = ajouter 3 Go / -L 25G = fixer à 25 Go / -l +100%FREE = tout l'espace libre",
+                                              "Deux chemins d'accès : /dev/vgdata/lvweb et /dev/mapper/vgdata-lvweb",
+                                              "Résumé : pvs / vgs / lvs — Détail : pvdisplay / vgdisplay / lvdisplay",
+                                              "lvreduce est dangereux — sauvegarder avant, réduire le FS d'abord, éviter en prod"
+                                        ]
+                                  }
+                            }
+                      ]
+                },
+                {
+                      "id": "admin-linux-m09",
+                      "fichier": "M09 - Systèmes de fichiers, montage & fstab.md",
+                      "titre": "Systèmes de fichiers, montage & fstab",
+                      "emoji": "🗂️",
+                      "description": "Inode, superbloc, EXT4, formatage, montage, /etc/fstab.",
+                      "sections": [
+                            {
+                                  "id": "m09-notions",
+                                  "titre": "Notions essentielles à retenir",
+                                  "type": "highlight",
+                                  "contenu": {
+                                        "items": [
+                                              "L'inode NE CONTIENT PAS le nom du fichier — le nom est dans le répertoire parent. L'inode contient : type, droits, taille, propriétaire (UID/GID), timestamps, numéros des blocs de données.",
+                                              "Superbloc = métadonnées globales du FS (taille, état, UUID, date création…) — dupliqué à plusieurs endroits pour la résilience. Si corrompu, les copies permettent la récupération.",
+                                              "7 éléments fondamentaux d'un FS Linux : Superbloc, Inode, Bloc de données, Bloc d'indirection, Table des inodes, Table des inodes libres, Table des blocs libres.",
+                                              "Famille EXT : EXT2 (sans journalisation) → EXT3 (avec journalisation) → EXT4 (réécriture complète, par défaut Debian, journalisé, 16 To max par fichier, 4 milliards de fichiers max).",
+                                              "UUID attribué lors du formatage. Utiliser les UUID dans fstab plutôt que /dev/sda1 (peut changer si ordre de détection change).",
+                                              "Le dossier de montage doit être VIDE — sinon son contenu devient inaccessible tant que le montage est actif.",
+                                              "/etc/fstab : configure les montages automatiques. Une erreur peut empêcher le système de démarrer. TOUJOURS faire une copie avant modification. Tester avec mount [point] avant de redémarrer."
+                                        ]
+                                  }
+                            },
+                            {
+                                  "id": "m09-ext",
+                                  "titre": "Famille EXT — caractéristiques",
+                                  "type": "table",
+                                  "contenu": {
+                                        "columns": [
+                                              "FS",
+                                              "Journalisation",
+                                              "Caractéristique principale"
+                                        ],
+                                        "rows": [
+                                              [
+                                                    "EXT2",
+                                                    "❌ Non",
+                                                    "Historique — sans journalisation"
+                                              ],
+                                              [
+                                                    "EXT3",
+                                                    "✅ Oui",
+                                                    "Ajout de la journalisation à EXT2"
+                                              ],
+                                              [
+                                                    "EXT4",
+                                                    "✅ Oui",
+                                                    "Réécriture complète, plus performant, défaut Debian"
+                                              ]
+                                        ]
+                                  }
+                            },
+                            {
+                                  "id": "m09-procedure-montage",
+                                  "titre": "Formater et monter un volume logique",
+                                  "type": "code",
+                                  "contenu": {
+                                        "description": "Procédure complète : formatage, label, point de montage, montage, fstab",
+                                        "langage": "bash",
+                                        "code": "# 1. Formater en ext4\nmkfs.ext4 /dev/vgdata/lvweb\n\n# 2. (Optionnel) Ajouter ou modifier un label\ntune2fs -L WWW /dev/vgdata/lvweb\n\n# 3. Créer le point de montage\nmkdir -p /var/www\n\n# 4. Monter manuellement\nmount -t ext4 /dev/vgdata/lvweb /var/www\n\n# 5. Vérifier\nlsblk\nfindmnt /var/www\n\n# 6. Montage permanent dans /etc/fstab\ncp /etc/fstab /etc/fstab.bak          # TOUJOURS sauvegarder avant\nblkid /dev/vgdata/lvweb               # récupérer l'UUID\n# Ajouter dans /etc/fstab :\n# /dev/vgdata/lvweb     /var/www     ext4     defaults     0     2\n# LABEL=BDD             /srv/bdd     ext4     defaults     0     2\n\n# 7. Tester sans redémarrer\nmount /var/www"
+                                  }
+                            },
+                            {
+                                  "id": "m09-fstab",
+                                  "titre": "Structure du fichier /etc/fstab",
+                                  "type": "table",
+                                  "contenu": {
+                                        "columns": [
+                                              "Colonne",
+                                              "Rôle",
+                                              "Exemple"
+                                        ],
+                                        "rows": [
+                                              [
+                                                    "Périphérique",
+                                                    "Ce qu'on monte (chemin, UUID ou LABEL)",
+                                                    "/dev/vgdata/lvweb"
+                                              ],
+                                              [
+                                                    "Point de montage",
+                                                    "Dossier cible",
+                                                    "/var/www"
+                                              ],
+                                              [
+                                                    "Type",
+                                                    "Système de fichiers",
+                                                    "ext4, swap, ntfs"
+                                              ],
+                                              [
+                                                    "Options",
+                                                    "Comportement du montage",
+                                                    "defaults, ro, noexec"
+                                              ],
+                                              [
+                                                    "dump",
+                                                    "Sauvegarde par dump (0=non, 1=oui)",
+                                                    "0"
+                                              ],
+                                              [
+                                                    "pass",
+                                                    "Ordre fsck au démarrage (0=non, 1=racine, 2=autres)",
+                                                    "1 ou 2"
+                                              ]
+                                        ]
+                                  }
+                            },
+                            {
+                                  "id": "m09-commandes",
+                                  "titre": "Commandes utiles",
+                                  "type": "table",
+                                  "contenu": {
+                                        "columns": [
+                                              "Commande",
+                                              "Description"
+                                        ],
+                                        "rows": [
+                                              [
+                                                    "mkfs.ext4 /dev/vgdata/lvweb",
+                                                    "Formater en ext4"
+                                              ],
+                                              [
+                                                    "mkfs.ext4 -L WWW /dev/vgdata/lvweb",
+                                                    "Formater en ext4 avec un label"
+                                              ],
+                                              [
+                                                    "tune2fs -L WWW /dev/vgdata/lvweb",
+                                                    "Modifier le label sans reformater"
+                                              ],
+                                              [
+                                                    "resize2fs /dev/vgdata/lvweb",
+                                                    "Redimensionner le FS après extension du LV"
+                                              ],
+                                              [
+                                                    "fsck /dev/sda1",
+                                                    "Vérifier l'intégrité d'un FS (à faire hors montage)"
+                                              ],
+                                              [
+                                                    "mount -t ext4 /dev/vgdata/lvweb /var/www",
+                                                    "Monter un FS ext4"
+                                              ],
+                                              [
+                                                    "mount /var/www",
+                                                    "Monter selon la config fstab"
+                                              ],
+                                              [
+                                                    "umount /var/www",
+                                                    "Démonter par point de montage"
+                                              ],
+                                              [
+                                                    "blkid",
+                                                    "UUID, type, label de toutes les partitions/LV"
+                                              ],
+                                              [
+                                                    "lsblk -f",
+                                                    "Vue hiérarchique + UUID, label, espace utilisé"
+                                              ],
+                                              [
+                                                    "findmnt /var/www",
+                                                    "Info sur un point de montage spécifique"
+                                              ],
+                                              [
+                                                    "df -h",
+                                                    "Espace utilisé/disponible de tous les FS montés"
+                                              ],
+                                              [
+                                                    "du -hs /etc",
+                                                    "Taille totale du répertoire /etc"
+                                              ],
+                                              [
+                                                    "stat /etc/apt/sources.list",
+                                                    "Afficher le contenu de l'inode d'un fichier"
+                                              ]
+                                        ]
+                                  }
+                            },
+                            {
+                                  "id": "m09-tldr",
+                                  "titre": "TL;DR — 10 points essentiels",
+                                  "type": "list",
+                                  "contenu": {
+                                        "items": [
+                                              "Inode = métadonnées d'un fichier (droits, taille, proprio…) — SANS le nom",
+                                              "Superbloc = métadonnées globales du FS — DUPLIQUÉ pour sécurité",
+                                              "EXT4 = FS par défaut Debian — journalisé — 16 To max par fichier",
+                                              "Formatage : mkfs.ext4 /dev/vgdata/lvweb — efface toutes les données",
+                                              "Changer le label SANS reformater : tune2fs -L NOM /dev/…",
+                                              "Montage manuel : mount -t ext4 /dev/vgdata/lvweb /var/www",
+                                              "Montage automatique : configurer /etc/fstab — TOUJOURS sauvegarder avant",
+                                              "Utiliser UUID ou LABEL dans fstab — pas /dev/sdX (peut changer)",
+                                              "Tester fstab avec mount /point avant de redémarrer",
+                                              "Commandes info : blkid (UUID/label) / lsblk (hiérarchie) / df -h (espace) / findmnt (montages actifs)"
+                                        ]
+                                  }
+                            }
+                      ]
+                },
+                {
+                      "id": "admin-linux-m10",
+                      "fichier": "M10 - Gestion des utilisateurs & groupes.md",
+                      "titre": "Gestion des utilisateurs & groupes",
+                      "emoji": "👥",
+                      "description": "Types d'utilisateurs, fichiers système, useradd, groupadd, su, sudo.",
+                      "sections": [
+                            {
+                                  "id": "m10-notions",
+                                  "titre": "Notions essentielles à retenir",
+                                  "type": "highlight",
+                                  "contenu": {
+                                        "items": [
+                                              "3 types d'utilisateurs : root (UID 0), utilisateurs de service/daemons (UID 1-999), utilisateurs humains (UID 1000+).",
+                                              "Linux identifie les utilisateurs par leur UID (numérique), pas par leur nom — crucial en NFS, LDAP, migrations.",
+                                              "Groupe principal = groupe par défaut à la connexion (stocké dans /etc/passwd). Groupes secondaires = groupes supplémentaires (stockés dans /etc/group).",
+                                              "4 fichiers système : /etc/passwd (7 champs), /etc/shadow (9 champs, MDP hashés), /etc/group (4 champs), /etc/gshadow. NE JAMAIS modifier directement — toujours utiliser les commandes dédiées.",
+                                              "/etc/passwd — 7 champs : login : x : UID : GID : Commentaire : /home/login : /bin/bash",
+                                              "/etc/shadow : ! devant le hash = compte verrouillé. $6$ = SHA-512.",
+                                              "su - (avec tiret) = charge l'environnement complet. su (sans tiret) = PATH incomplet → useradd, groupadd introuvables — piège classique.",
+                                              "sudo = demande le MDP de l'utilisateur (pas de root). L'utilisateur doit être dans le groupe sudo ou /etc/sudoers.",
+                                              "usermod -G groupe login (sans -a) ÉCRASE la liste des groupes secondaires. Toujours : usermod -a -G groupe login.",
+                                              "/usr/sbin/nologin comme shell = interdit toute connexion interactive — bonne pratique pour les utilisateurs techniques."
+                                        ]
+                                  }
+                            },
+                            {
+                                  "id": "m10-fichiers-systeme",
+                                  "titre": "Les 4 fichiers système",
+                                  "type": "table",
+                                  "contenu": {
+                                        "columns": [
+                                              "Fichier",
+                                              "Champs",
+                                              "Contenu principal"
+                                        ],
+                                        "rows": [
+                                              [
+                                                    "/etc/passwd",
+                                                    "7 (login:x:UID:GID:Commentaire:home:shell)",
+                                                    "Comptes utilisateurs — mot de passe fictif x"
+                                              ],
+                                              [
+                                                    "/etc/shadow",
+                                                    "9 (login:hash:dates:min:max:avert:inact:exp:réservé)",
+                                                    "Mots de passe hashés ($6$=SHA-512) — root uniquement"
+                                              ],
+                                              [
+                                                    "/etc/group",
+                                                    "4 (nom:x:GID:membres)",
+                                                    "Groupes et leurs membres secondaires"
+                                              ],
+                                              [
+                                                    "/etc/gshadow",
+                                                    "4 (nom:mdp:admins:membres)",
+                                                    "Mots de passe de groupes — root uniquement"
+                                              ]
+                                        ]
+                                  }
+                            },
+                            {
+                                  "id": "m10-procedure-user",
+                                  "titre": "Créer un utilisateur complet",
+                                  "type": "code",
+                                  "contenu": {
+                                        "description": "Procédure complète de création d'utilisateur avec groupe, mot de passe et expiration",
+                                        "langage": "bash",
+                                        "code": "# Créer l'utilisateur avec répertoire home, shell bash, groupe secondaire\nuseradd -m -s /bin/bash -G informatique -u 2001 claude\n\n# Définir le commentaire\nusermod -c \"Administrateur Système\" claude\n\n# Définir le mot de passe\npasswd claude\n\n# Forcer le changement de MDP à la première connexion\npasswd -e claude\n\n# Verrouiller / déverrouiller un compte\npasswd -l stagiaire    # verrouiller (! dans /etc/shadow)\npasswd -u stagiaire    # déverrouiller\nusermod -L stagiaire   # équivalent\nusermod -U stagiaire   # équivalent\n\n# Supprimer le compte ET son répertoire home\nuserdel -r stagiaire"
+                                  }
+                            },
+                            {
+                                  "id": "m10-commandes-users",
+                                  "titre": "Commandes de gestion des utilisateurs",
+                                  "type": "table",
+                                  "contenu": {
+                                        "columns": [
+                                              "Commande",
+                                              "Description"
+                                        ],
+                                        "rows": [
+                                              [
+                                                    "useradd -m -s /bin/bash -G grp -u 2001 login",
+                                                    "Créer un utilisateur complet"
+                                              ],
+                                              [
+                                                    "usermod -s /bin/bash login",
+                                                    "Changer le shell"
+                                              ],
+                                              [
+                                                    "usermod -c \"Commentaire\" login",
+                                                    "Ajouter un commentaire"
+                                              ],
+                                              [
+                                                    "usermod -e 2025-12-31 login",
+                                                    "Définir une date d'expiration du compte"
+                                              ],
+                                              [
+                                                    "usermod -a -G sudo login",
+                                                    "Ajouter au groupe sudo (sans écraser les autres)"
+                                              ],
+                                              [
+                                                    "usermod -G grp1,grp2 login",
+                                                    "Remplacer la liste des groupes secondaires"
+                                              ],
+                                              [
+                                                    "usermod -L login",
+                                                    "Verrouiller le compte"
+                                              ],
+                                              [
+                                                    "usermod -U login",
+                                                    "Déverrouiller le compte"
+                                              ],
+                                              [
+                                                    "userdel login",
+                                                    "Supprimer le compte (home conservé)"
+                                              ],
+                                              [
+                                                    "userdel -r login",
+                                                    "Supprimer le compte ET le home"
+                                              ],
+                                              [
+                                                    "passwd login",
+                                                    "Définir/changer le MDP d'un utilisateur"
+                                              ],
+                                              [
+                                                    "passwd -e login",
+                                                    "Forcer le changement MDP à la prochaine connexion"
+                                              ],
+                                              [
+                                                    "passwd -l login",
+                                                    "Verrouiller le MDP"
+                                              ],
+                                              [
+                                                    "passwd -u login",
+                                                    "Déverrouiller le MDP"
+                                              ],
+                                              [
+                                                    "id login",
+                                                    "UID, GID principal et groupes secondaires"
+                                              ],
+                                              [
+                                                    "groupadd informatique",
+                                                    "Créer le groupe informatique"
+                                              ],
+                                              [
+                                                    "groupadd -g 2000 direction",
+                                                    "Créer avec un GID précis"
+                                              ],
+                                              [
+                                                    "groupmod -n techniciens technicien",
+                                                    "Renommer un groupe"
+                                              ],
+                                              [
+                                                    "groupdel techniciens",
+                                                    "Supprimer un groupe (doit être vide)"
+                                              ],
+                                              [
+                                                    "gpasswd -a jdoe informatique",
+                                                    "Ajouter un utilisateur à un groupe secondaire"
+                                              ],
+                                              [
+                                                    "gpasswd -d jdoe informatique",
+                                                    "Retirer un utilisateur d'un groupe"
+                                              ],
+                                              [
+                                                    "su -",
+                                                    "Connexion root avec environnement complet"
+                                              ],
+                                              [
+                                                    "su - jdoe",
+                                                    "Changer d'identité vers jdoe avec son environnement"
+                                              ],
+                                              [
+                                                    "sudo commande",
+                                                    "Exécuter une commande en tant que root"
+                                              ],
+                                              [
+                                                    "sudo -i",
+                                                    "Ouvrir un shell root complet (MDP utilisateur)"
+                                              ]
+                                        ]
+                                  }
+                            },
+                            {
+                                  "id": "m10-tldr",
+                                  "titre": "TL;DR — 10 points essentiels",
+                                  "type": "list",
+                                  "contenu": {
+                                        "items": [
+                                              "3 types d'utilisateurs : root (0), services (1-999), humains (1000+)",
+                                              "/etc/passwd = 7 champs — /etc/shadow = MDP hashés — jamais éditer directement",
+                                              "! dans /etc/shadow = compte VERROUILLÉ — $6$ = algorithme SHA-512",
+                                              "useradd -m -s /bin/bash -G groupe login — -m est indispensable pour créer le home",
+                                              "usermod -a -G groupe login — -a OBLIGATOIRE pour ne pas écraser les groupes existants",
+                                              "passwd -e = forcer changement MDP / passwd -l = verrouiller / passwd -u = déverrouiller",
+                                              "su - (avec tiret) = environnement complet — su sans tiret = PATH incomplet",
+                                              "sudo = élévation sans MDP root — l'utilisateur doit être dans le groupe sudo ou /etc/sudoers",
+                                              "gpasswd -a user groupe = ajouter / gpasswd -d user groupe = retirer d'un groupe secondaire",
+                                              "userdel -r login = supprimer compte ET home — sans -r le home reste sur le disque"
+                                        ]
+                                  }
+                            }
+                      ]
+                },
+                {
+                      "id": "admin-linux-m11",
+                      "fichier": "M11 - Droits, permissions & droits spéciaux.md",
+                      "titre": "Droits, permissions & droits spéciaux",
+                      "emoji": "🔒",
+                      "description": "Modèle UGO, notation octale, chmod, chown, umask, SetUID, SetGID, Sticky Bit.",
+                      "sections": [
+                            {
+                                  "id": "m11-notions",
+                                  "titre": "Notions essentielles à retenir",
+                                  "type": "highlight",
+                                  "contenu": {
+                                        "items": [
+                                              "Modèle UGO : chaque fichier/répertoire a 3 groupes de droits (User, Group, Other) × 3 droits (r=4, w=2, x=1).",
+                                              "r sur fichier = lire. w sur fichier = modifier. x sur fichier = exécuter. r sur répertoire = lister (ls). w sur répertoire = créer/supprimer/renommer. x sur répertoire = traverser (cd).",
+                                              "Notation octale : r=4, w=2, x=1, aucun=0. rwx=7, rw-=6, r-x=5, r--=4. chmod 755 = rwxr-xr-x / chmod 644 = rw-r--r--.",
+                                              "umask soustrait des droits maximaux à la création. Fichier : 666-umask. Répertoire : 777-umask. umask 022 → fichier=644, dossier=755.",
+                                              "Umask temporaire (session) : umask 027. Permanent : ajouter dans ~/.bashrc.",
+                                              "Seul root peut changer le propriétaire (chown). Le propriétaire peut changer le groupe.",
+                                              "chmod +X (majuscule) = ajoute x uniquement aux répertoires. chmod +x (minuscule) = ajoute x à tout.",
+                                              "SetUID (u+s) : exécution avec droits du propriétaire. Ex. : /usr/bin/passwd. SetGID (g+s) sur dossier : nouveaux fichiers héritent du groupe. Sticky Bit (o+t) sur dossier : seul proprio ou root peut supprimer.",
+                                              "s/t minuscule = droit spécial + x présent. S/T majuscule = droit spécial + x ABSENT."
+                                        ]
+                                  }
+                            },
+                            {
+                                  "id": "m11-octal",
+                                  "titre": "Exemples notation octale",
+                                  "type": "table",
+                                  "contenu": {
+                                        "columns": [
+                                              "Notation symbolique",
+                                              "Notation octale",
+                                              "Signification"
+                                        ],
+                                        "rows": [
+                                              [
+                                                    "rwxrwxrwx",
+                                                    "777",
+                                                    "Tous les droits pour tous"
+                                              ],
+                                              [
+                                                    "rwxr-xr-x",
+                                                    "755",
+                                                    "Dossier standard"
+                                              ],
+                                              [
+                                                    "rw-r--r--",
+                                                    "644",
+                                                    "Fichier standard"
+                                              ],
+                                              [
+                                                    "rwxrwx---",
+                                                    "770",
+                                                    "Partage groupe"
+                                              ],
+                                              [
+                                                    "rw-rw-r--",
+                                                    "664",
+                                                    "Fichier partagé groupe"
+                                              ],
+                                              [
+                                                    "rwx------",
+                                                    "700",
+                                                    "Privé propriétaire"
+                                              ]
+                                        ]
+                                  }
+                            },
+                            {
+                                  "id": "m11-droits-speciaux",
+                                  "titre": "Droits spéciaux — récapitulatif",
+                                  "type": "table",
+                                  "contenu": {
+                                        "columns": [
+                                              "Droit",
+                                              "Position",
+                                              "Commande",
+                                              "Effet fichier",
+                                              "Effet dossier"
+                                        ],
+                                        "rows": [
+                                              [
+                                                    "SetUID",
+                                                    "x utilisateur → s/S",
+                                                    "chmod u+s",
+                                                    "Exécution avec droits du proprio",
+                                                    "(peu utilisé)"
+                                              ],
+                                              [
+                                                    "SetGID",
+                                                    "x groupe → s/S",
+                                                    "chmod g+s",
+                                                    "Exécution avec droits du groupe",
+                                                    "Héritage du groupe pour nouveaux fichiers"
+                                              ],
+                                              [
+                                                    "Sticky Bit",
+                                                    "x autres → t/T",
+                                                    "chmod o+t",
+                                                    "Stockage en mémoire (archaïque)",
+                                                    "Seul proprio ou root peut supprimer"
+                                              ]
+                                        ]
+                                  }
+                            },
+                            {
+                                  "id": "m11-umask",
+                                  "titre": "Calcul umask — tableau de référence",
+                                  "type": "table",
+                                  "contenu": {
+                                        "columns": [
+                                              "umask",
+                                              "Fichiers (666-umask)",
+                                              "Dossiers (777-umask)"
+                                        ],
+                                        "rows": [
+                                              [
+                                                    "022",
+                                                    "644 (rw-r--r--)",
+                                                    "755 (rwxr-xr-x)"
+                                              ],
+                                              [
+                                                    "027",
+                                                    "640 (rw-r-----)",
+                                                    "750 (rwxr-x---)"
+                                              ],
+                                              [
+                                                    "002",
+                                                    "664 (rw-rw-r--)",
+                                                    "775 (rwxrwxr-x)"
+                                              ],
+                                              [
+                                                    "077",
+                                                    "600 (rw-------)",
+                                                    "700 (rwx------)"
+                                              ]
+                                        ]
+                                  }
+                            },
+                            {
+                                  "id": "m11-procedure-partage",
+                                  "titre": "Dossier partagé avec SetGID + Sticky Bit",
+                                  "type": "code",
+                                  "contenu": {
+                                        "description": "Mise en place d'un dossier partagé entre membres d'un groupe avec héritage de groupe et protection contre suppression",
+                                        "langage": "bash",
+                                        "code": "mkdir /partage\nchown :informatique /partage          # groupe propriétaire = informatique\nchmod g+w /partage                    # écriture pour le groupe\nchmod g+s /partage                    # SetGID : héritage du groupe\nchmod o+t /partage                    # Sticky : seul proprio peut supprimer\nls -ld /partage\n# drwxrwx--t ... informatique /partage\n\n# Commandes chmod courantes :\nchmod 755 fichier                     # notation octale\nchmod g+w,o-rx /data/commun          # notation symbolique\nchmod -R g+w dossier                  # récursif\nchmod -R +X dossier                   # x uniquement sur les répertoires\nchown user:groupe fichier             # changer proprio ET groupe\nchown :groupe fichier                 # changer groupe uniquement\numask 027                             # modifier temporairement le masque"
+                                  }
+                            },
+                            {
+                                  "id": "m11-tldr",
+                                  "titre": "TL;DR — 10 points essentiels",
+                                  "type": "list",
+                                  "contenu": {
+                                        "items": [
+                                              "Droits Linux = UGO × rwx — r=4 / w=2 / x=1 — toujours dans cet ordre",
+                                              "x sur fichier = EXÉCUTER / x sur répertoire = TRAVERSER (cd)",
+                                              "chmod 755 = rwxr-xr-x / chmod 644 = rw-r--r-- — apprendre par cœur",
+                                              "chmod +X (majuscule) = x sur répertoires uniquement — usage sécurisé",
+                                              "umask : fichier = 666-umask / dossier = 777-umask — umask 022 → 644/755",
+                                              "Umask permanent → ajouter dans ~/.bashrc",
+                                              "SetUID (u+s) : exécution avec droits du proprio — ex. /usr/bin/passwd",
+                                              "SetGID (g+s) sur dossier : nouveaux fichiers HÉRITENT DU GROUPE du dossier",
+                                              "Sticky Bit (o+t) sur dossier : seul PROPRIO ou root peut supprimer",
+                                              "s/t = droit spécial + x présent / S/T = droit spécial + x ABSENT"
+                                        ]
+                                  }
+                            }
+                      ]
+                },
+                {
+                      "id": "admin-linux-m12",
+                      "fichier": "M12 - Logs, planification & analyse système.md",
+                      "titre": "Logs, planification & analyse système",
+                      "emoji": "📋",
+                      "description": "journald, rsyslog, logrotate, cron, anacron, analyse système.",
+                      "sections": [
+                            {
+                                  "id": "m12-notions",
+                                  "titre": "Notions essentielles à retenir",
+                                  "type": "highlight",
+                                  "contenu": {
+                                        "items": [
+                                              "Deux systèmes de journalisation coexistants : journald (Systemd, base binaire, VOLATILE par défaut dans /run/log/journal) et rsyslog (historique, fichiers texte dans /var/log/, PERSISTANT).",
+                                              "Pour rendre journald persistant : mkdir /var/log/journal puis redémarrer journald.",
+                                              "journald par défaut : max 10% du système de fichiers. Config dans /etc/systemd/journald.conf. SystemMaxUse=500M et SystemMaxFileSize=50M pour limiter la taille.",
+                                              "rsyslog : facility.niveau → fichier. Facilities : auth, authpriv, daemon, kern, mail, user, cron, * (tout), none (aucun). - devant le fichier = écriture asynchrone.",
+                                              "8 niveaux de priorité rsyslog (du plus grave au moins grave) : emerg, alert, crit, err, warning, notice, info, debug. journalctl -p err affiche err ET tous les niveaux plus graves.",
+                                              "Syntaxe cron : 5 champs — min (0-59) heure (0-23) jmois (1-31) mois (1-12) jsemaine (0-7, 0 et 7 = dimanche). Caractères : * (tous), , (liste), - (intervalle), / (répétition).",
+                                              "cron ne rattrape pas les tâches manquées. anacron les rattrape pour daily/weekly/monthly.",
+                                              "logrotate gère la rotation des logs rsyslog — /etc/logrotate.conf et /etc/logrotate.d/[service]."
+                                        ]
+                                  }
+                            },
+                            {
+                                  "id": "m12-journald-rsyslog",
+                                  "titre": "journald vs rsyslog",
+                                  "type": "table",
+                                  "contenu": {
+                                        "columns": [
+                                              "Système",
+                                              "Type",
+                                              "Stockage",
+                                              "Persistance"
+                                        ],
+                                        "rows": [
+                                              [
+                                                    "journald",
+                                                    "Moderne (Systemd)",
+                                                    "Base de données binaire",
+                                                    "VOLATILE par défaut (/run/log/journal)"
+                                              ],
+                                              [
+                                                    "rsyslog",
+                                                    "Historique (syslog)",
+                                                    "Fichiers texte (/var/log/)",
+                                                    "PERSISTANTE"
+                                              ]
+                                        ]
+                                  }
+                            },
+                            {
+                                  "id": "m12-niveaux-rsyslog",
+                                  "titre": "Niveaux de priorité rsyslog (du plus au moins grave)",
+                                  "type": "table",
+                                  "contenu": {
+                                        "columns": [
+                                              "Niveau",
+                                              "Signification"
+                                        ],
+                                        "rows": [
+                                              [
+                                                    "emerg",
+                                                    "Système inutilisable"
+                                              ],
+                                              [
+                                                    "alert",
+                                                    "Action immédiate requise"
+                                              ],
+                                              [
+                                                    "crit",
+                                                    "Condition critique"
+                                              ],
+                                              [
+                                                    "err",
+                                                    "Erreur"
+                                              ],
+                                              [
+                                                    "warning",
+                                                    "Avertissement"
+                                              ],
+                                              [
+                                                    "notice",
+                                                    "Événement notable normal"
+                                              ],
+                                              [
+                                                    "info",
+                                                    "Information"
+                                              ],
+                                              [
+                                                    "debug",
+                                                    "Débogage"
+                                              ]
+                                        ]
+                                  }
+                            },
+                            {
+                                  "id": "m12-cron-anacron",
+                                  "titre": "cron vs anacron et dossiers système",
+                                  "type": "table",
+                                  "contenu": {
+                                        "columns": [
+                                              "Critère",
+                                              "cron",
+                                              "anacron"
+                                        ],
+                                        "rows": [
+                                              [
+                                                    "Exécution si machine éteinte",
+                                                    "❌ Tâche manquée",
+                                                    "✅ Récupère les tâches manquées"
+                                              ],
+                                              [
+                                                    "Granularité",
+                                                    "À la minute",
+                                                    "Journalier minimum"
+                                              ],
+                                              [
+                                                    "Usage",
+                                                    "Serveurs allumés 24/7",
+                                                    "Postes de travail / serveurs non permanents"
+                                              ],
+                                              [
+                                                    "Config",
+                                                    "/etc/crontab",
+                                                    "/etc/anacrontab"
+                                              ]
+                                        ]
+                                  }
+                            },
+                            {
+                                  "id": "m12-procedure-cron",
+                                  "titre": "Crontab et journald — procédures",
+                                  "type": "code",
+                                  "contenu": {
+                                        "description": "Rendre journald persistant, créer des tâches cron, logrotate",
+                                        "langage": "bash",
+                                        "code": "# Rendre journald persistant\nmkdir /var/log/journal\nvi /etc/systemd/journald.conf\n# Décommenter : SystemMaxUse=500M\n# Décommenter : SystemMaxFileSize=50M\nsystemctl restart systemd-journald\n\n# Crontab utilisateur\ncrontab -l          # lister les tâches existantes\ncrontab -e          # éditer la crontab\ncrontab -r          # supprimer toute la crontab (ATTENTION : irréversible)\n\n# Syntaxe : min heure jmois mois jsemaine commande\n# Exemple : tous les vendredis à 16h55\n# 55 16 * * 5 /home/jdoe/Scripts/archperso.sh\n# Exemple : toutes les 2 heures\n# 0 */2 * * * /opt/scripts/backup.sh\n\n# Tâche système via lien symbolique (recommandé)\nln -s /opt/scripts/majsys.sh /etc/cron.weekly/majsys\n\n# Test logger (rsyslog)\nlogger \"message test\"\nlogger -p cron.info \"test cron\"\ntail -n1 /var/log/syslog"
+                                  }
+                            },
+                            {
+                                  "id": "m12-commandes-journalctl",
+                                  "titre": "Commandes journalctl et analyse système",
+                                  "type": "table",
+                                  "contenu": {
+                                        "columns": [
+                                              "Commande",
+                                              "Description"
+                                        ],
+                                        "rows": [
+                                              [
+                                                    "journalctl",
+                                                    "Tous les journaux (navigation comme less)"
+                                              ],
+                                              [
+                                                    "journalctl -f",
+                                                    "Journaux en temps réel (mode live)"
+                                              ],
+                                              [
+                                                    "journalctl -u ssh",
+                                                    "Journaux d'un service spécifique"
+                                              ],
+                                              [
+                                                    "journalctl -u ssh -f",
+                                                    "Journaux d'un service en temps réel"
+                                              ],
+                                              [
+                                                    "journalctl _PID=538",
+                                                    "Journaux d'un processus par son PID"
+                                              ],
+                                              [
+                                                    "journalctl /usr/sbin/sshd",
+                                                    "Journaux d'un binaire spécifique"
+                                              ],
+                                              [
+                                                    "journalctl -p err",
+                                                    "Journaux d'un niveau de priorité (et au-dessus)"
+                                              ],
+                                              [
+                                                    "journalctl -p warning -u NetworkManager",
+                                                    "Combinaison niveau + service"
+                                              ],
+                                              [
+                                                    "uname -a",
+                                                    "Informations complètes sur le noyau"
+                                              ],
+                                              [
+                                                    "lscpu",
+                                                    "Informations sur le processeur"
+                                              ],
+                                              [
+                                                    "lspci",
+                                                    "Périphériques PCI (cartes réseau, GPU…)"
+                                              ],
+                                              [
+                                                    "lsusb",
+                                                    "Périphériques USB connectés"
+                                              ],
+                                              [
+                                                    "top",
+                                                    "Supervision temps réel (natif)"
+                                              ],
+                                              [
+                                                    "htop",
+                                                    "Supervision temps réel (à installer)"
+                                              ],
+                                              [
+                                                    "ps -ef",
+                                                    "Lister tous les processus en cours"
+                                              ],
+                                              [
+                                                    "free -h",
+                                                    "Utilisation de la mémoire RAM et swap"
+                                              ],
+                                              [
+                                                    "df -h",
+                                                    "Espace disque par système de fichiers"
+                                              ]
+                                        ]
+                                  }
+                            },
+                            {
+                                  "id": "m12-fichiers-logs",
+                                  "titre": "Fichiers de logs rsyslog et de configuration",
+                                  "type": "table",
+                                  "contenu": {
+                                        "columns": [
+                                              "Fichier",
+                                              "Contenu"
+                                        ],
+                                        "rows": [
+                                              [
+                                                    "/var/log/syslog",
+                                                    "Tous les logs sauf auth/authpriv"
+                                              ],
+                                              [
+                                                    "/var/log/auth.log",
+                                                    "Authentification et sécurité"
+                                              ],
+                                              [
+                                                    "/var/log/kern.log",
+                                                    "Messages du noyau"
+                                              ],
+                                              [
+                                                    "/var/log/mail.log",
+                                                    "Service mail"
+                                              ],
+                                              [
+                                                    "/etc/rsyslog.conf",
+                                                    "Configuration principale rsyslog"
+                                              ],
+                                              [
+                                                    "/etc/systemd/journald.conf",
+                                                    "Configuration journald"
+                                              ],
+                                              [
+                                                    "/var/log/journal/",
+                                                    "Logs journald persistants (si créé)"
+                                              ],
+                                              [
+                                                    "/run/log/journal/",
+                                                    "Logs journald volatils (défaut)"
+                                              ],
+                                              [
+                                                    "/etc/crontab",
+                                                    "Crontab système"
+                                              ],
+                                              [
+                                                    "/etc/anacrontab",
+                                                    "Configuration anacron"
+                                              ],
+                                              [
+                                                    "/var/spool/cron/crontabs/",
+                                                    "Crontabs utilisateurs"
+                                              ],
+                                              [
+                                                    "/etc/logrotate.conf",
+                                                    "Configuration logrotate principale"
+                                              ],
+                                              [
+                                                    "/etc/logrotate.d/",
+                                                    "Configurations logrotate par service"
+                                              ]
+                                        ]
+                                  }
+                            },
+                            {
+                                  "id": "m12-tldr",
+                                  "titre": "TL;DR — 10 points essentiels",
+                                  "type": "list",
+                                  "contenu": {
+                                        "items": [
+                                              "journald = volatile par défaut → mkdir /var/log/journal pour la persistance",
+                                              "rsyslog = fichiers texte dans /var/log/ — persistant et complémentaire à journald",
+                                              "journalctl -u ssh -f = logs d'un service en temps réel — -p err = erreurs et plus graves",
+                                              "rsyslog : facility.niveau → fichier — * = tout / none = aucun / - devant le fichier = async",
+                                              "Syntaxe cron : min heure jmois mois jsemaine commande — 0 et 7 = dimanche",
+                                              "cron ne rattrape pas les tâches manquées → anacron le fait pour daily/weekly/monthly",
+                                              "Tâche système : créer un lien symbolique dans /etc/cron.weekly/ plutôt que d'éditer la crontab root",
+                                              "crontab -l (lister) / crontab -e (éditer) / crontab -r (supprimer tout — attention)",
+                                              "logrotate gère la rotation des logs rsyslog — config dans /etc/logrotate.d/[service]",
+                                              "Analyse système : uname -a (noyau) / lscpu (CPU) / free -h (RAM) / ps -ef (processus) / top (supervision)"
+                                        ]
+                                  }
+                            }
+                      ]
+                }
           ]
-        },
-        {
-          "id": "admin-linux-lvm",
-          "fichier": "LVM - Gestion avancé de stockage.md",
-          "titre": "LVM — Gestion avancée du stockage",
-          "emoji": "🔧",
-          "description": "Logical Volume Manager : PV, VG, LV, redimensionnement à chaud.",
-          "sections": [
-            {
-              "id": "concepts-lvm",
-              "titre": "Concepts LVM — PV, VG, LV",
-              "type": "mixed",
-              "contenu": {
-                "blocks": [
-                  {
-                    "type": "text",
-                    "paragraphs": [
-                      "LVM (Logical Volume Manager) implémente une couche logique entre les disques physiques et le FS. Avantage majeur : redimensionnement à chaud et sans contrainte de contiguïté, contrairement au partitionnement legacy (hors-ligne, à froid, espace contigu requis)."
-                    ]
-                  },
-                  {
-                    "type": "tableau",
-                    "headers": [
-                      "Niveau",
-                      "Sigle",
-                      "Rôle"
-                    ],
-                    "rows": [
-                      [
-                        "Volume Physique",
-                        "PV",
-                        "Périphérique physique (partition ou disque) intégré dans LVM"
-                      ],
-                      [
-                        "Groupe de Volumes",
-                        "VG",
-                        "Regroupe un ou plusieurs PV (1 PV appartient à 1 seul VG)"
-                      ],
-                      [
-                        "Volume Logique",
-                        "LV",
-                        "Unité définie au sein d'un VG, sur laquelle on crée le FS"
-                      ]
-                    ]
-                  }
-                ]
-              }
-            },
-            {
-              "id": "creer-lvm",
-              "titre": "Créer des volumes LVM",
-              "type": "code",
-              "contenu": {
-                "description": "Procédure complète de création : partitionner → PV → VG → LV → FS → monter.",
-                "langage": "bash",
-                "code": "# 1. Marquer la partition comme LVM (type 8E dans fdisk)\nfdisk /dev/sdb  # puis 't', '8E', 'w'\n\n# 2. Créer des volumes physiques\npvcreate /dev/sdb1 /dev/sdb2\n\n# 3. Créer un groupe de volumes\nvgcreate vggroup1 /dev/sdb1 /dev/sdb2\n\n# 4. Créer un volume logique\nlvcreate -n lv_data -L 20G vggroup1\n# -n : nom du LV\n# -L : taille (K, M, G, T, E)\n\n# Deux chemins équivalents pour accéder au LV :\n# /dev/vggroup1/lv_data\n# /dev/mapper/vggroup1-lv_data\n\n# 5. Créer le FS et monter\nmkfs.ext4 /dev/vggroup1/lv_data\nmount /dev/vggroup1/lv_data /srv/data"
-              }
-            },
-            {
-              "id": "modifier-lvm",
-              "titre": "Modifier des volumes LVM",
-              "type": "code",
-              "contenu": {
-                "description": "Étendre un VG en ajoutant un PV, agrandir ou réduire un LV. L'extension est non destructive.",
-                "langage": "bash",
-                "code": "# Ajouter un PV à un VG existant\nvgextend vggroup1 /dev/sdd\n\n# Agrandir un LV (+ agrandit le FS automatiquement avec -r)\nlvextend -r -L +512M /dev/vggroup1/lv_data   # ajouter 512 Mo\nlvextend -r -L 1G /dev/vggroup1/lv_data       # fixer à 1 Go\nlvextend -r -l +100%FREE /dev/vggroup1/lv_data # prend 100% de l'espace libre\n# -r : invoque resize2fs automatiquement (ext3/ext4)\n# Sans -r : resize2fs /dev/vggroup1/lv_data à lancer manuellement\n\n# Réduire un LV (ATTENTION : potentiellement destructeur)\n# Nécessite de démonter le FS, fsck, resize2fs, puis lvreduce\nlvreduce -L -200M /dev/vggroup1/lv_data"
-              }
-            },
-            {
-              "id": "afficher-lvm",
-              "titre": "Afficher les informations LVM",
-              "type": "code",
-              "contenu": {
-                "description": "Deux familles de commandes : résumées (pvs/vgs/lvs) et détaillées (pvdisplay/vgdisplay/lvdisplay).",
-                "langage": "bash",
-                "code": "# Informations résumées\npvs                           # liste des volumes physiques\nvgs                           # liste des groupes de volumes\nlvs                           # liste des volumes logiques\n\n# Informations détaillées\npvdisplay /dev/sdb1\nvgdisplay vggroup1\nlvdisplay /dev/vggroup1/lv_data\n\n# Shell dédié LVM (toutes les commandes disponibles)\nlvm"
-              }
-            }
-          ]
-        },
-        {
-          "id": "admin-linux-maintenance-prod",
-          "fichier": "Maintenance d'un système en production.md",
-          "titre": "Maintenance en production",
-          "emoji": "🛠️",
-          "description": "Surveillance, journaux, mises à jour et maintenance d'un système Linux.",
-          "sections": [
-            {
-              "id": "journaux-systeme",
-              "titre": "Gestion des journaux — Journald et Rsyslog",
-              "type": "mixed",
-              "contenu": {
-                "blocks": [
-                  {
-                    "type": "text",
-                    "paragraphs": [
-                      "Depuis Debian 9, deux outils coexistent : Journald (via systemd) stocke les logs dans une BDD volatile (/run/log/journal), accessible via journalctl. Rsyslog reçoit les logs de journald pour les conserver durablement dans des fichiers (/var/log/)."
-                    ]
-                  },
-                  {
-                    "type": "tableau",
-                    "headers": [
-                      "Outil",
-                      "Stockage",
-                      "Avantage"
-                    ],
-                    "rows": [
-                      [
-                        "Journald",
-                        "BDD volatile (RAM), perd les logs au reboot par défaut",
-                        "Intégration systemd, requêtes filtrées, logs temps réel"
-                      ],
-                      [
-                        "Rsyslog",
-                        "Fichiers persistants dans /var/log/",
-                        "Conservation durable, envoi vers serveur distant possible"
-                      ]
-                    ]
-                  }
-                ]
-              }
-            },
-            {
-              "id": "journalctl",
-              "titre": "La commande journalctl",
-              "type": "code",
-              "contenu": {
-                "description": "journalctl interroge la base de données de journald. Config dans /etc/systemd/journald.conf.",
-                "langage": "bash",
-                "code": "journalctl -f                    # Logs en temps réel (follow)\njournalctl -u sshd.service       # Logs d'un service donné\njournalctl _PID=1234             # Logs d'un PID donné\njournalctl /usr/bin/sshd         # Logs d'un programme (chemin absolu)\n\n# Par niveau de priorité (du plus critique au plus informatif) :\n# emerg, alert, crit, err, warning, notice, info, debug\njournalctl -p err                # Erreurs et niveaux plus critiques\n\n# Combiner les options\njournalctl -f /usr/sbin/sshd -p info\n\n# Conservation durable des logs journald :\nmkdir /var/log/journal           # Crée le dossier → journald conserve les logs\n# Paramètres dans /etc/systemd/journald.conf :\n# SystemMaxUse=500M              # Taille max\n# SystemMaxFileSize=50M          # Taille max par fichier"
-              }
-            },
-            {
-              "id": "rsyslog",
-              "titre": "RSyslog — Facilities et niveaux de priorité",
-              "type": "mixed",
-              "contenu": {
-                "blocks": [
-                  {
-                    "type": "text",
-                    "paragraphs": [
-                      "Rsyslog fonctionne sur des facilities (thèmes) et des niveaux de priorité qui déclenchent des actions (écriture dans un fichier, envoi vers un serveur distant). Config dans /etc/rsyslog.conf."
-                    ]
-                  },
-                  {
-                    "type": "tableau",
-                    "headers": [
-                      "Facility",
-                      "Usage"
-                    ],
-                    "rows": [
-                      [
-                        "auth / authpriv",
-                        "Sécurité et authentification (SSH, PAM)"
-                      ],
-                      [
-                        "daemon",
-                        "Processus système et applicatifs"
-                      ],
-                      [
-                        "kern",
-                        "Messages du noyau"
-                      ],
-                      [
-                        "mail",
-                        "Service mail interne"
-                      ],
-                      [
-                        "user",
-                        "Par défaut si aucune facility n'est précisée"
-                      ],
-                      [
-                        "local0 à local7",
-                        "Programmes divers"
-                      ],
-                      [
-                        "*",
-                        "Toutes les facilities"
-                      ],
-                      [
-                        "none",
-                        "Aucune facility"
-                      ]
-                    ]
-                  },
-                  {
-                    "type": "code",
-                    "description": "Envoyer un message test à rsyslog/journald",
-                    "langage": "bash",
-                    "code": "logger -p cron.info \"Message de test\"\nlogger -p auth.warning \"Tentative d'authentification\""
-                  }
-                ]
-              }
-            },
-            {
-              "id": "crontab",
-              "titre": "Planification des tâches — crontab",
-              "type": "mixed",
-              "contenu": {
-                "blocks": [
-                  {
-                    "type": "code",
-                    "description": "crontab -e édite le cron de l'utilisateur courant. crontab -l liste les tâches planifiées.",
-                    "langage": "bash",
-                    "code": "crontab -e    # Éditer le cron utilisateur\ncrontab -l    # Lister les tâches planifiées\n\n# Format d'une ligne cron :\n# Minute  Heure  JourMois  Mois  JourSemaine  Commande\n# 0-59    0-23   1-31      1-12  0-7 (0,7=dim)\n# Formateurs : , (liste), - (intervalle), * (joker), / (répétiteur)\n\n# Exemples :\n0 5 * * 1 /opt/bin/backup.sh        # Chaque lundi à 5h00\n*/10 * * * * /opt/bin/check.sh      # Toutes les 10 minutes\n0 8-18 * * 1-5 /opt/bin/work.sh    # En jours ouvrés, de 8h à 18h"
-                  },
-                  {
-                    "type": "text",
-                    "paragraphs": [
-                      "Cron système : /etc/crontab (déclaration des tâches système). Anacron complète cron pour les tâches manquées si le système était éteint. Config : /etc/anacrontab. Dossiers surveillés : /etc/cron.daily (6h25), /etc/cron.weekly (+10 min si >7j), /etc/cron.monthly (+15 min si >1 mois)."
-                    ]
-                  }
-                ]
-              }
-            },
-            {
-              "id": "gestion-logs",
-              "titre": "Gestion de la taille des logs — Logrotate",
-              "type": "highlight",
-              "contenu": {
-                "items": [
-                  "Logrotate effectue une rotation automatique des logs (tâche cron daily). Config : /etc/logrotate.conf",
-                  "Options clés : daily/weekly/monthly, rotate N (nbre de fichiers conservés), compress, delaycompress",
-                  "delaycompress : fichier créé mardi → archivé mercredi → compressé jeudi",
-                  "Pour éviter les doublons si journald est configuré en persistant : systemctl disable rsyslog",
-                  "journald par défaut : max 10% du FS dans /var/log/journal. Configurable : SystemMaxUse="
-                ]
-              }
-            },
-            {
-              "id": "outils-analyse",
-              "titre": "Outils d'analyse du système",
-              "type": "code",
-              "contenu": {
-                "description": "Commandes de diagnostic système : version, matériel, processus, ressources.",
-                "langage": "bash",
-                "code": "cat /etc/debian_version   # Version du système\nuname -a                  # Version du noyau et architecture\nlscpu                     # Type de CPU\nlspci                     # Matériels PCI\nlsusb                     # Périphériques USB\nfile /bin/bash            # Nature d'un fichier\n\n# Stockage\nfdisk -l ; pvs ; vgs ; lvs ; lsblk ; blkid ; findmnt ; df\ndu -sh /root              # Taille d'un répertoire\n\n# Processus et performances\ntop                       # Temps réel (l=couleurs, m=mode, q=quitter, h=aide)\nhtop                      # Version améliorée (apt install htop)\nglances                   # Infos complètes (apt install glances)\nps aux                    # Lister tous les processus\nfree -h                   # Utilisation de la RAM"
-              }
-            }
-          ]
-        },
-        {
-          "id": "admin-linux-mode-maintenance",
-          "fichier": "Mode Maintenance.md",
-          "titre": "Mode Maintenance",
-          "emoji": "🔴",
-          "description": "Rescue mode, single user, récupération de mot de passe root.",
-          "sections": [
-            {
-              "id": "raisons-maintenance",
-              "titre": "Cas d'usage du mode maintenance",
-              "type": "highlight",
-              "contenu": {
-                "items": [
-                  "Problème suite à une mise à jour ou une installation défaillante",
-                  "Mot de passe root perdu (récupération sans connaitre le mdp)",
-                  "Récupération de données sur un système qui ne démarre plus"
-                ]
-              }
-            },
-            {
-              "id": "mode-grub-avec-mdp",
-              "titre": "Mode maintenance via GRUB (avec mdp root)",
-              "type": "list",
-              "contenu": {
-                "description": "Méthode pour accéder au mode maintenance quand on connaît le mot de passe root.",
-                "items": [
-                  "1. Au menu GRUB, appuyer sur 'e' pour entrer en mode édition",
-                  "2. Trouver la ligne : linux /vmlinuz.....quiet",
-                  "3. Remplacer 'quiet' par 'single'",
-                  "4. Valider avec F10 ou Ctrl+X pour démarrer",
-                  "5. Saisir le mot de passe root (ATTENTION : clavier en QWERTY)",
-                  "6. Ctrl+D pour poursuivre vers la cible rescue.target"
-                ]
-              }
-            },
-            {
-              "id": "mode-grub-sans-mdp",
-              "titre": "Mode maintenance via GRUB (sans mdp root)",
-              "type": "list",
-              "contenu": {
-                "description": "Méthode pour réinitialiser le mot de passe root sans le connaître.",
-                "items": [
-                  "1. Au menu GRUB, appuyer sur 'e' pour entrer en mode édition",
-                  "2. Trouver la ligne : linux /vmlinuz.....quiet",
-                  "3. Remplacer 'quiet' par 'init=/bin/bash'",
-                  "4. Valider avec F10 ou Ctrl+X pour démarrer",
-                  "5. Remonter la racine en lecture-écriture : mount -o remount,rw /",
-                  "6. Changer le mot de passe root : passwd",
-                  "7. Synchroniser les données RAM → disque : sync",
-                  "8. Éteindre le PC électriquement (reboot et shutdown ne fonctionnent pas dans ce mode)"
-                ]
-              }
-            },
-            {
-              "id": "mode-cd-install",
-              "titre": "Mode maintenance via le CD d'installation",
-              "type": "mixed",
-              "contenu": {
-                "blocks": [
-                  {
-                    "type": "list",
-                    "description": "Procédure via le CD d'installation Debian.",
-                    "items": [
-                      "1. Démarrer sur le CD d'installation",
-                      "2. Aller dans le menu avancé de démarrage du GRUB",
-                      "3. Choisir 'Rescue Mode'"
-                    ]
-                  },
-                  {
-                    "type": "tableau",
-                    "headers": [
-                      "Avantages",
-                      "Inconvénients"
-                    ],
-                    "rows": [
-                      [
-                        "Langue française disponible",
-                        "Nécessite d'avoir le CD ou une image ISO"
-                      ],
-                      [
-                        "Pas besoin du mot de passe root",
-                        "Complexité possible en environnement virtualisé"
-                      ],
-                      [
-                        "Extinction normale possible",
-                        "Accès physique ou console nécessaire"
-                      ]
-                    ]
-                  }
-                ]
-              }
-            }
-          ]
-        }
-      ]
     },
     {
       "id": "base-reseaux",
@@ -28194,1113 +29483,3876 @@ const MODULES_DATA = {
       ]
     },
     {
-      "id": "intro-linux",
-      "titre": "Introduction à Linux",
-      "emoji": "🐧",
-      "domain": "linux",
-      "description": "Concepts fondamentaux Linux : éditeur vi, expressions régulières, manipulation de fichiers et spécificités Bash.",
-      "tags": [
-        "Linux",
-        "Bash",
-        "vi",
-        "grep",
-        "sed",
-        "awk",
-        "Regex"
-      ],
-      "modules": [
-        {
-          "id": "intro-linux-vi",
-          "fichier": "Editeur de Texte VI.md",
-          "titre": "Éditeur de Texte VI/Vim",
-          "emoji": "📝",
-          "description": "Modes VI, commandes de navigation, édition et sauvegarde.",
-          "sections": [
-            {
-              "id": "intro-linux-vi-s00-diteur-de-texte-vi-vim",
-              "titre": "Éditeur de Texte VI/Vim",
-              "type": "mixed",
-              "contenu": {
-                "blocks": [
-                  {
-                    "type": "text",
-                    "paragraphs": [
-                      "vi \\<nomdufichier> = ouvre le fichier via vi"
-                    ]
-                  },
-                  {
-                    "type": "text",
-                    "paragraphs": [
-                      "-R = Ouvre en lecture seule +n = Ouvre le fichier et positionne le curseur en début de la ligne n +/motif = Ouvre le fichier et positionne le curseur sur la premiere occurence du mot motif"
-                    ]
-                  },
-                  {
-                    "type": "text",
-                    "paragraphs": [
-                      "2 modes :"
-                    ]
-                  },
-                  {
-                    "type": "list",
-                    "items": [
-                      "mode commande",
-                      "mode insertion"
-                    ]
-                  },
-                  {
-                    "type": "text",
-                    "paragraphs": [
-                      "**mode commande**"
-                    ]
-                  },
-                  {
-                    "type": "text",
-                    "paragraphs": [
-                      "hjkl ou fleches directionnelles : se déplacer (5 + flèche du bas pour descendre de 5 lignes par exemple) 0 : premier caractère de la ligne ^ : premier caractère du dernier mot de la ligne $ : dernier caractère de la ligne w : début du prochain mot ou ponctuation b : début du mot précédent ou ponctuation e : fin du prochain mot ou ponctuation :n : se déplacer a la ligne n gg ou :0 : début du fichier G ou :$ : fin du fichier % : se déplacer à la prochaine accolade ou parenthèse"
-                    ]
-                  },
-                  {
-                    "type": "text",
-                    "paragraphs": [
-                      "Rechercher un mot dans un texte : /motif = rechercher le terme motif n = se déplacer vers la prochaine occurrence N = se déplacer vers l'occurrence précédente"
-                    ]
-                  },
-                  {
-                    "type": "text",
-                    "paragraphs": [
-                      "Utiliser la ligne de commande : :w = Enregistre les modif :wq = enregistrer et quitter VI :x = autre manière pour enregistrer et quitter :q = quitter un fichier sans modification :q! = quitter en ignorant les modifications"
-                    ]
-                  },
-                  {
-                    "type": "text",
-                    "paragraphs": [
-                      "**supprimer du texte**"
-                    ]
-                  },
-                  {
-                    "type": "text",
-                    "paragraphs": [
-                      "nx : suppression du ou des n caractères suivants nX : suppression du ou des n caractères précédents D : suppression du reste de la ligne à droite du curseur ndw : suppression de n mots ndd : suppression de n lignes à partir de la ligne courante np : coller n fois le contenu du tampon à la suite du curseur nP : coller n fois le contenu du tampon avant le curseur nyw : copier les n mots suivant le curseur nyy : copier les n lignes suivantes"
-                    ]
-                  },
-                  {
-                    "type": "text",
-                    "paragraphs": [
-                      "*la dernière suppression est stockée dans un tampon mémoire appelé tampon d'annulation* *Il est possible d'utiliser d'autres tampons d'annulation que celui par défaut en précisant des tampons de a à z précédés du caractère \"* \t\"lyy : copier la ligne courante dans le tampon l \t\"lp : coller le contenu du tampon l *Les tampons d'annulation sont internes à une instance de VI. Il est possible d'utiliser les tampons dans tous les fichiers ouverts dans une instance de VI. A la fermeture de VI, ces mémoires sont vidées.*"
-                    ]
-                  },
-                  {
-                    "type": "text",
-                    "paragraphs": [
-                      "**Changer/remplacer du texte**"
-                    ]
-                  },
-                  {
-                    "type": "text",
-                    "paragraphs": [
-                      "ncl : effacer (couper) n lettres et passer en mode insertion ncw : effacer (couper) n mots et passer en mode insertion ncc : effacer (couper) n lignes et passer en mode insertion rl : remplace le caractère sous le curseur par le caractère l R : passer en mode remplacement (mode insertion ou le texte saisi remplace le texte actuel)"
-                    ]
-                  },
-                  {
-                    "type": "text",
-                    "paragraphs": [
-                      "**mode insertion**"
-                    ]
-                  },
-                  {
-                    "type": "text",
-                    "paragraphs": [
-                      "Passer en mode insertion : a : insertion après le caractère courant i : insertion avant le caractère courant o : insertion au début d'une nouvelle ligne suivant l'actuelle A : insertion à la fin de la ligne courante I : insertion au début de la ligne courante O : insertion au début d'une nouvelle ligne précédant l'actuelle Echap : Sortir du mode insertion"
-                    ]
-                  },
-                  {
-                    "type": "text",
-                    "paragraphs": [
-                      "**commandes diverses et ligne de commande**"
-                    ]
-                  },
-                  {
-                    "type": "text",
-                    "paragraphs": [
-                      "u : annuler la dernière action ctrl + r : refaire la derniere action annulée :n : passer au prochain fichier ouvert :N : passer au précédent fichier ouvert :w fich01 : enregistrer le contenu de l'espace de travail dans fic01 :!cmd : éxécuter la commande du shell cmd sans quitter VI"
-                    ]
-                  },
-                  {
-                    "type": "text",
-                    "paragraphs": [
-                      "Le caractère \":\" place le focus sur la ligne de commande. Il débute l'utilisation de celle-ci. Il est possible de naviguer dans l'historique des commandes comme on le ferait depuis le shell bash"
-                    ]
-                  }
-                ]
-              }
-            }
+          "id": "intro-linux",
+          "titre": "Introduction à Linux",
+          "emoji": "🐧",
+          "domain": "linux",
+          "description": "Fondamentaux Linux : histoire, virtualisation, shell Bash, arborescence, fichiers, recherches, éditeurs vi/nano, processus et redirections.",
+          "tags": [
+                "Linux",
+                "Bash",
+                "Shell",
+                "vi",
+                "grep",
+                "find",
+                "tar",
+                "Regex"
+          ],
+          "modules": [
+                {
+                      "id": "intro-linux-m01",
+                      "titre": "Linux & Unix — Fondamentaux TSSR",
+                      "emoji": "🐧",
+                      "description": "Histoire d'Unix/Linux, distributions, logiciel libre et licences.",
+                      "sections": [
+                            {
+                                  "titre": "Histoire & Filiation",
+                                  "type": "list",
+                                  "contenu": {
+                                        "description": "Unix naît en 1969/70 au Bell Labs. Linux apparaît en 1991.",
+                                        "items": [
+                                              "**Unix** naît en **1969/70** au sein des Bell Labs (AT&T) — Thompson, Ritchie, Kernighan. Nom original : _Unics_.",
+                                              "**1972** : Ritchie crée le **langage C** ; **1973** : noyau Unix réécrit en C → portabilité multi-architectures.",
+                                              "**BSD** émerge en **1977** (Bill Joy) → création du C Shell et de l'éditeur **vi** (1979).",
+                                              "**1983** : Richard Stallman lance le projet **GNU** (_GNU is Not Unix_) — bases du logiciel libre.",
+                                              "**1987** : Andrew Tanenbaum crée **Minix** — système pédagogique inspirant Torvalds.",
+                                              "**1991** : **Linus Torvalds** annonce le noyau Linux le **25 août**. GNU + Linux = **GNU/Linux**.",
+                                              "Distinguer **Linux** (le noyau seul) de **GNU/Linux** (le système complet)."
+                                        ]
+                                  }
+                            },
+                            {
+                                  "titre": "Distributions & Usages",
+                                  "type": "list",
+                                  "contenu": {
+                                        "description": "Une distribution = noyau + outils GNU + paquets + gestionnaire.",
+                                        "items": [
+                                              "Distributions dominantes : **Debian**, **Ubuntu**, **Red Hat / RHEL**, **CentOS / Rocky Linux**, **SUSE**.",
+                                              "**Debian** : repose sur un contrat social — redistribution libre, code source inclus, gratuit. Version stable actuelle : **Debian 12 Bookworm**.",
+                                              "Debian est la base de nombreuses distros : Ubuntu, Kali, Raspbian, 3CX.",
+                                              "**Android** est un dérivé de Linux → Linux est présent sur smartphones, IoT, serveurs."
+                                        ]
+                                  }
+                            },
+                            {
+                                  "titre": "Logiciel libre & Licences",
+                                  "type": "list",
+                                  "contenu": {
+                                        "description": "\"Free as in free speech, not as in free beer\" (Stallman).",
+                                        "items": [
+                                              "**Libre ≠ Gratuit** — _free_ signifie liberté d'usage, pas absence de coût.",
+                                              "La **FSF** (Free Software Foundation), fondée par Stallman, promeut les libertés logicielles.",
+                                              "Les **4 libertés GNU GPL** : 1. Utiliser pour tout usage / 2. Étudier et adapter / 3. Redistribuer / 4. Améliorer et partager ses modifications."
+                                        ]
+                                  }
+                            },
+                            {
+                                  "titre": "Commandes utiles",
+                                  "type": "table",
+                                  "contenu": {
+                                        "columns": [
+                                              "Commande",
+                                              "Description"
+                                        ],
+                                        "rows": [
+                                              [
+                                                    "`uname -a`",
+                                                    "Affiche la version du noyau Linux en cours"
+                                              ],
+                                              [
+                                                    "`lsb_release -a`",
+                                                    "Affiche la distribution et sa version"
+                                              ],
+                                              [
+                                                    "`cat /etc/os-release`",
+                                                    "Alternative moderne pour identifier la distro"
+                                              ]
+                                        ]
+                                  }
+                            },
+                            {
+                                  "titre": "Grandes dates clés",
+                                  "type": "table",
+                                  "contenu": {
+                                        "columns": [
+                                              "Année",
+                                              "Événement"
+                                        ],
+                                        "rows": [
+                                              [
+                                                    "1969/70",
+                                                    "Création d'Unics (Bell Labs)"
+                                              ],
+                                              [
+                                                    "1972",
+                                                    "Création du langage C (Ritchie)"
+                                              ],
+                                              [
+                                                    "1973",
+                                                    "Réécriture du noyau Unix en C"
+                                              ],
+                                              [
+                                                    "1977",
+                                                    "Début de BSD (Bill Joy)"
+                                              ],
+                                              [
+                                                    "1983",
+                                                    "Projet GNU (Stallman)"
+                                              ],
+                                              [
+                                                    "1987",
+                                                    "Création de Minix (Tanenbaum)"
+                                              ],
+                                              [
+                                                    "1991",
+                                                    "Annonce Linux (Torvalds, 25 août)"
+                                              ],
+                                              [
+                                                    "1992",
+                                                    "Première distro GNU/Linux : SLS"
+                                              ],
+                                              [
+                                                    "1993",
+                                                    "Slackware + Debian"
+                                              ],
+                                              [
+                                                    "1994",
+                                                    "Red Hat + SuSE"
+                                              ],
+                                              [
+                                                    "2004",
+                                                    "Ubuntu (Shuttleworth)"
+                                              ]
+                                        ]
+                                  }
+                            },
+                            {
+                                  "titre": "Distributions et leurs usages",
+                                  "type": "table",
+                                  "contenu": {
+                                        "columns": [
+                                              "Distribution",
+                                              "Base",
+                                              "Usage principal"
+                                        ],
+                                        "rows": [
+                                              [
+                                                    "Debian 12 Bookworm",
+                                                    "Debian",
+                                                    "Serveurs stables, référence"
+                                              ],
+                                              [
+                                                    "Ubuntu Server/LTS",
+                                                    "Debian",
+                                                    "Serveurs, cloud, entreprise"
+                                              ],
+                                              [
+                                                    "Red Hat / Rocky Linux",
+                                                    "Red Hat",
+                                                    "Entreprise, certifications"
+                                              ],
+                                              [
+                                                    "Kali Linux",
+                                                    "Debian",
+                                                    "Sécurité / pentest"
+                                              ],
+                                              [
+                                                    "Raspbian",
+                                                    "Debian",
+                                                    "Raspberry Pi / embarqué"
+                                              ],
+                                              [
+                                                    "Linux Mint",
+                                                    "Ubuntu",
+                                                    "Poste utilisateur débutant"
+                                              ],
+                                              [
+                                                    "ZorinOS",
+                                                    "Ubuntu",
+                                                    "Migration Windows/macOS"
+                                              ],
+                                              [
+                                                    "3CX",
+                                                    "Debian",
+                                                    "Téléphonie IP"
+                                              ],
+                                              [
+                                                    "System Rescue CD",
+                                                    "Gentoo",
+                                                    "Récupération système"
+                                              ]
+                                        ]
+                                  }
+                            },
+                            {
+                                  "titre": "Licences libres comparées",
+                                  "type": "table",
+                                  "contenu": {
+                                        "columns": [
+                                              "Licence",
+                                              "Copyleft",
+                                              "Modif. commerciale",
+                                              "Contexte typique"
+                                        ],
+                                        "rows": [
+                                              [
+                                                    "GNU GPL",
+                                                    "Fort",
+                                                    "Oui (sous GPL)",
+                                                    "Noyau Linux, logiciels libres"
+                                              ],
+                                              [
+                                                    "Apache 2.0",
+                                                    "Non",
+                                                    "Oui",
+                                                    "Projets open source d'entreprise"
+                                              ],
+                                              [
+                                                    "BSD",
+                                                    "Non",
+                                                    "Oui (sans restriction)",
+                                                    "Systèmes embarqués, réutilisation"
+                                              ],
+                                              [
+                                                    "CeCILL",
+                                                    "Fort",
+                                                    "Oui",
+                                                    "Organismes publics français"
+                                              ],
+                                              [
+                                                    "Creative Commons",
+                                                    "Variable",
+                                                    "Variable",
+                                                    "Médias, graphiques, musique"
+                                              ]
+                                        ]
+                                  }
+                            },
+                            {
+                                  "titre": "Pièges & erreurs fréquentes",
+                                  "type": "table",
+                                  "contenu": {
+                                        "columns": [
+                                              "Symptôme",
+                                              "Cause",
+                                              "Solution"
+                                        ],
+                                        "rows": [
+                                              [
+                                                    "Confusion Linux = GNU/Linux",
+                                                    "Linux désigne le noyau seul",
+                                                    "Retenir : Linux (noyau) + GNU (outils) = système complet"
+                                              ],
+                                              [
+                                                    "Logiciel libre = gratuit",
+                                                    "Erreur de traduction de _free_",
+                                                    "Free = liberté d'usage, pas nécessairement prix nul"
+                                              ],
+                                              [
+                                                    "Confondre BSD et GPL",
+                                                    "Deux philosophies différentes",
+                                                    "GPL = copyleft fort ; BSD = permissif"
+                                              ],
+                                              [
+                                                    "Croire que Debian = Ubuntu",
+                                                    "Ubuntu est basé sur Debian",
+                                                    "Ce n'est pas la même distro, cycles de release différents"
+                                              ],
+                                              [
+                                                    "Utiliser CentOS en prod",
+                                                    "CentOS 8 est EOL depuis 2021",
+                                                    "Utiliser Rocky Linux ou AlmaLinux comme remplaçants"
+                                              ]
+                                        ]
+                                  }
+                            },
+                            {
+                                  "titre": "Glossaire",
+                                  "type": "table",
+                                  "contenu": {
+                                        "columns": [
+                                              "Terme",
+                                              "Définition + exemple"
+                                        ],
+                                        "rows": [
+                                              [
+                                                    "**CLI**",
+                                                    "Command Line Interface — interface en ligne de commande. Ex : terminal Bash"
+                                              ],
+                                              [
+                                                    "**GUI**",
+                                                    "Graphical User Interface — interface graphique. Ex : GNOME, KDE"
+                                              ],
+                                              [
+                                                    "**Noyau (Kernel)**",
+                                                    "Couche logicielle centrale gérant matériel et ressources. Ex : Linux 6.x"
+                                              ],
+                                              [
+                                                    "**Distribution**",
+                                                    "Ensemble noyau + outils + paquets. Ex : Debian 12"
+                                              ],
+                                              [
+                                                    "**GNU**",
+                                                    "Projet de Stallman fournissant les outils système libres (gcc, bash, etc.)"
+                                              ],
+                                              [
+                                                    "**FSF**",
+                                                    "Free Software Foundation — association promouvant les logiciels libres"
+                                              ],
+                                              [
+                                                    "**GPL**",
+                                                    "GNU General Public License — licence avec copyleft fort"
+                                              ],
+                                              [
+                                                    "**Copyleft**",
+                                                    "Obligation de redistribuer les modifications sous la même licence"
+                                              ],
+                                              [
+                                                    "**BSD**",
+                                                    "Berkeley Software Distribution — famille Unix + licence permissive"
+                                              ],
+                                              [
+                                                    "**LTS**",
+                                                    "Long Term Support — version avec support étendu (ex : Ubuntu 24.04 LTS)"
+                                              ],
+                                              [
+                                                    "**EOL**",
+                                                    "End Of Life — version sans support ni mises à jour de sécurité"
+                                              ],
+                                              [
+                                                    "**IoT**",
+                                                    "Internet of Things — objets connectés tournant souvent sous Linux"
+                                              ],
+                                              [
+                                                    "**CeCILL**",
+                                                    "Licence libre conforme au droit français (CEA, CNRS, INRIA)"
+                                              ]
+                                        ]
+                                  }
+                            },
+                            {
+                                  "titre": "Checklist de révision",
+                                  "type": "highlight",
+                                  "contenu": {
+                                        "items": [
+                                              "Je connais les 3 créateurs d'Unix et l'année de création",
+                                              "Je sais qui a créé Linux, la date exacte, et la distinction Linux / GNU/Linux",
+                                              "Je connais les 4 grandes familles de distributions et leurs gestionnaires de paquets",
+                                              "Je sais citer au moins 5 distributions professionnelles et leurs usages",
+                                              "Je connais la version stable actuelle de Debian",
+                                              "Je distingue CLI et GUI avec un exemple chacun",
+                                              "Je connais les 4 libertés de la GNU GPL",
+                                              "Je sais différencier GPL, BSD, Apache, CeCILL et Creative Commons",
+                                              "Je comprends la distinction libre ≠ gratuit",
+                                              "Je sais que Android est un dérivé de Linux"
+                                        ]
+                                  }
+                            },
+                            {
+                                  "titre": "TL;DR — 10 points essentiels",
+                                  "type": "highlight",
+                                  "contenu": {
+                                        "items": [
+                                              "**Unix → 1969/70**, Bell Labs, par Thompson, Ritchie & Kernighan",
+                                              "**Linux → 1991**, annoncé par **Linus Torvalds** le 25 août",
+                                              "Linux = **noyau** ; GNU/Linux = système complet",
+                                              "**Debian 12 Bookworm** est la référence stable actuelle",
+                                              "En prod : Debian, Ubuntu, Red Hat/Rocky, SUSE dominent",
+                                              "Android = dérivé Linux → Linux est partout (serveurs, mobile, IoT)",
+                                              "**Logiciel libre ≠ gratuit** — _free_ = liberté (FSF, Stallman)",
+                                              "GPL = copyleft fort ; BSD/Apache = permissif ; CeCILL = droit français",
+                                              "Les **4 libertés GPL** : utiliser, étudier, redistribuer, améliorer",
+                                              "CLI (terminal) est le mode d'interaction principal sous Linux en prod"
+                                        ]
+                                  }
+                            }
+                      ]
+                },
+                {
+                      "id": "intro-linux-m02",
+                      "titre": "Virtualisation & VMware Workstation",
+                      "emoji": "🖥️",
+                      "description": "Hyperviseurs, machines virtuelles, snapshots, réseaux virtuels.",
+                      "sections": [
+                            {
+                                  "titre": "La virtualisation",
+                                  "type": "list",
+                                  "contenu": {
+                                        "description": "Plusieurs OS simultanément sur une seule machine physique, chacun dans un environnement isolé.",
+                                        "items": [
+                                              "La **machine hôte** (_host_) fournit les ressources matérielles. Les **VMs** (_guests_) les consomment de façon encadrée.",
+                                              "L'**hyperviseur intercepte, priorise et distribue** les ressources — les VMs ne voient jamais le matériel réel directement."
+                                        ]
+                                  }
+                            },
+                            {
+                                  "titre": "Types d'hyperviseurs",
+                                  "type": "list",
+                                  "contenu": {
+                                        "description": "L'hyperviseur est le chef d'orchestre de la virtualisation.",
+                                        "items": [
+                                              "**Type 1 (bare-metal)** : s'installe directement sur le matériel, sans OS hôte. Ex : **VMware ESXi**, Hyper-V Server, Proxmox. Utilisé en **production**.",
+                                              "**Type 2 (hosted)** : s'installe sur un OS hôte existant. Ex : **VMware Workstation**, VirtualBox. Utilisé pour **tests et maquettes**.",
+                                              "Un hyperviseur Type 1 offre de meilleures performances car il ne partage pas les ressources avec un OS hôte."
+                                        ]
+                                  }
+                            },
+                            {
+                                  "titre": "Une VM concrètement",
+                                  "type": "list",
+                                  "contenu": {
+                                        "description": "Une VM = un ensemble de fichiers dans un répertoire.",
+                                        "items": [
+                                              "**`.vmx`** : fichier texte de configuration (CPU, RAM, réseau, etc.) — éditable avec un éditeur de texte.",
+                                              "**`.vmdk`** (_Virtual Machine Disk_) : fichier représentant le disque dur virtuel.",
+                                              "La taille du `.vmdk` est **dynamique par défaut** : il grandit à mesure qu'on remplit le disque."
+                                        ]
+                                  }
+                            },
+                            {
+                                  "titre": "Ressources et fonctionnalités clés",
+                                  "type": "list",
+                                  "contenu": {
+                                        "description": "Gestion des ressources CPU, RAM, stockage, réseau.",
+                                        "items": [
+                                              "**CPU** : trop de vCPUs → files d'attente → dégradation pour **toutes** les VMs de l'hôte.",
+                                              "**RAM** : allouée **dès le démarrage** de la VM. Si éteinte → libérée. Si en **pause** → sauvegardée sur disque.",
+                                              "**Snapshot** : photo de l'état d'une VM à un instant T → permet un **rollback** rapide. Indispensable avant toute action risquée.",
+                                              "**Clonage** : duplication d'une VM modèle → montage rapide de maquettes.",
+                                              "**VMware Tools** : améliore l'intégration hôte/invité (glisser-déposer, résolution, horloge)."
+                                        ]
+                                  }
+                            },
+                            {
+                                  "titre": "Réseaux virtuels dans Workstation",
+                                  "type": "table",
+                                  "contenu": {
+                                        "columns": [
+                                              "Type",
+                                              "Avec VMs",
+                                              "Avec l'hôte",
+                                              "Réseau physique"
+                                        ],
+                                        "rows": [
+                                              [
+                                                    "**Host-only**",
+                                                    "Oui (même réseau)",
+                                                    "Oui (via VMnet1)",
+                                                    "Non"
+                                              ],
+                                              [
+                                                    "**VMnet (0–19)**",
+                                                    "Oui (personnalisable)",
+                                                    "Oui (si activé)",
+                                                    "Non"
+                                              ],
+                                              [
+                                                    "**LAN Segment**",
+                                                    "Oui (réseau isolé nommé)",
+                                                    "Non",
+                                                    "Non"
+                                              ],
+                                              [
+                                                    "**NAT**",
+                                                    "Oui",
+                                                    "Oui (via VMnet8)",
+                                                    "Oui (via IP de l'hôte)"
+                                              ],
+                                              [
+                                                    "**Bridge**",
+                                                    "Oui",
+                                                    "Oui",
+                                                    "Oui (comme machine physique)"
+                                              ]
+                                        ]
+                                  }
+                            },
+                            {
+                                  "titre": "Fichiers constitutifs d'une VM VMware",
+                                  "type": "table",
+                                  "contenu": {
+                                        "columns": [
+                                              "Fichier",
+                                              "Rôle"
+                                        ],
+                                        "rows": [
+                                              [
+                                                    ".vmx",
+                                                    "Configuration de la VM (texte, éditable)"
+                                              ],
+                                              [
+                                                    ".vmdk",
+                                                    "Disque dur virtuel (taille dynamique par défaut)"
+                                              ],
+                                              [
+                                                    ".vmem / .vmss",
+                                                    "Contenu RAM lors d'une mise en pause"
+                                              ],
+                                              [
+                                                    ".vmsn",
+                                                    "Fichier snapshot"
+                                              ],
+                                              [
+                                                    ".nvram",
+                                                    "BIOS/UEFI de la VM"
+                                              ],
+                                              [
+                                                    ".vmsd",
+                                                    "Métadonnées des snapshots"
+                                              ]
+                                        ]
+                                  }
+                            },
+                            {
+                                  "titre": "Formats d'import/export",
+                                  "type": "table",
+                                  "contenu": {
+                                        "columns": [
+                                              "Format",
+                                              "Type",
+                                              "Avantage"
+                                        ],
+                                        "rows": [
+                                              [
+                                                    ".vmx + .vmdk",
+                                                    "Dossier natif VMware",
+                                                    "Simple, rapide à copier"
+                                              ],
+                                              [
+                                                    ".ova",
+                                                    "Archive unique",
+                                                    "Portable, un seul fichier à transférer"
+                                              ],
+                                              [
+                                                    ".ovf",
+                                                    "Archive multi-fichiers",
+                                                    "Standard ouvert, compatible multi-hyperviseurs"
+                                              ]
+                                        ]
+                                  }
+                            },
+                            {
+                                  "titre": "Comparatif Workstation vs ESXi",
+                                  "type": "table",
+                                  "contenu": {
+                                        "columns": [
+                                              "Critère",
+                                              "VMware Workstation (Type 2)",
+                                              "VMware ESXi (Type 1)"
+                                        ],
+                                        "rows": [
+                                              [
+                                                    "Usage",
+                                                    "Tests, maquettes, formation",
+                                                    "Production, entreprise"
+                                              ],
+                                              [
+                                                    "Installation",
+                                                    "Sur OS hôte",
+                                                    "Bare-metal"
+                                              ],
+                                              [
+                                                    "Performances",
+                                                    "Moyennes",
+                                                    "Élevées"
+                                              ],
+                                              [
+                                                    "Licence",
+                                                    "Payante, propriétaire",
+                                                    "Gratuit (base) + payant"
+                                              ],
+                                              [
+                                                    "Gestion",
+                                                    "Interface locale",
+                                                    "vSphere / Web UI"
+                                              ]
+                                        ]
+                                  }
+                            },
+                            {
+                                  "titre": "Pièges & erreurs fréquentes",
+                                  "type": "table",
+                                  "contenu": {
+                                        "columns": [
+                                              "Symptôme",
+                                              "Cause",
+                                              "Solution"
+                                        ],
+                                        "rows": [
+                                              [
+                                                    "VM lente, lag constant",
+                                                    "Trop de vCPUs → file d'attente CPU",
+                                                    "Réduire le nombre de cœurs alloués"
+                                              ],
+                                              [
+                                                    "Disque hôte saturé",
+                                                    "VMDK dynamique a atteint la limite physique",
+                                                    "Surveiller l'espace disque hôte régulièrement"
+                                              ],
+                                              [
+                                                    "Conflit réseau entre deux VMs",
+                                                    "Même adresse MAC (copie sans régénération)",
+                                                    "À l'import, choisir I copied it pour régénérer le MAC"
+                                              ],
+                                              [
+                                                    "VM bloquée au démarrage",
+                                                    "Aucun OS installé / ISO non montée",
+                                                    "Monter l'ISO dans les paramètres > CD/DVD"
+                                              ],
+                                              [
+                                                    "Souris bloquée dans la VM",
+                                                    "Workstation capture les entrées",
+                                                    "Appuyer sur Ctrl + Alt pour reprendre la main"
+                                              ],
+                                              [
+                                                    "Rollback impossible",
+                                                    "Aucun snapshot pris avant",
+                                                    "Toujours faire un snapshot AVANT toute action risquée"
+                                              ]
+                                        ]
+                                  }
+                            },
+                            {
+                                  "titre": "Glossaire",
+                                  "type": "table",
+                                  "contenu": {
+                                        "columns": [
+                                              "Terme",
+                                              "Définition + exemple"
+                                        ],
+                                        "rows": [
+                                              [
+                                                    "**Hyperviseur**",
+                                                    "Logiciel gérant la coexistence des VMs et leur accès aux ressources"
+                                              ],
+                                              [
+                                                    "**VM / Machine virtuelle**",
+                                                    "Ordinateur simulé par logiciel, défini par un ensemble de fichiers"
+                                              ],
+                                              [
+                                                    "**Hôte (Host)**",
+                                                    "Machine physique hébergeant les VMs"
+                                              ],
+                                              [
+                                                    "**Invité (Guest)**",
+                                                    "Système d'exploitation tournant à l'intérieur d'une VM"
+                                              ],
+                                              [
+                                                    "**VMDK**",
+                                                    "Virtual Machine Disk — fichier représentant le disque dur d'une VM"
+                                              ],
+                                              [
+                                                    "**Snapshot**",
+                                                    "Sauvegarde instantanée de l'état d'une VM à un instant T"
+                                              ],
+                                              [
+                                                    "**Rollback**",
+                                                    "Retour à un état antérieur via un snapshot"
+                                              ],
+                                              [
+                                                    "**OVA**",
+                                                    "Open Virtual Appliance — archive unique contenant une VM exportée"
+                                              ],
+                                              [
+                                                    "**NAT**",
+                                                    "Network Address Translation — la VM accède à Internet via l'IP de l'hôte"
+                                              ],
+                                              [
+                                                    "**Bridge**",
+                                                    "Mode réseau où la VM est vue comme une machine physique sur le réseau réel"
+                                              ],
+                                              [
+                                                    "**Host-only**",
+                                                    "Réseau isolé entre VMs et hôte uniquement, sans accès extérieur"
+                                              ],
+                                              [
+                                                    "**VMware Tools**",
+                                                    "Extension installée dans la VM pour améliorer l'intégration avec l'hôte"
+                                              ]
+                                        ]
+                                  }
+                            },
+                            {
+                                  "titre": "Checklist de révision",
+                                  "type": "highlight",
+                                  "contenu": {
+                                        "items": [
+                                              "Je sais définir la virtualisation et expliquer le rôle de l'hyperviseur",
+                                              "Je connais la différence entre hyperviseur Type 1 et Type 2, avec un exemple chacun",
+                                              "Je sais ce que contient un dossier de VM VMware (.vmx, .vmdk, etc.)",
+                                              "Je connais les 5 types de réseaux Workstation et leurs différences",
+                                              "Je comprends la gestion dynamique du VMDK et les risques de saturation",
+                                              "Je sais que la RAM est allouée immédiatement au démarrage de la VM",
+                                              "Je sais faire un snapshot et effectuer un rollback",
+                                              "Je distingue OVA (fichier unique) et OVF (multi-fichiers)",
+                                              "Je sais pourquoi choisir I copied it vs I moved it à l'import",
+                                              "Je connais le raccourci Ctrl + Alt pour libérer la souris dans Workstation"
+                                        ]
+                                  }
+                            },
+                            {
+                                  "titre": "TL;DR — 10 points essentiels",
+                                  "type": "highlight",
+                                  "contenu": {
+                                        "items": [
+                                              "La virtualisation = plusieurs OS sur une machine physique grâce à un **hyperviseur**",
+                                              "**Type 1** (ESXi) = bare-metal, production ; **Type 2** (Workstation) = sur OS, tests/maquettes",
+                                              "Une VM = des fichiers : **`.vmx`** (config) + **`.vmdk`** (disque)",
+                                              "Le **VMDK est dynamique** : grandit à l'usage, ne dépasse jamais le quota défini",
+                                              "La **RAM est allouée immédiatement** au démarrage — bien dimensionner l'hôte",
+                                              "**Snapshot + Rollback** = filet de sécurité indispensable avant toute action critique",
+                                              "**5 modes réseau** : Host-only, VMnet, LAN Segment, NAT, Bridge",
+                                              "**NAT** = VM accède à Internet via l'IP de l'hôte ; **Bridge** = VM visible sur le réseau physique",
+                                              "Import/Export : `.vmx` (natif), `.ova` (archive unique), `.ovf` (standard ouvert multi-fichiers)",
+                                              "À l'import : **I copied it** → nouveau MAC ; **I moved it** → MAC conservé"
+                                        ]
+                                  }
+                            }
+                      ]
+                },
+                {
+                      "id": "intro-linux-m03",
+                      "titre": "Shell Linux, Connexion & Environnement de travail",
+                      "emoji": "💻",
+                      "description": "Architecture OS, Shell Bash, flux standard, SSH et PuTTY.",
+                      "sections": [
+                            {
+                                  "titre": "Architecture d'un système d'exploitation",
+                                  "type": "list",
+                                  "contenu": {
+                                        "description": "Un OS s'organise en 5 couches superposées.",
+                                        "items": [
+                                              "1. **Matériel** → composants physiques (CPU, RAM, carte mère, périphériques)",
+                                              "2. **Noyau (Kernel)** → gère les échanges entre matériel et logiciels, ordonne les tâches",
+                                              "3. **Shell** → interface entre l'utilisateur et le noyau (CLI sous Linux, GUI sous Windows)",
+                                              "4. **Applications** → logiciels utilisateur (éditeurs, navigateurs, etc.)",
+                                              "5. **Utilisateurs** → interagissent via le shell pour lancer des programmes"
+                                        ]
+                                  }
+                            },
+                            {
+                                  "titre": "Le Shell et le prompt",
+                                  "type": "list",
+                                  "contenu": {
+                                        "description": "Le shell est un interpréteur de commandes (CLI).",
+                                        "items": [
+                                              "Sous Linux, le shell par défaut est **Bash** (_Bourne Again Shell_), réécrit par Brian Fox.",
+                                              "Syntaxe universelle : **`commande [options] [arguments]`**",
+                                              "Linux est **case-sensitive** : `ls` ≠ `Ls` ≠ `LS`",
+                                              "Prompt : `user1@deb$` — `$` = utilisateur standard | `#` = root"
+                                        ]
+                                  }
+                            },
+                            {
+                                  "titre": "Connexion à Linux",
+                                  "type": "list",
+                                  "contenu": {
+                                        "description": "Console locale, SSH et PuTTY.",
+                                        "items": [
+                                              "**Console locale** : connexion directe, mode terminal sans souris — installation initiale ou pannes graves.",
+                                              "**SSH** (_Secure Shell_) : connexion distante chiffrée, méthode standard en production.",
+                                              "**PuTTY** : client SSH pour Windows, open source (licence MIT), le plus utilisé en entreprise.",
+                                              "À la première connexion SSH : accepter l'échange de clés en tapant `yes`."
+                                        ]
+                                  }
+                            },
+                            {
+                                  "titre": "Les flux standard",
+                                  "type": "table",
+                                  "contenu": {
+                                        "columns": [
+                                              "Flux",
+                                              "Nom",
+                                              "Numéro",
+                                              "Description"
+                                        ],
+                                        "rows": [
+                                              [
+                                                    "**stdin**",
+                                                    "Standard Input",
+                                                    "0",
+                                                    "Entrée clavier (saisie utilisateur)"
+                                              ],
+                                              [
+                                                    "**stdout**",
+                                                    "Standard Output",
+                                                    "1",
+                                                    "Sortie normale (résultat affiché)"
+                                              ],
+                                              [
+                                                    "**stderr**",
+                                                    "Standard Error",
+                                                    "2",
+                                                    "Sortie d'erreur (messages d'erreur)"
+                                              ]
+                                        ]
+                                  }
+                            },
+                            {
+                                  "titre": "Les différents shells Unix/Linux",
+                                  "type": "table",
+                                  "contenu": {
+                                        "columns": [
+                                              "Shell",
+                                              "Nom complet",
+                                              "Créateur",
+                                              "Particularité"
+                                        ],
+                                        "rows": [
+                                              [
+                                                    "`sh`",
+                                                    "Bourne Shell",
+                                                    "Steve Bourne",
+                                                    "Shell historique, référence"
+                                              ],
+                                              [
+                                                    "`csh`",
+                                                    "C Shell",
+                                                    "Bill Joy",
+                                                    "Syntaxe inspirée du C"
+                                              ],
+                                              [
+                                                    "`ksh`",
+                                                    "Korn Shell",
+                                                    "David Korn",
+                                                    "Compatible Bourne Shell"
+                                              ],
+                                              [
+                                                    "`bash`",
+                                                    "Bourne Again Shell",
+                                                    "Brian Fox",
+                                                    "Shell par défaut Linux, autocomplétion, historique, alias"
+                                              ]
+                                        ]
+                                  }
+                            },
+                            {
+                                  "titre": "Commandes utiles",
+                                  "type": "table",
+                                  "contenu": {
+                                        "columns": [
+                                              "Commande",
+                                              "Description"
+                                        ],
+                                        "rows": [
+                                              [
+                                                    "`echo \"texte\"`",
+                                                    "Affiche du texte à l'écran (stdout)"
+                                              ],
+                                              [
+                                                    "`who`",
+                                                    "Liste les utilisateurs actuellement connectés"
+                                              ],
+                                              [
+                                                    "`ls`",
+                                                    "Liste le contenu du répertoire courant"
+                                              ],
+                                              [
+                                                    "`ls -l`",
+                                                    "Affichage long (permissions, taille, date)"
+                                              ],
+                                              [
+                                                    "`ip a`",
+                                                    "Affiche les interfaces réseau et leurs adresses IP"
+                                              ],
+                                              [
+                                                    "`clear`",
+                                                    "Efface l'écran du terminal"
+                                              ],
+                                              [
+                                                    "`exit`",
+                                                    "Ferme la session shell courante"
+                                              ],
+                                              [
+                                                    "`ssh user@ip`",
+                                                    "Connexion SSH distante vers un serveur Linux"
+                                              ]
+                                        ]
+                                  }
+                            },
+                            {
+                                  "titre": "Raccourcis clavier essentiels",
+                                  "type": "table",
+                                  "contenu": {
+                                        "columns": [
+                                              "Raccourci",
+                                              "Action"
+                                        ],
+                                        "rows": [
+                                              [
+                                                    "`Ctrl + L`",
+                                                    "Efface l'écran (équivalent à `clear`)"
+                                              ],
+                                              [
+                                                    "`Ctrl + D`",
+                                                    "Ferme la session (équivalent à `exit`)"
+                                              ],
+                                              [
+                                                    "`Ctrl + C`",
+                                                    "Interrompt la commande en cours"
+                                              ],
+                                              [
+                                                    "`Tab`",
+                                                    "Autocomplétion des commandes et chemins (Bash)"
+                                              ],
+                                              [
+                                                    "`↑ / ↓`",
+                                                    "Navigation dans l'historique des commandes"
+                                              ]
+                                        ]
+                                  }
+                            },
+                            {
+                                  "titre": "Comparatif méthodes de connexion",
+                                  "type": "table",
+                                  "contenu": {
+                                        "columns": [
+                                              "Méthode",
+                                              "OS client",
+                                              "Usage typique",
+                                              "Avantages"
+                                        ],
+                                        "rows": [
+                                              [
+                                                    "Console locale",
+                                                    "N/A",
+                                                    "Installation, panne grave",
+                                                    "Accès direct, pas de réseau"
+                                              ],
+                                              [
+                                                    "SSH (CMD/PowerShell)",
+                                                    "Windows 10+",
+                                                    "Connexion rapide ponctuelle",
+                                                    "Natif, sans logiciel tiers"
+                                              ],
+                                              [
+                                                    "PuTTY",
+                                                    "Windows",
+                                                    "Usage quotidien professionnel",
+                                                    "Sessions sauvegardées, personnalisable"
+                                              ],
+                                              [
+                                                    "SSH (terminal Linux)",
+                                                    "Linux/macOS",
+                                                    "Usage quotidien",
+                                                    "Natif, scriptable"
+                                              ]
+                                        ]
+                                  }
+                            },
+                            {
+                                  "titre": "Pièges & erreurs fréquentes",
+                                  "type": "table",
+                                  "contenu": {
+                                        "columns": [
+                                              "Symptôme",
+                                              "Cause",
+                                              "Solution"
+                                        ],
+                                        "rows": [
+                                              [
+                                                    "`bash: Echo: commande introuvable`",
+                                                    "Majuscule sur Echo au lieu de echo",
+                                                    "Linux est case-sensitive — tout en minuscules"
+                                              ],
+                                              [
+                                                    "Caractères accentués illisibles dans PuTTY",
+                                                    "Encodage non configuré",
+                                                    "Régler Window > Translation > UTF-8"
+                                              ],
+                                              [
+                                                    "Prompt # inattendu",
+                                                    "Connecté en tant que root",
+                                                    "Vérifier avec who ou whoami — ne pas travailler en root par défaut"
+                                              ],
+                                              [
+                                                    "`logout` ne fonctionne pas",
+                                                    "Shell sh (pas Bash)",
+                                                    "Utiliser exit ou Ctrl + D à la place"
+                                              ],
+                                              [
+                                                    "Connexion SSH refusée à la première tentative",
+                                                    "Échange de clés non validé",
+                                                    "Taper yes pour accepter l'empreinte du serveur"
+                                              ]
+                                        ]
+                                  }
+                            },
+                            {
+                                  "titre": "Glossaire",
+                                  "type": "table",
+                                  "contenu": {
+                                        "columns": [
+                                              "Terme",
+                                              "Définition + exemple"
+                                        ],
+                                        "rows": [
+                                              [
+                                                    "**Shell**",
+                                                    "Interpréteur de commandes, interface entre l'utilisateur et le noyau. Ex : Bash"
+                                              ],
+                                              [
+                                                    "**Bash**",
+                                                    "Bourne Again Shell — shell par défaut sous Linux, créé par Brian Fox"
+                                              ],
+                                              [
+                                                    "**CLI**",
+                                                    "Command Line Interface — interface en ligne de commande"
+                                              ],
+                                              [
+                                                    "**stdin**",
+                                                    "Flux d'entrée standard (numéro 0) — saisie clavier"
+                                              ],
+                                              [
+                                                    "**stdout**",
+                                                    "Flux de sortie standard (numéro 1) — résultat normal affiché"
+                                              ],
+                                              [
+                                                    "**stderr**",
+                                                    "Flux d'erreur standard (numéro 2) — messages d'erreur"
+                                              ],
+                                              [
+                                                    "**Prompt**",
+                                                    "Indicateur d'attente de commande. Ex : user1@deb$"
+                                              ],
+                                              [
+                                                    "**SSH**",
+                                                    "Secure Shell — protocole de connexion distante chiffrée. Ex : ssh user@192.168.0.45"
+                                              ],
+                                              [
+                                                    "**PuTTY**",
+                                                    "Client SSH open source (licence MIT) pour Windows"
+                                              ],
+                                              [
+                                                    "**UTF-8**",
+                                                    "Encodage universel des caractères — indispensable pour les accents"
+                                              ]
+                                        ]
+                                  }
+                            },
+                            {
+                                  "titre": "Checklist de révision",
+                                  "type": "highlight",
+                                  "contenu": {
+                                        "items": [
+                                              "Je sais décrire les 5 couches d'un OS et le rôle de chacune",
+                                              "Je distingue les 3 types d'OS (propriétaire / monoposte / multi-utilisateurs)",
+                                              "Je connais les 3 flux standard avec leurs numéros (0, 1, 2)",
+                                              "Je connais la syntaxe de base : commande [options] [arguments]",
+                                              "Je sais que Linux est case-sensitive et j'en connais les conséquences",
+                                              "Je sais lire un prompt et identifier si l'utilisateur est root (#) ou standard ($)",
+                                              "Je connais au moins 4 shells Unix/Linux et leurs créateurs",
+                                              "Je sais me connecter en SSH depuis Windows (CMD, PowerShell, PuTTY)",
+                                              "Je connais les 3 façons de me déconnecter (exit, logout, Ctrl+D)",
+                                              "Je sais configurer PuTTY (UTF-8, taille police, Keypad Mode, sauvegarde de session)"
+                                        ]
+                                  }
+                            },
+                            {
+                                  "titre": "TL;DR — 10 points essentiels",
+                                  "type": "highlight",
+                                  "contenu": {
+                                        "items": [
+                                              "Un OS Linux s'organise en couches : **Matériel → Noyau → Shell → Applications → Utilisateurs**",
+                                              "Le **noyau (kernel)** gère les ressources — on ne le pilote jamais directement",
+                                              "**Bash** = shell par défaut Linux, issu du Bourne Shell, créé par Brian Fox",
+                                              "Syntaxe universelle : **`commande [options] [arguments]`**",
+                                              "Linux est **case-sensitive** : `ls` ≠ `Ls` ≠ `LS`",
+                                              "**3 flux** : stdin (0 = entrée), stdout (1 = sortie normale), stderr (2 = erreurs)",
+                                              "**`$`** = utilisateur standard | **`#`** = root — ne jamais travailler en root sans raison",
+                                              "Connexion distante = **SSH** : `ssh user@ip` depuis CMD, PowerShell ou PuTTY",
+                                              "**PuTTY** : configurer UTF-8, désactiver Application Keypad Mode, sauvegarder les sessions",
+                                              "Se déconnecter proprement : **`exit`** (universel) ou Ctrl+D"
+                                        ]
+                                  }
+                            }
+                      ]
+                },
+                {
+                      "id": "intro-linux-m04",
+                      "titre": "Premières commandes Bash, Variables et Aide",
+                      "emoji": "🔧",
+                      "description": "Root, variables Bash, historique, autocomplétion, commandes date/id/who.",
+                      "sections": [
+                            {
+                                  "titre": "Le compte root et la sécurité",
+                                  "type": "list",
+                                  "contenu": {
+                                        "description": "root est le superadministrateur Linux : il peut tout faire.",
+                                        "items": [
+                                              "**Ne jamais se connecter directement en root**, en particulier via SSH.",
+                                              "Sur de nombreuses distributions, la connexion SSH root est **désactivée par défaut**.",
+                                              "Bonne pratique : se connecter avec un compte utilisateur, puis élever les privilèges (`sudo` ou `su`).",
+                                              "Indicateur visuel : `$` = utilisateur standard | `#` = root."
+                                        ]
+                                  }
+                            },
+                            {
+                                  "titre": "Les variables",
+                                  "type": "list",
+                                  "contenu": {
+                                        "description": "Une variable = un contenant (nom) qui stocke un contenu (valeur).",
+                                        "items": [
+                                              "On **crée / modifie** une variable sans `$` : `monNom=\"Mathieu\"`",
+                                              "On **lit** une variable avec `$` : `echo $monNom`",
+                                              "On **supprime** une variable avec : `unset monNom`",
+                                              "Après `unset`, la variable ne retourne plus rien (chaîne vide)."
+                                        ]
+                                  }
+                            },
+                            {
+                                  "titre": "Variables d'environnement",
+                                  "type": "list",
+                                  "contenu": {
+                                        "description": "Générées automatiquement au démarrage ou à l'ouverture de session.",
+                                        "items": [
+                                              "Convention : noms en **MAJUSCULES** — `$HOME` ≠ `$home` (la casse est obligatoire).",
+                                              "`$HOME` = chemin du répertoire personnel | `$PATH` = répertoires des exécutables",
+                                              "`$SHELL` = chemin vers le shell actif | `$LANG` = langue et encodage | `$PWD` = répertoire courant",
+                                              "`~` = raccourci pour `$HOME` — saisi avec AltGr + 2 (AZERTY)",
+                                              "L'historique est stocké dans **`~/.bash_history`** — ne jamais y laisser de mots de passe."
+                                        ]
+                                  }
+                            },
+                            {
+                                  "titre": "Créer et utiliser une variable locale",
+                                  "type": "code",
+                                  "contenu": {
+                                        "description": "",
+                                        "langage": "bash",
+                                        "code": "monNom=\"Mathieu\"           # Création / affectation\necho $monNom               # Lecture : affiche \"Mathieu\"\necho \"Je m'appelle $monNom\"  # Utilisation dans une phrase\nunset monNom               # Suppression de la variable\necho $monNom               # Ne retourne plus rien"
+                                  }
+                            },
+                            {
+                                  "titre": "Formater la sortie de date",
+                                  "type": "code",
+                                  "contenu": {
+                                        "description": "",
+                                        "langage": "bash",
+                                        "code": "date +\"%A %d %B %Y\"           # Exemple : mardi 18 mai 2021\ndate +\"%Y%m%d\"                # Format horodatage fichier journal : 20210518\ndate +\"%A %d %B %Y%nIl est %H:%M\"  # Saut de ligne avec %n"
+                                  }
+                            },
+                            {
+                                  "titre": "Informations système et utilisateur",
+                                  "type": "table",
+                                  "contenu": {
+                                        "columns": [
+                                              "Commande",
+                                              "Description"
+                                        ],
+                                        "rows": [
+                                              [
+                                                    "`logname`",
+                                                    "Affiche le nom de l'utilisateur connecté"
+                                              ],
+                                              [
+                                                    "`id`",
+                                                    "Affiche UID, GID et groupes de l'utilisateur courant"
+                                              ],
+                                              [
+                                                    "`id -u user5`",
+                                                    "Affiche uniquement l'UID de l'utilisateur user5"
+                                              ],
+                                              [
+                                                    "`who`",
+                                                    "Liste les utilisateurs connectés"
+                                              ],
+                                              [
+                                                    "`who -H`",
+                                                    "Idem avec en-têtes de colonnes"
+                                              ],
+                                              [
+                                                    "`passwd`",
+                                                    "Change le mot de passe de l'utilisateur courant"
+                                              ]
+                                        ]
+                                  }
+                            },
+                            {
+                                  "titre": "Date, variables et aide",
+                                  "type": "table",
+                                  "contenu": {
+                                        "columns": [
+                                              "Commande",
+                                              "Description"
+                                        ],
+                                        "rows": [
+                                              [
+                                                    "`date`",
+                                                    "Affiche la date et l'heure système"
+                                              ],
+                                              [
+                                                    "`date +\"%A %d %B %Y %H:%M\"`",
+                                                    "Affichage formaté de la date"
+                                              ],
+                                              [
+                                                    "`cal`",
+                                                    "Calendrier du mois courant"
+                                              ],
+                                              [
+                                                    "`cal 03 2021`",
+                                                    "Calendrier du mois de mars 2021"
+                                              ],
+                                              [
+                                                    "`echo $NOM_VARIABLE`",
+                                                    "Affiche le contenu d'une variable"
+                                              ],
+                                              [
+                                                    "`env`",
+                                                    "Affiche toutes les variables d'environnement"
+                                              ],
+                                              [
+                                                    "`set`",
+                                                    "Affiche variables ET fonctions du shell (sortie longue)"
+                                              ],
+                                              [
+                                                    "`unset maVariable`",
+                                                    "Supprime une variable"
+                                              ],
+                                              [
+                                                    "`history`",
+                                                    "Liste les commandes précédemment exécutées"
+                                              ],
+                                              [
+                                                    "**`!!`**",
+                                                    "Réexécute la dernière commande"
+                                              ],
+                                              [
+                                                    "`!73`",
+                                                    "Réexécute la commande numéro 73 de l'historique"
+                                              ],
+                                              [
+                                                    "`man commande`",
+                                                    "Ouvre le manuel de la commande"
+                                              ],
+                                              [
+                                                    "`commande --help`",
+                                                    "Aide courte sur la commande"
+                                              ],
+                                              [
+                                                    "`help`",
+                                                    "Aide sur les commandes internes Bash"
+                                              ]
+                                        ]
+                                  }
+                            },
+                            {
+                                  "titre": "Symboles de formatage de date",
+                                  "type": "table",
+                                  "contenu": {
+                                        "columns": [
+                                              "Symbole",
+                                              "Signification",
+                                              "Exemple"
+                                        ],
+                                        "rows": [
+                                              [
+                                                    "`%A`",
+                                                    "Nom complet du jour",
+                                                    "mardi"
+                                              ],
+                                              [
+                                                    "`%d`",
+                                                    "Numéro du jour (01–31)",
+                                                    "18"
+                                              ],
+                                              [
+                                                    "`%B`",
+                                                    "Nom complet du mois",
+                                                    "mai"
+                                              ],
+                                              [
+                                                    "`%m`",
+                                                    "Numéro du mois (01–12)",
+                                                    "05"
+                                              ],
+                                              [
+                                                    "`%Y`",
+                                                    "Année sur 4 chiffres",
+                                                    "2021"
+                                              ],
+                                              [
+                                                    "`%H`",
+                                                    "Heure (00–23)",
+                                                    "13"
+                                              ],
+                                              [
+                                                    "`%M`",
+                                                    "Minutes (00–59)",
+                                                    "54"
+                                              ],
+                                              [
+                                                    "`%n`",
+                                                    "Saut de ligne",
+                                                    "(retour à la ligne)"
+                                              ]
+                                        ]
+                                  }
+                            },
+                            {
+                                  "titre": "Sections du manuel (man)",
+                                  "type": "table",
+                                  "contenu": {
+                                        "columns": [
+                                              "Section",
+                                              "Contenu"
+                                        ],
+                                        "rows": [
+                                              [
+                                                    "1",
+                                                    "Commandes utilisateur"
+                                              ],
+                                              [
+                                                    "5",
+                                                    "Fichiers de configuration"
+                                              ],
+                                              [
+                                                    "8",
+                                                    "Commandes d'administration système"
+                                              ]
+                                        ]
+                                  }
+                            },
+                            {
+                                  "titre": "Pièges & erreurs fréquentes",
+                                  "type": "table",
+                                  "contenu": {
+                                        "columns": [
+                                              "Symptôme",
+                                              "Cause",
+                                              "Solution"
+                                        ],
+                                        "rows": [
+                                              [
+                                                    "`echo $home` retourne vide",
+                                                    "Variable en minuscules → n'existe pas",
+                                                    "Utiliser $HOME (majuscules obligatoires)"
+                                              ],
+                                              [
+                                                    "Commande non trouvée après création d'un script",
+                                                    "Répertoire absent de $PATH",
+                                                    "Ajouter le répertoire à $PATH ou appeler avec son chemin complet"
+                                              ],
+                                              [
+                                                    "man affiche du texte illisible",
+                                                    "Traduction française incomplète",
+                                                    "Passer en anglais : LANG=C man commande"
+                                              ],
+                                              [
+                                                    "Connexion SSH refusée en root",
+                                                    "SSH root désactivé sur le serveur",
+                                                    "Se connecter avec un utilisateur standard puis élever les privilèges"
+                                              ]
+                                        ]
+                                  }
+                            },
+                            {
+                                  "titre": "Glossaire",
+                                  "type": "table",
+                                  "contenu": {
+                                        "columns": [
+                                              "Terme",
+                                              "Définition + exemple"
+                                        ],
+                                        "rows": [
+                                              [
+                                                    "**root**",
+                                                    "Superadministrateur Linux — accès illimité. Prompt : #"
+                                              ],
+                                              [
+                                                    "**UID**",
+                                                    "User Identifier — identifiant numérique unique d'un utilisateur. Ex : uid=1060"
+                                              ],
+                                              [
+                                                    "**GID**",
+                                                    "Group Identifier — identifiant numérique du groupe principal. Ex : gid=1060"
+                                              ],
+                                              [
+                                                    "**Variable locale**",
+                                                    "Variable créée manuellement, visible uniquement dans le shell courant. Ex : monNom=\"Mathieu\""
+                                              ],
+                                              [
+                                                    "**Variable d'environnement**",
+                                                    "Variable système générée automatiquement, disponible pour tous les processus. Ex : $PATH"
+                                              ],
+                                              [
+                                                    "**`$PATH`**",
+                                                    "Liste des répertoires où Bash cherche les exécutables. Ex : /usr/bin:/usr/sbin:/bin"
+                                              ],
+                                              [
+                                                    "**`$HOME`**",
+                                                    "Répertoire personnel de l'utilisateur. Ex : /home/user1 — aussi accessible via ~"
+                                              ],
+                                              [
+                                                    "**`~/.bash_history`**",
+                                                    "Fichier caché stockant l'historique des commandes Bash"
+                                              ],
+                                              [
+                                                    "**`man`**",
+                                                    "Manuel en ligne des commandes et fichiers de config Linux"
+                                              ],
+                                              [
+                                                    "**`unset`**",
+                                                    "Commande supprimant une variable de la mémoire shell"
+                                              ]
+                                        ]
+                                  }
+                            },
+                            {
+                                  "titre": "Checklist de révision",
+                                  "type": "highlight",
+                                  "contenu": {
+                                        "items": [
+                                              "Je sais lire un prompt et distinguer $ (standard) de # (root)",
+                                              "Je connais les raisons de ne pas utiliser root directement en SSH",
+                                              "Je sais créer, lire, modifier et supprimer une variable locale",
+                                              "Je connais les 6 variables d'environnement essentielles ($HOME, $PATH, $SHELL, $LOGNAME, $LANG, $PWD)",
+                                              "Je sais utiliser env pour lister les variables d'environnement",
+                                              "Je maîtrise la commande date avec formatage (%A, %d, %B, %Y, %H, %M)",
+                                              "Je sais naviguer et rechercher dans man (/, n, q)",
+                                              "Je connais la différence entre --help, man et help",
+                                              "Je sais utiliser history, !!, !n et !string",
+                                              "Je connais l'emplacement du fichier d'historique : ~/.bash_history"
+                                        ]
+                                  }
+                            },
+                            {
+                                  "titre": "TL;DR — 10 points essentiels",
+                                  "type": "highlight",
+                                  "contenu": {
+                                        "items": [
+                                              "**`$` = standard | `#` = root** — ne jamais travailler en root sans nécessité",
+                                              "Variables : **sans `$`** pour créer (`var=\"valeur\"`) | **avec `$`** pour lire (`echo $var`)",
+                                              "Variables d'environnement en **MAJUSCULES** par convention — `$HOME` ≠ `$home`",
+                                              "**`$HOME`** = répertoire personnel | **`$PATH`** = chemins des exécutables | **`~`** = raccourci `$HOME`",
+                                              "`env` = variables d'environnement | `set` = variables + fonctions (sortie complète)",
+                                              "`unset maVar` supprime définitivement une variable de la mémoire",
+                                              "**`date +\"%A %d %B %Y\"`** = date formatée | **`%Y%m%d`** = format horodatage fichier",
+                                              "**`man`** = documentation complète | naviguer : ↑↓, chercher : /mot, quitter : q",
+                                              "**`Tab`** = autocomplétion | **`history`** + `!n` = rappel de commandes précédentes",
+                                              "Historique stocké dans **`~/.bash_history`** — ne jamais y laisser de mots de passe"
+                                        ]
+                                  }
+                            }
+                      ]
+                },
+                {
+                      "id": "intro-linux-m05",
+                      "titre": "Arborescence Linux, Manipulation de Fichiers & Métacaractères",
+                      "emoji": "📁",
+                      "description": "FHS, navigation, touch/mv/cp/rm, ls, métacaractères Bash.",
+                      "sections": [
+                            {
+                                  "titre": "L'arborescence Linux (FHS)",
+                                  "type": "list",
+                                  "contenu": {
+                                        "description": "Sous Linux, une seule racine : / — tout part de là.",
+                                        "items": [
+                                              "Contrairement à Windows (C:\\, D:\\...), il n'y a **pas de lettres de lecteur**.",
+                                              "Les disques et partitions sont connectés via des **points de montage** (dossiers dans l'arborescence).",
+                                              "Le FHS (_Filesystem Hierarchy Standard_) définit l'organisation standard — actuellement en **version 3.0**."
+                                        ]
+                                  }
+                            },
+                            {
+                                  "titre": "Chemin absolu vs chemin relatif",
+                                  "type": "list",
+                                  "contenu": {
+                                        "description": "Deux façons de désigner un fichier ou dossier.",
+                                        "items": [
+                                              "**Absolu** : commence toujours par `/` — chemin complet depuis la racine. Ex : `/home/user01/mon_rep`",
+                                              "**Relatif** : construit depuis l'emplacement courant (sans `/` au début). Ex : `mon_rep` ou `../dossier`",
+                                              "`.` = répertoire courant | `..` = répertoire parent | `~` = `$HOME` | `./hello.sh` = exécuter dans le répertoire courant"
+                                        ]
+                                  }
+                            },
+                            {
+                                  "titre": "Fichiers cachés & extensions",
+                                  "type": "list",
+                                  "contenu": {
+                                        "description": "Spécificités Linux vs Windows.",
+                                        "items": [
+                                              "Tout fichier ou dossier dont le nom **commence par `.`** est caché sous Linux.",
+                                              "Exemples : `.bash_history`, `.bashrc`, `.profile` — visibles uniquement avec `ls -a`.",
+                                              "Les extensions n'ont **aucune signification technique** sous Linux — uniquement indicatives pour l'humain."
+                                        ]
+                                  }
+                            },
+                            {
+                                  "titre": "Métacaractères — principe",
+                                  "type": "list",
+                                  "contenu": {
+                                        "description": "Les métacaractères permettent des sélections génériques sur les noms de fichiers.",
+                                        "items": [
+                                              "Ils sont interprétés par le shell **avant** l'exécution de la commande.",
+                                              "`*` = n'importe quels caractères (0 ou plus) | `?` = un seul caractère quelconque",
+                                              "`[abc]` = un caractère parmi a, b ou c | `[a-z]` = plage | `[!Tt]` = tout sauf T ou t",
+                                              "`{jpg,png,gif}` = choix multiples"
+                                        ]
+                                  }
+                            },
+                            {
+                                  "titre": "Naviguer dans l'arborescence",
+                                  "type": "code",
+                                  "contenu": {
+                                        "description": "",
+                                        "langage": "bash",
+                                        "code": "cd /home/user01          # Chemin absolu\ncd mon_rep               # Chemin relatif\ncd ..                    # Remonter d'un niveau\ncd ../../                # Remonter de deux niveaux\ncd -                     # Retourner à l'emplacement précédent ($OLDPWD)\ncd                       # Retour au répertoire personnel\npwd                      # Afficher le chemin courant"
+                                  }
+                            },
+                            {
+                                  "titre": "Créer, déplacer, copier, supprimer",
+                                  "type": "code",
+                                  "contenu": {
+                                        "description": "",
+                                        "langage": "bash",
+                                        "code": "touch fichier01.txt              # Créer un fichier vide\n\nmv fichier01.txt /tmp/           # Déplacer un fichier\nmv fichier01.txt fichier02.txt   # Renommer\nmv fichier01.txt /tmp/new.txt    # Déplacer ET renommer\n\ncp fichier01.txt fichier02.txt   # Copier un fichier\ncp -r dossier/ copie_dossier/    # Copier un dossier récursivement\ncp -p source dest                # Copier en préservant les permissions\n\nmkdir -p -v IR02/IR03            # Créer des niveaux imbriqués\nrmdir dossier01                  # Supprimer un dossier VIDE uniquement\n\nrm fichier.txt                   # Supprimer un fichier (SANS corbeille)\nrm -r dossier/                   # Supprimer un dossier et son contenu\nrm -rf dossier/                  # Forcer la suppression récursive (DANGEREUX)"
+                                  }
+                            },
+                            {
+                                  "titre": "Répertoires principaux du FHS",
+                                  "type": "table",
+                                  "contenu": {
+                                        "columns": [
+                                              "Répertoire",
+                                              "Équivalent Windows",
+                                              "Rôle"
+                                        ],
+                                        "rows": [
+                                              [
+                                                    "`/home`",
+                                                    "C:\\Users",
+                                                    "Répertoires personnels des utilisateurs"
+                                              ],
+                                              [
+                                                    "`/root`",
+                                                    "N/A",
+                                                    "Répertoire personnel de root (hors /home)"
+                                              ],
+                                              [
+                                                    "`/etc`",
+                                                    "Base de registre",
+                                                    "Fichiers de configuration système"
+                                              ],
+                                              [
+                                                    "`/var`",
+                                                    "N/A",
+                                                    "Données variables : logs, bases de données"
+                                              ],
+                                              [
+                                                    "`/tmp`",
+                                                    "%TEMP%",
+                                                    "Fichiers temporaires (vidé au redémarrage)"
+                                              ],
+                                              [
+                                                    "`/bin`, `/usr/bin`",
+                                                    "C:\\Windows\\System32",
+                                                    "Commandes utilisables par tous"
+                                              ],
+                                              [
+                                                    "`/sbin`",
+                                                    "N/A",
+                                                    "Commandes d'administration (root)"
+                                              ],
+                                              [
+                                                    "`/opt`",
+                                                    "C:\\Program Files",
+                                                    "Applications installées manuellement"
+                                              ],
+                                              [
+                                                    "`/boot`",
+                                                    "N/A",
+                                                    "Fichiers de démarrage du système"
+                                              ],
+                                              [
+                                                    "`/dev`",
+                                                    "N/A",
+                                                    "Fichiers périphériques (réels et virtuels)"
+                                              ],
+                                              [
+                                                    "`/media`, `/mnt`",
+                                                    "Lecteurs amovibles",
+                                                    "Points de montage (USB, CD, partitions)"
+                                              ],
+                                              [
+                                                    "`/proc`, `/sys`",
+                                                    "N/A",
+                                                    "Répertoires virtuels (en mémoire uniquement)"
+                                              ]
+                                        ]
+                                  }
+                            },
+                            {
+                                  "titre": "Commandes utiles",
+                                  "type": "table",
+                                  "contenu": {
+                                        "columns": [
+                                              "Commande",
+                                              "Description"
+                                        ],
+                                        "rows": [
+                                              [
+                                                    "`cd chemin`",
+                                                    "Se déplacer dans l'arborescence"
+                                              ],
+                                              [
+                                                    "`pwd`",
+                                                    "Afficher le répertoire courant"
+                                              ],
+                                              [
+                                                    "`ls [options]`",
+                                                    "Lister fichiers et dossiers"
+                                              ],
+                                              [
+                                                    "`mkdir [-p] [-v] dossier`",
+                                                    "Créer un ou plusieurs dossiers"
+                                              ],
+                                              [
+                                                    "`rmdir [-p] [-v] dossier`",
+                                                    "Supprimer un dossier vide"
+                                              ],
+                                              [
+                                                    "`touch fichier`",
+                                                    "Créer un fichier vide / mettre à jour sa date"
+                                              ],
+                                              [
+                                                    "`mv source dest`",
+                                                    "Déplacer ou renommer"
+                                              ],
+                                              [
+                                                    "`cp [-r] [-p] source dest`",
+                                                    "Copier fichier ou dossier"
+                                              ],
+                                              [
+                                                    "`rm [-r] [-f] fichier`",
+                                                    "Supprimer (sans corbeille)"
+                                              ],
+                                              [
+                                                    "`ls -l`",
+                                                    "Format long (permissions, taille, date…)"
+                                              ],
+                                              [
+                                                    "`ls -a`",
+                                                    "Inclure les fichiers cachés"
+                                              ],
+                                              [
+                                                    "`ls -lh`",
+                                                    "Long + tailles lisibles (K, M, G)"
+                                              ],
+                                              [
+                                                    "`ls -ltr`",
+                                                    "Long + tri par date inversée"
+                                              ],
+                                              [
+                                                    "`shopt -s extglob`",
+                                                    "Activer les quantificateurs étendus Bash"
+                                              ]
+                                        ]
+                                  }
+                            },
+                            {
+                                  "titre": "Métacaractères Bash",
+                                  "type": "table",
+                                  "contenu": {
+                                        "columns": [
+                                              "Métacaractère",
+                                              "Signification",
+                                              "Exemple"
+                                        ],
+                                        "rows": [
+                                              [
+                                                    "`*`",
+                                                    "N'importe quels caractères (0 ou plus)",
+                                                    "`ls *.txt`"
+                                              ],
+                                              [
+                                                    "`?`",
+                                                    "Un seul caractère quelconque",
+                                                    "`ls tel20??`"
+                                              ],
+                                              [
+                                                    "`[abc]`",
+                                                    "Un caractère parmi a, b ou c",
+                                                    "`ls [Tt]el*`"
+                                              ],
+                                              [
+                                                    "`[a-z]`",
+                                                    "Un caractère dans la plage a à z",
+                                                    "`ls tel20[0-9][0-9]`"
+                                              ],
+                                              [
+                                                    "`[!Tt]` ou `[^Tt]`",
+                                                    "Tout sauf T ou t",
+                                                    "`ls [!Tt]*`"
+                                              ],
+                                              [
+                                                    "`{jpg,png,gif}`",
+                                                    "Choix multiples",
+                                                    "`ls *.{jpg,png,gif}`"
+                                              ]
+                                        ]
+                                  }
+                            },
+                            {
+                                  "titre": "Quantificateurs Bash (extglob)",
+                                  "type": "table",
+                                  "contenu": {
+                                        "columns": [
+                                              "Quantificateur",
+                                              "Signification"
+                                        ],
+                                        "rows": [
+                                              [
+                                                    "`?(expr)`",
+                                                    "0 ou 1 fois (optionnel)"
+                                              ],
+                                              [
+                                                    "`*(expr)`",
+                                                    "0 ou plusieurs fois"
+                                              ],
+                                              [
+                                                    "`+(expr)`",
+                                                    "1 ou plusieurs fois (au moins une fois)"
+                                              ],
+                                              [
+                                                    "`@(expr)`",
+                                                    "Exactement 1 fois"
+                                              ],
+                                              [
+                                                    "`!(expr)`",
+                                                    "Tout sauf cette expression"
+                                              ]
+                                        ]
+                                  }
+                            },
+                            {
+                                  "titre": "Guillemets et caractères spéciaux",
+                                  "type": "table",
+                                  "contenu": {
+                                        "columns": [
+                                              "Syntaxe",
+                                              "Effet"
+                                        ],
+                                        "rows": [
+                                              [
+                                                    "`\"texte $VAR\"`",
+                                                    "Double quotes : les variables sont interprétées"
+                                              ],
+                                              [
+                                                    "`'texte $VAR'`",
+                                                    "Simples quotes : tout est littéral, pas d'interprétation"
+                                              ],
+                                              [
+                                                    "`\\$`",
+                                                    "Anti-slash : neutralise le caractère suivant (ici $)"
+                                              ],
+                                              [
+                                                    "`$(commande)`",
+                                                    "Substitution de commande : insère le résultat"
+                                              ]
+                                        ]
+                                  }
+                            },
+                            {
+                                  "titre": "Pièges & erreurs fréquentes",
+                                  "type": "table",
+                                  "contenu": {
+                                        "columns": [
+                                              "Symptôme",
+                                              "Cause",
+                                              "Solution"
+                                        ],
+                                        "rows": [
+                                              [
+                                                    "`rmdir` refuse de supprimer",
+                                                    "Le dossier n'est pas vide",
+                                                    "Vider le dossier d'abord, ou utiliser rm -r"
+                                              ],
+                                              [
+                                                    "`mkdir IR02/IR03` échoue",
+                                                    "IR02 n'existe pas encore",
+                                                    "Ajouter l'option -p : mkdir -p IR02/IR03"
+                                              ],
+                                              [
+                                                    "`cp dossier/ dest/` incomplet",
+                                                    "Oubli de -r",
+                                                    "Toujours utiliser cp -r pour les dossiers"
+                                              ],
+                                              [
+                                                    "`ls *.TXT` ne trouve rien",
+                                                    "Linux est case-sensitive",
+                                                    "*.txt ≠ *.TXT — respecter la casse"
+                                              ],
+                                              [
+                                                    "`ls +([e])*` ne fonctionne pas",
+                                                    "extglob non activé",
+                                                    "shopt -s extglob avant d'utiliser les quantificateurs"
+                                              ],
+                                              [
+                                                    "`echo \"prix $5\"` affiche mal",
+                                                    "$5 interprété comme variable",
+                                                    "Utiliser des simples quotes : echo 'prix $5'"
+                                              ]
+                                        ]
+                                  }
+                            },
+                            {
+                                  "titre": "Glossaire",
+                                  "type": "table",
+                                  "contenu": {
+                                        "columns": [
+                                              "Terme",
+                                              "Définition + exemple"
+                                        ],
+                                        "rows": [
+                                              [
+                                                    "**FHS**",
+                                                    "Filesystem Hierarchy Standard — norme définissant l'arborescence Linux/Unix"
+                                              ],
+                                              [
+                                                    "**Racine `/`**",
+                                                    "Point le plus haut de l'arborescence Linux — tout en part"
+                                              ],
+                                              [
+                                                    "**Chemin absolu**",
+                                                    "Chemin complet depuis /. Ex : /home/user01/fichier.txt"
+                                              ],
+                                              [
+                                                    "**Chemin relatif**",
+                                                    "Chemin depuis l'emplacement courant. Ex : ../dossier/fichier.txt"
+                                              ],
+                                              [
+                                                    "**Point de montage**",
+                                                    "Répertoire où un disque/partition/périphérique est connecté. Ex : /media/usb"
+                                              ],
+                                              [
+                                                    "**Fichier caché**",
+                                                    "Fichier dont le nom commence par . Ex : .bashrc"
+                                              ],
+                                              [
+                                                    "**Métacaractère**",
+                                                    "Caractère avec signification spéciale dans le shell. Ex : *, ?, []"
+                                              ],
+                                              [
+                                                    "**extglob**",
+                                                    "Option Bash activant les quantificateurs étendus (?(), +(), etc.)"
+                                              ],
+                                              [
+                                                    "**`touch`**",
+                                                    "Crée un fichier vide ou met à jour la date de modification"
+                                              ],
+                                              [
+                                                    "**`mv`**",
+                                                    "Déplacer OU renommer un fichier/dossier"
+                                              ],
+                                              [
+                                                    "**`cp -r`**",
+                                                    "Copier récursivement un dossier et son contenu"
+                                              ],
+                                              [
+                                                    "**`rm -rf`**",
+                                                    "Suppression récursive forcée — irréversible, à utiliser avec extrême précaution"
+                                              ],
+                                              [
+                                                    "**`$OLDPWD`**",
+                                                    "Variable stockant le répertoire précédent — utilisée par cd -"
+                                              ]
+                                        ]
+                                  }
+                            },
+                            {
+                                  "titre": "Checklist de révision",
+                                  "type": "highlight",
+                                  "contenu": {
+                                        "items": [
+                                              "Je connais les principaux répertoires du FHS et leur rôle (/etc, /var, /tmp, /home, /bin, /dev…)",
+                                              "Je distingue chemin absolu (commence par /) et chemin relatif",
+                                              "Je maîtrise cd avec ., .., ~, -, chemin absolu et relatif",
+                                              "Je sais créer des dossiers imbriqués avec mkdir -p",
+                                              "Je sais que rmdir ne fonctionne que sur des dossiers vides",
+                                              "Je connais les options essentielles de ls : -l, -a, -h, -r, -t, -R, -d",
+                                              "Je connais touch, mv, cp, rm et leurs options principales",
+                                              "Je sais que rm est irréversible (pas de corbeille en CLI)",
+                                              "Je maîtrise les 4 métacaractères : *, ?, [], {}",
+                                              "Je connais les quantificateurs ?(), *(), +(), @(), !() et l'option extglob",
+                                              "Je distingue doubles quotes (variables interprétées) et simples quotes (tout littéral)"
+                                        ]
+                                  }
+                            },
+                            {
+                                  "titre": "TL;DR — 10 points essentiels",
+                                  "type": "highlight",
+                                  "contenu": {
+                                        "items": [
+                                              "Linux = **une seule racine `/`** — tout y est rattaché, pas de lettres de lecteur",
+                                              "FHS : `/etc` = config | `/var` = logs | `/tmp` = temporaire | `/home` = users | `/bin` = commandes",
+                                              "**Absolu** = commence par `/` | **Relatif** = depuis où on est | `.` = ici | `..` = parent | `~` = home",
+                                              "`cd -` = retour au dossier précédent | `mkdir -p` = créer niveaux imbriqués",
+                                              "`ls -ltr` = liste triée par date inversée → réflexe admin pour voir les derniers fichiers modifiés",
+                                              "`touch` = créer fichier vide OU mettre à jour la date de modification",
+                                              "`mv` = déplacer ET renommer | `cp -r` = copier récursivement | `rm` = **irréversible**, pas de corbeille",
+                                              "`*` = tout | `?` = un seul caractère | `[abc]` = un parmi la liste | `{jpg,png}` = choix multiples",
+                                              "`[!Tt]` = tout sauf T ou t | `+(expr)` = au moins une fois (nécessite shopt -s extglob)",
+                                              "Doubles quotes `\"...\"` = variables interprétées | Simples quotes `'...'` = tout littéral"
+                                        ]
+                                  }
+                            }
+                      ]
+                },
+                {
+                      "id": "intro-linux-m06",
+                      "titre": "Lecture de Fichiers, Types, Inodes & Liens",
+                      "emoji": "🔗",
+                      "description": "cat, less, head, tail, wc, types de fichiers, inodes, liens symboliques et physiques.",
+                      "sections": [
+                            {
+                                  "titre": "Tout est fichier sous Unix/Linux",
+                                  "type": "list",
+                                  "contenu": {
+                                        "description": "Principe fondateur de Unix/Linux.",
+                                        "items": [
+                                              "Sous Linux, **absolument tout est représenté par un fichier** : dossiers, disques durs, clavier, écran, imprimante, périphériques USB, etc.",
+                                              "Il n'y a **pas de notion d'extension technique** — l'extension n'existe que pour l'humain.",
+                                              "La commande `file` permet de déterminer le type réel d'un fichier indépendamment de son nom."
+                                        ]
+                                  }
+                            },
+                            {
+                                  "titre": "Types de fichiers",
+                                  "type": "table",
+                                  "contenu": {
+                                        "columns": [
+                                              "Lettre",
+                                              "Type",
+                                              "Exemple"
+                                        ],
+                                        "rows": [
+                                              [
+                                                    "`-`",
+                                                    "Fichier standard",
+                                                    "contact.txt, image.png, script.sh"
+                                              ],
+                                              [
+                                                    "`d`",
+                                                    "Répertoire (_directory_)",
+                                                    "/home, /etc"
+                                              ],
+                                              [
+                                                    "`l`",
+                                                    "Lien symbolique",
+                                                    "edition1.txt -> Edition"
+                                              ],
+                                              [
+                                                    "`b`",
+                                                    "Périphérique bloc",
+                                                    "Disque dur, partition, clé USB, CD-ROM"
+                                              ],
+                                              [
+                                                    "`c`",
+                                                    "Périphérique caractère",
+                                                    "Terminal, port série"
+                                              ],
+                                              [
+                                                    "`p`",
+                                                    "Tube nommé (_pipe_)",
+                                                    "Communication inter-processus"
+                                              ],
+                                              [
+                                                    "`s`",
+                                                    "Socket",
+                                                    "Communication réseau locale"
+                                              ]
+                                        ]
+                                  }
+                            },
+                            {
+                                  "titre": "Les inodes",
+                                  "type": "list",
+                                  "contenu": {
+                                        "description": "Un inode est une structure de métadonnées associée à chaque fichier.",
+                                        "items": [
+                                              "L'inode contient : type du fichier, UID/GID propriétaire, permissions, dates, taille, **pointeurs vers les blocs de données**.",
+                                              "**L'inode ne contient PAS le nom du fichier** — le nom est stocké dans le répertoire.",
+                                              "Accès via `ls -i` pour voir les numéros d'inode."
+                                        ]
+                                  }
+                            },
+                            {
+                                  "titre": "Liens symboliques vs liens physiques",
+                                  "type": "table",
+                                  "contenu": {
+                                        "columns": [
+                                              "Critère",
+                                              "Lien symbolique (`ln -s`)",
+                                              "Lien physique (`ln`)"
+                                        ],
+                                        "rows": [
+                                              [
+                                                    "Inode",
+                                                    "Différent du fichier source",
+                                                    "**Même inode** que le source"
+                                              ],
+                                              [
+                                                    "Affichage `ls -l`",
+                                                    "`l` + couleur cyan + `->`",
+                                                    "`-` (fichier standard)"
+                                              ],
+                                              [
+                                                    "Répertoires",
+                                                    "Possible",
+                                                    "Impossible"
+                                              ],
+                                              [
+                                                    "Partitions différentes",
+                                                    "Possible",
+                                                    "Limité à une seule partition"
+                                              ],
+                                              [
+                                                    "Si fichier source déplacé",
+                                                    "Lien cassé (rouge)",
+                                                    "Toujours fonctionnel"
+                                              ],
+                                              [
+                                                    "Si fichier source supprimé",
+                                                    "Lien mort",
+                                                    "Données accessibles tant qu'un lien existe"
+                                              ],
+                                              [
+                                                    "Compteur de liens",
+                                                    "Non affecté",
+                                                    "Incrémenté / décrémenté"
+                                              ]
+                                        ]
+                                  }
+                            },
+                            {
+                                  "titre": "Fonctionnement du compteur de liens physiques",
+                                  "type": "list",
+                                  "contenu": {
+                                        "description": "Dans ls -l, le chiffre entre permissions et propriétaire.",
+                                        "items": [
+                                              "À la création d'un fichier : compteur = 1",
+                                              "À chaque `ln` (lien physique ajouté) : compteur +1",
+                                              "À chaque `rm` d'un lien : compteur -1",
+                                              "Quand compteur = 0 → **l'inode est libéré** et les données effacées."
+                                        ]
+                                  }
+                            },
+                            {
+                                  "titre": "Créer des liens et vérifier les inodes",
+                                  "type": "code",
+                                  "contenu": {
+                                        "description": "",
+                                        "langage": "bash",
+                                        "code": "# Lien symbolique\nln -s fichier_long.txt fl.txt          # Dans le même répertoire\nln -s /chemin/absolu/source /chemin/absolu/cible  # Chemins absolus (recommandé)\n\n# Lien physique\nln fichier_long.txt fl01.txt           # Même partition obligatoire\n\n# Vérification\nls -l          # Voir le type, compteur de liens, flèche ->\nls -li         # Ajouter les numéros d'inode\nls -la         # Inclure les fichiers cachés\nfile nom       # Identifier le type réel d'un fichier"
+                                  }
+                            },
+                            {
+                                  "titre": "Commandes de lecture",
+                                  "type": "table",
+                                  "contenu": {
+                                        "columns": [
+                                              "Commande",
+                                              "Description"
+                                        ],
+                                        "rows": [
+                                              [
+                                                    "`cat fichier`",
+                                                    "Affiche tout le fichier en une fois"
+                                              ],
+                                              [
+                                                    "`cat f1.txt f2.txt`",
+                                                    "Concatène et affiche plusieurs fichiers"
+                                              ],
+                                              [
+                                                    "`cat > fichier.txt`",
+                                                    "Crée un fichier et saisit du contenu (Ctrl+D pour finir)"
+                                              ],
+                                              [
+                                                    "`more fichier`",
+                                                    "Lecture page par page (descendant uniquement)"
+                                              ],
+                                              [
+                                                    "`less fichier`",
+                                                    "Lecture interactive (haut/bas, recherche, etc.)"
+                                              ],
+                                              [
+                                                    "`head fichier`",
+                                                    "Affiche les 10 premières lignes (par défaut)"
+                                              ],
+                                              [
+                                                    "`head -n 5 fichier`",
+                                                    "Affiche les 5 premières lignes"
+                                              ],
+                                              [
+                                                    "`tail fichier`",
+                                                    "Affiche les 10 dernières lignes (par défaut)"
+                                              ],
+                                              [
+                                                    "`tail -n 30 fichier`",
+                                                    "Affiche les 30 dernières lignes"
+                                              ],
+                                              [
+                                                    "`tail -f fichier.log`",
+                                                    "Suivi en temps réel (Ctrl+C pour arrêter)"
+                                              ],
+                                              [
+                                                    "`wc fichier`",
+                                                    "Compte lignes, mots, caractères"
+                                              ],
+                                              [
+                                                    "`wc -l fichier`",
+                                                    "Compte uniquement les lignes"
+                                              ],
+                                              [
+                                                    "`file nom`",
+                                                    "Identifie le type réel d'un fichier"
+                                              ],
+                                              [
+                                                    "`ln -s source cible`",
+                                                    "Crée un lien symbolique"
+                                              ],
+                                              [
+                                                    "`ln source cible`",
+                                                    "Crée un lien physique"
+                                              ]
+                                        ]
+                                  }
+                            },
+                            {
+                                  "titre": "Navigation dans less",
+                                  "type": "table",
+                                  "contenu": {
+                                        "columns": [
+                                              "Touche",
+                                              "Action"
+                                        ],
+                                        "rows": [
+                                              [
+                                                    "`Espace`",
+                                                    "Page suivante"
+                                              ],
+                                              [
+                                                    "`b`",
+                                                    "Page précédente"
+                                              ],
+                                              [
+                                                    "`j` / `↓`",
+                                                    "Ligne suivante"
+                                              ],
+                                              [
+                                                    "`k` / `↑`",
+                                                    "Ligne précédente"
+                                              ],
+                                              [
+                                                    "`g` (minuscule)",
+                                                    "Aller au début du fichier"
+                                              ],
+                                              [
+                                                    "`G` (majuscule)",
+                                                    "Aller à la fin du fichier"
+                                              ],
+                                              [
+                                                    "`/mot`",
+                                                    "Rechercher mot"
+                                              ],
+                                              [
+                                                    "`n`",
+                                                    "Occurrence suivante"
+                                              ],
+                                              [
+                                                    "`N`",
+                                                    "Occurrence précédente"
+                                              ],
+                                              [
+                                                    "`h`",
+                                                    "Aide interne"
+                                              ],
+                                              [
+                                                    "`q`",
+                                                    "Quitter"
+                                              ]
+                                        ]
+                                  }
+                            },
+                            {
+                                  "titre": "Comparatif commandes de lecture",
+                                  "type": "table",
+                                  "contenu": {
+                                        "columns": [
+                                              "Commande",
+                                              "Fichier court",
+                                              "Fichier long",
+                                              "Remontée",
+                                              "Recherche",
+                                              "Temps réel"
+                                        ],
+                                        "rows": [
+                                              [
+                                                    "`cat`",
+                                                    "Idéal",
+                                                    "Défile tout",
+                                                    "Non",
+                                                    "Non",
+                                                    "Non"
+                                              ],
+                                              [
+                                                    "`more`",
+                                                    "Oui",
+                                                    "Oui",
+                                                    "Non",
+                                                    "Non",
+                                                    "Non"
+                                              ],
+                                              [
+                                                    "`less`",
+                                                    "Oui",
+                                                    "**Idéal**",
+                                                    "Oui",
+                                                    "Oui",
+                                                    "Non"
+                                              ],
+                                              [
+                                                    "`head`",
+                                                    "Oui",
+                                                    "Début seul",
+                                                    "Non",
+                                                    "Non",
+                                                    "Non"
+                                              ],
+                                              [
+                                                    "`tail`",
+                                                    "Oui",
+                                                    "Fin seule",
+                                                    "Non",
+                                                    "Non",
+                                                    "Oui (-f)"
+                                              ]
+                                        ]
+                                  }
+                            },
+                            {
+                                  "titre": "Options de wc",
+                                  "type": "table",
+                                  "contenu": {
+                                        "columns": [
+                                              "Option",
+                                              "Compte"
+                                        ],
+                                        "rows": [
+                                              [
+                                                    "`wc -l`",
+                                                    "Nombre de lignes"
+                                              ],
+                                              [
+                                                    "`wc -w`",
+                                                    "Nombre de mots"
+                                              ],
+                                              [
+                                                    "`wc -c`",
+                                                    "Nombre d'octets"
+                                              ],
+                                              [
+                                                    "`wc -m`",
+                                                    "Nombre de caractères"
+                                              ]
+                                        ]
+                                  }
+                            },
+                            {
+                                  "titre": "Pièges & erreurs fréquentes",
+                                  "type": "table",
+                                  "contenu": {
+                                        "columns": [
+                                              "Symptôme",
+                                              "Cause",
+                                              "Solution"
+                                        ],
+                                        "rows": [
+                                              [
+                                                    "`cat` sur un long fichier → tout défile",
+                                                    "cat n'est pas paginé",
+                                                    "Utiliser less à la place"
+                                              ],
+                                              [
+                                                    "Lien symbolique en rouge",
+                                                    "Chemin source incorrect du point de vue du lien",
+                                                    "Utiliser des chemins absolus ou recréer avec le bon chemin relatif"
+                                              ],
+                                              [
+                                                    "`ln` (physique) entre partitions → erreur",
+                                                    "Les inodes sont propres à chaque partition",
+                                                    "Utiliser un lien symbolique à la place"
+                                              ],
+                                              [
+                                                    "`tail -f` bloque le terminal",
+                                                    "Mode suivi actif",
+                                                    "Ctrl+C pour quitter"
+                                              ],
+                                              [
+                                                    "`wc` compte 3 valeurs mais lesquelles ?",
+                                                    "Ordre : lignes, mots, caractères",
+                                                    "wc -l pour cibler uniquement les lignes"
+                                              ],
+                                              [
+                                                    "Suppression du fichier source → lien symbolique mort",
+                                                    "Le lien pointe un chemin qui n'existe plus",
+                                                    "Recréer le fichier source ou recréer le lien vers le nouvel emplacement"
+                                              ]
+                                        ]
+                                  }
+                            },
+                            {
+                                  "titre": "Glossaire",
+                                  "type": "table",
+                                  "contenu": {
+                                        "columns": [
+                                              "Terme",
+                                              "Définition + exemple"
+                                        ],
+                                        "rows": [
+                                              [
+                                                    "**Inode**",
+                                                    "Structure de métadonnées d'un fichier (type, permissions, taille, pointeurs). Ne contient PAS le nom"
+                                              ],
+                                              [
+                                                    "**Lien symbolique**",
+                                                    "Fichier contenant un chemin vers un autre fichier. Équivalent d'un raccourci Windows. Commande : ln -s"
+                                              ],
+                                              [
+                                                    "**Lien physique**",
+                                                    "Nom supplémentaire pointant vers le même inode. Commande : ln"
+                                              ],
+                                              [
+                                                    "**Lien mort / cassé**",
+                                                    "Lien symbolique dont le fichier source a été déplacé ou supprimé → apparaît en rouge"
+                                              ],
+                                              [
+                                                    "**Compteur de liens**",
+                                                    "Champ dans ls -l indiquant le nombre de liens physiques vers un inode"
+                                              ],
+                                              [
+                                                    "**`cat`**",
+                                                    "Concatenate — affiche ou concatène le contenu de fichiers"
+                                              ],
+                                              [
+                                                    "**`less`**",
+                                                    "Lecteur de fichier interactif avec navigation haut/bas et recherche"
+                                              ],
+                                              [
+                                                    "**`tail -f`**",
+                                                    "Suivi de fichier en temps réel — indispensable pour les logs en production"
+                                              ],
+                                              [
+                                                    "**`wc`**",
+                                                    "Word Count — compte lignes (-l), mots (-w), caractères (-m), octets (-c)"
+                                              ],
+                                              [
+                                                    "**`file`**",
+                                                    "Commande identifiant le type réel d'un fichier indépendamment de son extension"
+                                              ]
+                                        ]
+                                  }
+                            },
+                            {
+                                  "titre": "Checklist de révision",
+                                  "type": "highlight",
+                                  "contenu": {
+                                        "items": [
+                                              "Je sais expliquer tout est fichier sous Linux avec des exemples",
+                                              "Je connais les 7 types de fichiers et leur lettre (-, d, l, b, c, p, s)",
+                                              "Je sais ce que contient un inode (et ce qu'il ne contient PAS : le nom du fichier)",
+                                              "Je sais utiliser cat, less, head, tail, wc et choisir la bonne commande selon le contexte",
+                                              "Je connais les raccourcis de navigation dans less (/, n, N, g, G, q)",
+                                              "Je sais utiliser tail -f pour suivre un fichier de log en temps réel",
+                                              "Je sais créer un lien symbolique avec ln -s et un lien physique avec ln",
+                                              "Je comprends pourquoi un lien symbolique peut devenir cassé",
+                                              "Je sais que les liens physiques sont limités à une seule partition",
+                                              "Je sais que les liens physiques ne fonctionnent pas sur les répertoires",
+                                              "Je sais lire le compteur de liens dans ls -l et l'interpréter"
+                                        ]
+                                  }
+                            },
+                            {
+                                  "titre": "TL;DR — 10 points essentiels",
+                                  "type": "highlight",
+                                  "contenu": {
+                                        "items": [
+                                              "**Tout est fichier** sous Linux — disques, périphériques, répertoires, tout",
+                                              "Type de fichier lisible dans `ls -l` : **`-`** fichier | **`d`** répertoire | **`l`** lien symbolique | **`b`** bloc | **`c`** caractère",
+                                              "**L'inode stocke les métadonnées** (type, permissions, taille…) mais **pas le nom du fichier**",
+                                              "**`less`** = lecteur interactif de référence pour fichiers longs (navigation + recherche)",
+                                              "**`tail -f`** = suivi de log en temps réel → Ctrl+C pour sortir",
+                                              "**`wc -l`** = compter les lignes d'un fichier → très utilisé en scripts",
+                                              "**Lien symbolique** (`ln -s`) = raccourci, peut pointer vers répertoire ou autre partition, fragile si source bougée",
+                                              "**Lien physique** (`ln`) = même inode, données partagées, limité à une partition, impossible sur répertoire",
+                                              "Lien symbolique cassé → **rouge dans le terminal** → chemin source invalide",
+                                              "Supprimer le dernier lien physique = **données définitivement perdues** (inode libéré)"
+                                        ]
+                                  }
+                            }
+                      ]
+                },
+                {
+                      "id": "intro-linux-m07",
+                      "titre": "Recherches avancées : find, locate, grep et regex",
+                      "emoji": "🔍",
+                      "description": "Pipe, grep, find, locate, expressions régulières et classes POSIX.",
+                      "sections": [
+                            {
+                                  "titre": "Le pipe | — principe fondamental",
+                                  "type": "list",
+                                  "contenu": {
+                                        "description": "Le pipe envoie la sortie stdout d'une commande comme entrée à la commande suivante.",
+                                        "items": [
+                                              "Syntaxe : `commande1 | commande2`",
+                                              "Sur clavier AZERTY français : AltGr + 6",
+                                              "Chaînable plusieurs fois : `commande1 | commande2 | commande3`"
+                                        ]
+                                  }
+                            },
+                            {
+                                  "titre": "grep — recherche de motifs",
+                                  "type": "list",
+                                  "contenu": {
+                                        "description": "Recherche un motif (texte ou regex) dans un fichier ou flux pipe.",
+                                        "items": [
+                                              "Retourne les **lignes entières** qui contiennent le motif.",
+                                              "Utilise les **expressions régulières** par défaut.",
+                                              "Pour les regex étendues, utiliser `grep -E` ou `egrep`."
+                                        ]
+                                  }
+                            },
+                            {
+                                  "titre": "find — recherche dans l'arborescence",
+                                  "type": "list",
+                                  "contenu": {
+                                        "description": "Recherche de fichiers selon des critères multiples.",
+                                        "items": [
+                                              "**Nativement récursive** : descend dans tous les sous-dossiers.",
+                                              "Le chemin de recherche est **toujours le premier argument**.",
+                                              "Peut exécuter des **actions** sur les résultats (`-exec`, `-ok`, `-print`).",
+                                              "Toujours mettre le motif entre guillemets pour que les métacaractères soient passés à find."
+                                        ]
+                                  }
+                            },
+                            {
+                                  "titre": "locate — recherche rapide",
+                                  "type": "list",
+                                  "contenu": {
+                                        "description": "Interroge une base de données préconstruite → très rapide.",
+                                        "items": [
+                                              "Base de données mise à jour par un **cron job** automatique ou manuellement avec `updatedb`.",
+                                              "Inconvénient : peut retourner des fichiers **qui n'existent plus** si la base n'est pas à jour.",
+                                              "Ne recherche que dans les **noms et chemins**, pas dans le contenu des fichiers."
+                                        ]
+                                  }
+                            },
+                            {
+                                  "titre": "Les 3 compteurs de temps d'un inode",
+                                  "type": "table",
+                                  "contenu": {
+                                        "columns": [
+                                              "Compteur",
+                                              "Signification",
+                                              "Option find"
+                                        ],
+                                        "rows": [
+                                              [
+                                                    "`mtime`",
+                                                    "Date de dernière **modification** du contenu",
+                                                    "-mtime"
+                                              ],
+                                              [
+                                                    "`ctime`",
+                                                    "Date de dernière **modification des métadonnées** (inode)",
+                                                    "-ctime"
+                                              ],
+                                              [
+                                                    "`atime`",
+                                                    "Date de dernier **accès** en lecture",
+                                                    "-atime"
+                                              ]
+                                        ]
+                                  }
+                            },
+                            {
+                                  "titre": "Utiliser grep efficacement",
+                                  "type": "code",
+                                  "contenu": {
+                                        "description": "",
+                                        "langage": "bash",
+                                        "code": "grep motif fichier.txt              # Recherche simple\ngrep -i motif fichier.txt           # Insensible à la casse\ngrep -v motif fichier.txt           # Inverser : tout SAUF le motif\ngrep -n motif fichier.txt           # Afficher les numéros de ligne\ngrep -l motif *.txt                 # Noms des fichiers contenant le motif\ngrep -e motif1 -e motif2 fichier    # Recherche multi-motifs (OU)\ngrep -E '^$' fichier | wc -l        # Compter les lignes vides\ngrep -v -E '^$' fichier             # Exclure les lignes vides\n\n# Avec pipe\nls | grep \"\\.txt$\"              # Filtrer les .txt dans la liste\nls -l | grep \"^l\"              # Ne garder que les liens symboliques"
+                                  }
+                            },
+                            {
+                                  "titre": "Construire une recherche find",
+                                  "type": "code",
+                                  "contenu": {
+                                        "description": "",
+                                        "langage": "bash",
+                                        "code": "# Syntaxe : find CHEMIN [critères] [actions]\nfind . -name \"*.txt\"                        # Par nom dans le répertoire courant\nfind /home -name \"[Ee]*\"                    # Par nom avec métacaractère\nfind . -type d -name \"*test*\"               # Dossiers contenant test\nfind . -type f -name \"edition\"              # Fichiers standards nommés edition\nfind . -type l                              # Liens symboliques\nfind . -user user01                         # Fichiers appartenant à user01\nfind . -size +500k                          # Fichiers > 500 Ko\nfind . -size -100k                          # Fichiers < 100 Ko\nfind . -mtime -1                            # Modifiés depuis moins de 24h\nfind . -type f -name \"*.log\" -exec rm {} \\; # Supprimer tous les .log\nfind . -type f -name \"*.log\" -ok rm {} \\;   # Idem avec confirmation"
+                                  }
+                            },
+                            {
+                                  "titre": "Métacaractères regex principaux",
+                                  "type": "table",
+                                  "contenu": {
+                                        "columns": [
+                                              "Symbole",
+                                              "Signification regex",
+                                              "Exemple"
+                                        ],
+                                        "rows": [
+                                              [
+                                                    "`.`",
+                                                    "N'importe quel caractère (sauf newline)",
+                                                    "`a.c` → abc, axc"
+                                              ],
+                                              [
+                                                    "`^`",
+                                                    "Début de ligne",
+                                                    "`^erreur`"
+                                              ],
+                                              [
+                                                    "`$`",
+                                                    "Fin de ligne",
+                                                    "`\\.txt$`"
+                                              ],
+                                              [
+                                                    "`*`",
+                                                    "0 ou plusieurs fois le caractère précédent",
+                                                    "`lo*g` → lg, log, looog"
+                                              ],
+                                              [
+                                                    "`+`",
+                                                    "1 ou plusieurs fois",
+                                                    "`lo+g` → log, looog"
+                                              ],
+                                              [
+                                                    "`?`",
+                                                    "0 ou 1 fois",
+                                                    "`colou?r` → color, colour"
+                                              ],
+                                              [
+                                                    "`[abc]`",
+                                                    "Un caractère parmi la liste",
+                                                    "`[aeiou]`"
+                                              ],
+                                              [
+                                                    "`[^abc]`",
+                                                    "Tout sauf ces caractères",
+                                                    "`[^0-9]`"
+                                              ],
+                                              [
+                                                    "`|`",
+                                                    "OU logique",
+                                                    "`chat|chien`"
+                                              ],
+                                              [
+                                                    "`{n}`",
+                                                    "Exactement n fois",
+                                                    "`a{3}` → aaa"
+                                              ],
+                                              [
+                                                    "`{n,m}`",
+                                                    "Entre n et m fois",
+                                                    "`a{2,4}` → aa, aaa, aaaa"
+                                              ],
+                                              [
+                                                    "`(abc)`",
+                                                    "Groupe de caractères",
+                                                    "`(ab)+` → ab, abab"
+                                              ]
+                                        ]
+                                  }
+                            },
+                            {
+                                  "titre": "Classes de caractères POSIX",
+                                  "type": "table",
+                                  "contenu": {
+                                        "columns": [
+                                              "Classe",
+                                              "Équivalent",
+                                              "Signification"
+                                        ],
+                                        "rows": [
+                                              [
+                                                    "`[[:upper:]]`",
+                                                    "`[A-Z]`",
+                                                    "Lettres majuscules"
+                                              ],
+                                              [
+                                                    "`[[:lower:]]`",
+                                                    "`[a-z]`",
+                                                    "Lettres minuscules"
+                                              ],
+                                              [
+                                                    "`[[:alpha:]]`",
+                                                    "`[a-zA-Z]`",
+                                                    "Toutes les lettres"
+                                              ],
+                                              [
+                                                    "`[[:digit:]]`",
+                                                    "`[0-9]`",
+                                                    "Chiffres"
+                                              ],
+                                              [
+                                                    "`[[:alnum:]]`",
+                                                    "`[a-zA-Z0-9]`",
+                                                    "Lettres et chiffres"
+                                              ],
+                                              [
+                                                    "`[[:space:]]`",
+                                                    "espace, tab…",
+                                                    "Espaces blancs"
+                                              ],
+                                              [
+                                                    "`[[:punct:]]`",
+                                                    "!, ., ,…",
+                                                    "Ponctuation"
+                                              ]
+                                        ]
+                                  }
+                            },
+                            {
+                                  "titre": "Options de find — synthèse",
+                                  "type": "table",
+                                  "contenu": {
+                                        "columns": [
+                                              "Critère",
+                                              "Option",
+                                              "Exemple"
+                                        ],
+                                        "rows": [
+                                              [
+                                                    "Nom",
+                                                    "`-name`",
+                                                    "`-name \"*.log\"`"
+                                              ],
+                                              [
+                                                    "Type",
+                                                    "`-type f/d/l/b/c`",
+                                                    "`-type d`"
+                                              ],
+                                              [
+                                                    "Propriétaire",
+                                                    "`-user`",
+                                                    "`-user root`"
+                                              ],
+                                              [
+                                                    "Groupe",
+                                                    "`-group`",
+                                                    "`-group www-data`"
+                                              ],
+                                              [
+                                                    "Taille",
+                                                    "`-size +/-n[k/M/G]`",
+                                                    "`-size +1M`"
+                                              ],
+                                              [
+                                                    "Modif. contenu",
+                                                    "`-mtime -/+n`",
+                                                    "`-mtime -7` (7 derniers jours)"
+                                              ],
+                                              [
+                                                    "Modif. inode",
+                                                    "`-ctime`",
+                                                    "`-ctime +30`"
+                                              ],
+                                              [
+                                                    "Dernier accès",
+                                                    "`-atime`",
+                                                    "`-atime -1`"
+                                              ],
+                                              [
+                                                    "Action",
+                                                    "`-exec cmd {} \\;`",
+                                                    "`-exec rm {} \\;`"
+                                              ],
+                                              [
+                                                    "Action sécurisée",
+                                                    "`-ok cmd {} \\;`",
+                                                    "`-ok rm {} \\;`"
+                                              ]
+                                        ]
+                                  }
+                            },
+                            {
+                                  "titre": "Comparatif find vs locate",
+                                  "type": "table",
+                                  "contenu": {
+                                        "columns": [
+                                              "Critère",
+                                              "`find`",
+                                              "`locate`"
+                                        ],
+                                        "rows": [
+                                              [
+                                                    "Source",
+                                                    "Système de fichiers en temps réel",
+                                                    "Base de données"
+                                              ],
+                                              [
+                                                    "Vitesse",
+                                                    "Lente (lecture disque)",
+                                                    "Rapide"
+                                              ],
+                                              [
+                                                    "À jour",
+                                                    "Toujours",
+                                                    "Dépend de updatedb"
+                                              ],
+                                              [
+                                                    "Critères",
+                                                    "Très nombreux",
+                                                    "Nom/chemin uniquement"
+                                              ],
+                                              [
+                                                    "Actions",
+                                                    "Oui (-exec, -ok)",
+                                                    "Non"
+                                              ],
+                                              [
+                                                    "Usage typique",
+                                                    "Recherche précise, scripts",
+                                                    "Retrouver rapidement un fichier connu"
+                                              ]
+                                        ]
+                                  }
+                            },
+                            {
+                                  "titre": "Pièges & erreurs fréquentes",
+                                  "type": "table",
+                                  "contenu": {
+                                        "columns": [
+                                              "Symptôme",
+                                              "Cause",
+                                              "Solution"
+                                        ],
+                                        "rows": [
+                                              [
+                                                    "`find` ne trouve pas le fichier",
+                                                    "Motif non entre guillemets → interprété par le shell",
+                                                    "Toujours mettre le motif entre ... : find . -name \"*.txt\""
+                                              ],
+                                              [
+                                                    "`find -exec` sans \\; → erreur de syntaxe",
+                                                    "La fin de -exec n'est pas indiquée",
+                                                    "Toujours terminer par \\; (ou + pour regroupement)"
+                                              ],
+                                              [
+                                                    "`grep` retourne trop de résultats",
+                                                    "Regex trop large",
+                                                    "Utiliser ^ et $ pour ancrer le motif"
+                                              ],
+                                              [
+                                                    "`locate` retourne des fichiers inexistants",
+                                                    "Base de données obsolète",
+                                                    "Exécuter sudo updatedb puis relancer"
+                                              ],
+                                              [
+                                                    "`.` dans une regex matche n'importe quoi",
+                                                    ". en regex = tout caractère",
+                                                    "Échapper avec \\. si on veut un point littéral"
+                                              ],
+                                              [
+                                                    "`grep` sans -E sur regex étendue",
+                                                    "ERE non activée",
+                                                    "Utiliser grep -E ou egrep"
+                                              ]
+                                        ]
+                                  }
+                            },
+                            {
+                                  "titre": "Glossaire",
+                                  "type": "table",
+                                  "contenu": {
+                                        "columns": [
+                                              "Terme",
+                                              "Définition + exemple"
+                                        ],
+                                        "rows": [
+                                              [
+                                                    "**Pipe `|`**",
+                                                    "Redirige la sortie d'une commande vers l'entrée d'une autre. Ex : ls | grep txt"
+                                              ],
+                                              [
+                                                    "**`grep`**",
+                                                    "Global Regular Expression Print — recherche un motif dans un fichier ou flux"
+                                              ],
+                                              [
+                                                    "**Regex**",
+                                                    "Motif de recherche puissant utilisant des métacaractères. Ex : ^[A-Z].*\\.txt$"
+                                              ],
+                                              [
+                                                    "**ERE**",
+                                                    "Extended Regular Expressions — regex étendues, activées avec grep -E ou egrep"
+                                              ],
+                                              [
+                                                    "**`find`**",
+                                                    "Recherche récursive dans l'arborescence selon de nombreux critères"
+                                              ],
+                                              [
+                                                    "**`-exec`**",
+                                                    "Action find exécutant une commande sur chaque fichier trouvé. Ex : -exec rm {} \\;"
+                                              ],
+                                              [
+                                                    "**`{}`**",
+                                                    "Placeholder dans -exec remplacé par le chemin du fichier trouvé"
+                                              ],
+                                              [
+                                                    "**`locate`**",
+                                                    "Recherche rapide dans une base de données de noms de fichiers"
+                                              ],
+                                              [
+                                                    "**`updatedb`**",
+                                                    "Met à jour la base de données utilisée par locate"
+                                              ],
+                                              [
+                                                    "**`mtime`**",
+                                                    "Modification time — date de dernière modification du contenu d'un fichier"
+                                              ],
+                                              [
+                                                    "**`ctime`**",
+                                                    "Change time — date de dernière modification des métadonnées (inode)"
+                                              ],
+                                              [
+                                                    "**`atime`**",
+                                                    "Access time — date du dernier accès en lecture"
+                                              ],
+                                              [
+                                                    "**Classe POSIX**",
+                                                    "Classe de caractères portable. Ex : [[:upper:]] = toutes les majuscules"
+                                              ]
+                                        ]
+                                  }
+                            },
+                            {
+                                  "titre": "Checklist de révision",
+                                  "type": "highlight",
+                                  "contenu": {
+                                        "items": [
+                                              "Je sais utiliser le pipe | pour enchaîner des commandes",
+                                              "Je connais les options essentielles de grep : -i, -v, -n, -l, -e, -E",
+                                              "Je maîtrise la syntaxe de find : chemin en premier, puis critères",
+                                              "Je sais combiner plusieurs critères dans find",
+                                              "Je connais -exec et -ok et leur syntaxe avec {} et \\;",
+                                              "Je connais les métacaractères regex de base : ., ^, $, *, +, ?, []",
+                                              "Je distingue les métacaractères shell (*, ?) des métacaractères regex (., *)",
+                                              "Je sais ancrer une recherche avec ^ (début) et $ (fin de ligne)",
+                                              "Je connais les classes POSIX : [[:upper:]], [[:digit:]], [[:alpha:]]",
+                                              "Je comprends le fonctionnement de locate et la nécessité de updatedb",
+                                              "Je connais les 3 compteurs de temps : mtime, ctime, atime"
+                                        ]
+                                  }
+                            },
+                            {
+                                  "titre": "TL;DR — 10 points essentiels",
+                                  "type": "highlight",
+                                  "contenu": {
+                                        "items": [
+                                              "**Pipe `|`** = envoie stdout vers stdin de la commande suivante → `ls | grep .txt`",
+                                              "**`grep -v`** = inverser la recherche (tout SAUF le motif) → réflexe pour exclure des lignes",
+                                              "**`grep -i`** = insensible à la casse | **`grep -n`** = avec numéros de ligne",
+                                              "**`find`** : chemin **toujours en premier** — toujours mettre le motif entre **guillemets**",
+                                              "**`find . -type f -name \"*.log\" -exec rm {} \\;`** = supprimer tous les .log → pattern à mémoriser",
+                                              "**`-ok`** = `-exec` avec confirmation — à préférer pour les commandes destructrices",
+                                              "En regex : **`.`** = tout caractère | **`^`** = début | **`$`** = fin | **`\\.`** = point littéral",
+                                              "**`[[:upper:]]`** plus fiable que `[A-Z]` pour les classes de caractères en locale non-ASCII",
+                                              "**`find`** = temps réel, lent, critères riches | **`locate`** = rapide, base de données, actualiser avec updatedb",
+                                              "Les 3 temps d'un fichier : **`mtime`** (contenu) | **`ctime`** (inode) | **`atime`** (accès)"
+                                        ]
+                                  }
+                            }
+                      ]
+                },
+                {
+                      "id": "intro-linux-m08",
+                      "titre": "Éditeurs de Texte Linux : Nano, Vim",
+                      "emoji": "📝",
+                      "description": "Les 3 modes Vim, navigation, édition, Power of G, .vimrc, Nano, fins de ligne.",
+                      "sections": [
+                            {
+                                  "titre": "Les types d'éditeurs sous Linux",
+                                  "type": "list",
+                                  "contenu": {
+                                        "description": "Terminal ou mode graphique.",
+                                        "items": [
+                                              "**Mode terminal** : Nano (simple, intuitif), Vi/Vim (puissant) — utilisables **sans interface graphique**, indispensables sur les serveurs.",
+                                              "**Mode graphique** : Gedit, VS Code — nécessitent un environnement de bureau."
+                                        ]
+                                  }
+                            },
+                            {
+                                  "titre": "Les 3 modes de Vim",
+                                  "type": "table",
+                                  "contenu": {
+                                        "columns": [
+                                              "Mode",
+                                              "Accès",
+                                              "Rôle"
+                                        ],
+                                        "rows": [
+                                              [
+                                                    "**Normal / Commande**",
+                                                    "Mode par défaut à l'ouverture",
+                                                    "Navigation, copier/couper/coller, commandes"
+                                              ],
+                                              [
+                                                    "**Insertion**",
+                                                    "`i`, `a`, `o`, `I`, `A`, `O`",
+                                                    "Saisie de texte"
+                                              ],
+                                              [
+                                                    "**Remplacement**",
+                                                    "`R`",
+                                                    "Écrase le texte existant caractère par caractère"
+                                              ]
+                                        ]
+                                  }
+                            },
+                            {
+                                  "titre": "Le tampon d'annulation et les fins de ligne",
+                                  "type": "list",
+                                  "contenu": {
+                                        "description": "Spécificités importantes de Vim.",
+                                        "items": [
+                                              "Vim dispose de son **propre presse-papiers**, indépendant du système.",
+                                              "Chaque `dd`, `yy`, `dw` écrase le tampon par défaut — utiliser des **tampons nommés** (`\"a` à `\"z`) pour éviter les écrasements.",
+                                              "**Linux** : `LF` (`\\n`) | **Windows** : `CR+LF` (`\\r\\n`) — un fichier Windows peut afficher des `^M` sous Linux.",
+                                              "Outils de conversion : `dos2unix` et `unix2dos`."
+                                        ]
+                                  }
+                            },
+                            {
+                                  "titre": "Ouvrir, sauvegarder et quitter Vim",
+                                  "type": "code",
+                                  "contenu": {
+                                        "description": "",
+                                        "langage": "bash",
+                                        "code": "vim fichier.txt        # Ouvrir un fichier\nvim -R fichier.txt     # Ouvrir en lecture seule\n\n# En mode normal (précéder de :)\n:w          # Sauvegarder sans quitter\n:wq         # Sauvegarder et quitter\n:q          # Quitter (si pas de modification)\n:q!         # Quitter SANS sauvegarder (forcer)"
+                                  }
+                            },
+                            {
+                                  "titre": "Passer en mode insertion",
+                                  "type": "table",
+                                  "contenu": {
+                                        "columns": [
+                                              "Commande",
+                                              "Effet"
+                                        ],
+                                        "rows": [
+                                              [
+                                                    "`i`",
+                                                    "Insérer avant le curseur"
+                                              ],
+                                              [
+                                                    "`a`",
+                                                    "Insérer après le curseur"
+                                              ],
+                                              [
+                                                    "`o`",
+                                                    "Nouvelle ligne en dessous + insertion"
+                                              ],
+                                              [
+                                                    "`O`",
+                                                    "Nouvelle ligne au-dessus + insertion"
+                                              ],
+                                              [
+                                                    "`I`",
+                                                    "Insérer en début de ligne"
+                                              ],
+                                              [
+                                                    "`A`",
+                                                    "Insérer en fin de ligne"
+                                              ]
+                                        ]
+                                  }
+                            },
+                            {
+                                  "titre": "Navigation en mode normal",
+                                  "type": "table",
+                                  "contenu": {
+                                        "columns": [
+                                              "Commande",
+                                              "Action"
+                                        ],
+                                        "rows": [
+                                              [
+                                                    "`h` / `l`",
+                                                    "Gauche / Droite"
+                                              ],
+                                              [
+                                                    "`j` / `k`",
+                                                    "Bas / Haut"
+                                              ],
+                                              [
+                                                    "`0`",
+                                                    "Début de la ligne"
+                                              ],
+                                              [
+                                                    "`$`",
+                                                    "Fin de la ligne"
+                                              ],
+                                              [
+                                                    "`gg`",
+                                                    "Début du fichier"
+                                              ],
+                                              [
+                                                    "`G`",
+                                                    "Fin du fichier"
+                                              ],
+                                              [
+                                                    "`nG`",
+                                                    "Aller à la ligne n (ex. 15G)"
+                                              ],
+                                              [
+                                                    "`/motif`",
+                                                    "Rechercher motif"
+                                              ],
+                                              [
+                                                    "`n`",
+                                                    "Occurrence suivante"
+                                              ],
+                                              [
+                                                    "`N`",
+                                                    "Occurrence précédente"
+                                              ]
+                                        ]
+                                  }
+                            },
+                            {
+                                  "titre": "Suppression, copie, collage",
+                                  "type": "table",
+                                  "contenu": {
+                                        "columns": [
+                                              "Commande",
+                                              "Action"
+                                        ],
+                                        "rows": [
+                                              [
+                                                    "`x`",
+                                                    "Supprimer le caractère sous le curseur"
+                                              ],
+                                              [
+                                                    "`dw`",
+                                                    "Supprimer le mot"
+                                              ],
+                                              [
+                                                    "`dd`",
+                                                    "Supprimer la ligne entière"
+                                              ],
+                                              [
+                                                    "`ndd`",
+                                                    "Supprimer n lignes (ex. 10dd)"
+                                              ],
+                                              [
+                                                    "`yy`",
+                                                    "Copier la ligne courante"
+                                              ],
+                                              [
+                                                    "`nyy`",
+                                                    "Copier n lignes"
+                                              ],
+                                              [
+                                                    "`p`",
+                                                    "Coller **après** le curseur"
+                                              ],
+                                              [
+                                                    "`P`",
+                                                    "Coller **avant** le curseur"
+                                              ],
+                                              [
+                                                    "`u`",
+                                                    "Annuler la dernière action"
+                                              ],
+                                              [
+                                                    "`Ctrl+R`",
+                                                    "Rétablir (redo)"
+                                              ]
+                                        ]
+                                  }
+                            },
+                            {
+                                  "titre": "Power of G — substitution avancée",
+                                  "type": "code",
+                                  "contenu": {
+                                        "description": "",
+                                        "langage": "vim",
+                                        "code": ":g/motif/d                          # Supprimer toutes les lignes contenant motif\n:g/motif/s/ancien/nouveau/g         # Remplacer dans les lignes contenant motif\n:15,17g/motif/d                     # Supprimer lignes 15 à 17 contenant motif\n:g/Angers/s//Nantes/g               # Remplacer toutes les occurrences d'Angers par Nantes"
+                                  }
+                            },
+                            {
+                                  "titre": "Configurer .vimrc",
+                                  "type": "code",
+                                  "contenu": {
+                                        "description": "",
+                                        "langage": "vim",
+                                        "code": "set number          \" Afficher les numéros de ligne\nset autoindent      \" Indentation automatique\nset tabstop=4       \" Tabulation = 4 espaces\nset expandtab       \" Remplacer tab par espaces\nset incsearch       \" Recherche interactive en temps réel\nset ignorecase      \" Recherche insensible à la casse\ncolorscheme desert  \" Thème de couleurs\n\n\" Recharger sans quitter :\n:source ~/.vimrc"
+                                  }
+                            },
+                            {
+                                  "titre": "Nano — commandes essentielles",
+                                  "type": "table",
+                                  "contenu": {
+                                        "columns": [
+                                              "Raccourci",
+                                              "Action"
+                                        ],
+                                        "rows": [
+                                              [
+                                                    "`Ctrl+O`",
+                                                    "Sauvegarder"
+                                              ],
+                                              [
+                                                    "`Ctrl+X`",
+                                                    "Quitter"
+                                              ],
+                                              [
+                                                    "`Ctrl+K`",
+                                                    "Couper la ligne"
+                                              ],
+                                              [
+                                                    "`Ctrl+U`",
+                                                    "Coller"
+                                              ],
+                                              [
+                                                    "`Ctrl+W`",
+                                                    "Rechercher"
+                                              ]
+                                        ]
+                                  }
+                            },
+                            {
+                                  "titre": "Comparatif Nano vs Vim",
+                                  "type": "table",
+                                  "contenu": {
+                                        "columns": [
+                                              "Critère",
+                                              "Nano",
+                                              "Vim"
+                                        ],
+                                        "rows": [
+                                              [
+                                                    "Courbe d'apprentissage",
+                                                    "Faible",
+                                                    "Élevée"
+                                              ],
+                                              [
+                                                    "Modes",
+                                                    "Aucun",
+                                                    "3 modes"
+                                              ],
+                                              [
+                                                    "Puissance",
+                                                    "Basique",
+                                                    "Très élevée"
+                                              ],
+                                              [
+                                                    "Préinstallé",
+                                                    "Souvent",
+                                                    "Presque toujours"
+                                              ],
+                                              [
+                                                    "Usage typique",
+                                                    "Modifications rapides",
+                                                    "Édition avancée, scripts"
+                                              ],
+                                              [
+                                                    "Commandes visibles",
+                                                    "Oui (affichées en bas)",
+                                                    "Non (à mémoriser)"
+                                              ]
+                                        ]
+                                  }
+                            },
+                            {
+                                  "titre": "Fins de ligne",
+                                  "type": "table",
+                                  "contenu": {
+                                        "columns": [
+                                              "Système",
+                                              "Caractère",
+                                              "Code",
+                                              "Représentation"
+                                        ],
+                                        "rows": [
+                                              [
+                                                    "Linux / Unix",
+                                                    "LF",
+                                                    "\\n",
+                                                    "Line Feed"
+                                              ],
+                                              [
+                                                    "Windows",
+                                                    "CR+LF",
+                                                    "\\r\\n",
+                                                    "Carriage Return + Line Feed"
+                                              ],
+                                              [
+                                                    "Ancien Mac OS",
+                                                    "CR",
+                                                    "\\r",
+                                                    "Carriage Return uniquement"
+                                              ]
+                                        ]
+                                  }
+                            },
+                            {
+                                  "titre": "Pièges & erreurs fréquentes",
+                                  "type": "table",
+                                  "contenu": {
+                                        "columns": [
+                                              "Symptôme",
+                                              "Cause",
+                                              "Solution"
+                                        ],
+                                        "rows": [
+                                              [
+                                                    "Impossible de saisir du texte dans Vim",
+                                                    "En mode normal, les touches sont des commandes",
+                                                    "Appuyer sur i pour passer en mode insertion"
+                                              ],
+                                              [
+                                                    "Vim ne quitte pas après :q",
+                                                    "Des modifications non sauvegardées existent",
+                                                    ":wq pour sauver et quitter, ou :q! pour forcer"
+                                              ],
+                                              [
+                                                    "Texte collé écrasé par la suppression suivante",
+                                                    "Le tampon est unique par défaut",
+                                                    "Utiliser des tampons nommés : \"ayy puis \"ap"
+                                              ],
+                                              [
+                                                    "Caractères ^M en fin de ligne",
+                                                    "Fichier au format Windows (CR+LF)",
+                                                    "dos2unix fichier.txt pour corriger"
+                                              ],
+                                              [
+                                                    "Power of G modifie plus que prévu",
+                                                    "Motif de recherche trop large",
+                                                    "Affiner le motif avec ^ et $ ou des regex plus précises"
+                                              ],
+                                              [
+                                                    ".vimrc modifié mais pas pris en compte",
+                                                    "Fichier non rechargé",
+                                                    ":source ~/.vimrc pour recharger sans quitter"
+                                              ]
+                                        ]
+                                  }
+                            },
+                            {
+                                  "titre": "Glossaire",
+                                  "type": "table",
+                                  "contenu": {
+                                        "columns": [
+                                              "Terme",
+                                              "Définition + exemple"
+                                        ],
+                                        "rows": [
+                                              [
+                                                    "**Vim**",
+                                                    "Vi IMproved — éditeur de texte puissant, évolution de Vi"
+                                              ],
+                                              [
+                                                    "**Mode normal**",
+                                                    "Mode par défaut Vim — navigation et commandes"
+                                              ],
+                                              [
+                                                    "**Mode insertion**",
+                                                    "Mode saisie de texte dans Vim — activé par i, a, o…"
+                                              ],
+                                              [
+                                                    "**Tampon (buffer)**",
+                                                    "Presse-papiers interne de Vim — contient le dernier texte coupé/copié"
+                                              ],
+                                              [
+                                                    "**Tampon nommé**",
+                                                    "Tampon identifié par une lettre (\"a à \"z) — ex. \"tyy puis \"tp"
+                                              ],
+                                              [
+                                                    "**Power of G**",
+                                                    "Mécanisme Vim de recherche+action conditionnelle — :g/motif/commande"
+                                              ],
+                                              [
+                                                    "**`.vimrc`**",
+                                                    "Fichier de configuration personnel de Vim dans ~/.vimrc"
+                                              ],
+                                              [
+                                                    "**`LF`**",
+                                                    "Line Feed (\\n) — fin de ligne Linux/Unix"
+                                              ],
+                                              [
+                                                    "**`CR+LF`**",
+                                                    "Carriage Return + Line Feed (\\r\\n) — fin de ligne Windows"
+                                              ],
+                                              [
+                                                    "**`dos2unix`**",
+                                                    "Commande convertissant les fins de ligne Windows → Linux"
+                                              ]
+                                        ]
+                                  }
+                            },
+                            {
+                                  "titre": "Checklist de révision",
+                                  "type": "highlight",
+                                  "contenu": {
+                                        "items": [
+                                              "Je sais lancer Vim en lecture seule avec vim -R",
+                                              "Je connais les 3 modes Vim et comment passer de l'un à l'autre",
+                                              "Je sais toujours revenir en mode normal avec Echap",
+                                              "Je maîtrise les 4 commandes de sortie : :w, :wq, :q, :q!",
+                                              "Je sais naviguer sans souris : gg, G, nG, 0, $, h/j/k/l",
+                                              "Je connais dd, yy, p, P et leurs variantes avec n",
+                                              "Je comprends que dd coupe (et peut être collé avec p)",
+                                              "Je sais utiliser les tampons nommés \"a à \"z",
+                                              "Je connais la syntaxe du Power of G : :g/motif/s/old/new/g",
+                                              "Je sais créer et modifier ~/.vimrc pour rendre les options permanentes",
+                                              "Je distingue LF (Linux) et CR+LF (Windows) et sais convertir avec dos2unix",
+                                              "Je connais les commandes de base Nano : Ctrl+O, Ctrl+X, Ctrl+K, Ctrl+U"
+                                        ]
+                                  }
+                            },
+                            {
+                                  "titre": "TL;DR — 10 points essentiels",
+                                  "type": "highlight",
+                                  "contenu": {
+                                        "items": [
+                                              "**Vim = 3 modes** : Normal (défaut) → `i` → Insertion → Echap → Normal",
+                                              "**Toujours commencer par Echap** si on ne sait plus dans quel mode on est",
+                                              "**`:wq`** = sauver et quitter | **`:q!`** = quitter sans sauver (forcer)",
+                                              "**`dd`** = couper la ligne | **`yy`** = copier | **`p`** = coller après | **`P`** = coller avant",
+                                              "Préfixer par n pour multiplier : **`10dd`** = supprimer 10 lignes | **`5p`** = coller 5 fois",
+                                              "**Tampons nommés** : `\"tyy` copie dans le tampon t | `\"tp` colle depuis t",
+                                              "**Power of G** : `:g/motif/s/ancien/nouveau/g` — substitution conditionnelle sur tout le fichier",
+                                              "**`~/.vimrc`** = configuration permanente de Vim | recharger avec `:source ~/.vimrc`",
+                                              "**LF** (`\\n`) = Linux | **CR+LF** (`\\r\\n`) = Windows → convertir avec `dos2unix` / `unix2dos`",
+                                              "**Nano** = éditeur simple pour modifications rapides, commandes visibles (Ctrl+O sauver, Ctrl+X quitter)"
+                                        ]
+                                  }
+                            }
+                      ]
+                },
+                {
+                      "id": "intro-linux-m09",
+                      "titre": "Processus, Redirections, TAR, Alias & Variables avancées",
+                      "emoji": "⚙️",
+                      "description": "Gestion des processus, signaux, redirections de flux, tar, alias, export.",
+                      "sections": [
+                            {
+                                  "titre": "États d'un processus",
+                                  "type": "table",
+                                  "contenu": {
+                                        "columns": [
+                                              "Lettre",
+                                              "État",
+                                              "Signification"
+                                        ],
+                                        "rows": [
+                                              [
+                                                    "`R`",
+                                                    "Running",
+                                                    "En cours d'exécution ou prêt"
+                                              ],
+                                              [
+                                                    "`S`",
+                                                    "Sleeping",
+                                                    "En attente d'un événement"
+                                              ],
+                                              [
+                                                    "`T`",
+                                                    "Stopped",
+                                                    "Arrêté (manuellement ou signal)"
+                                              ],
+                                              [
+                                                    "`Z`",
+                                                    "Zombie",
+                                                    "Terminé mais non récupéré par le parent"
+                                              ]
+                                        ]
+                                  }
+                            },
+                            {
+                                  "titre": "Les signaux",
+                                  "type": "list",
+                                  "contenu": {
+                                        "description": "Les signaux permettent de communiquer avec un processus depuis l'extérieur.",
+                                        "items": [
+                                              "Envoyés avec `kill -NUMÉRO PID` ou `kill -NOM PID`.",
+                                              "`SIGTERM` (15) = demande de fin propre (peut être ignoré)",
+                                              "`SIGKILL` (9) = arrêt forcé immédiat (ne peut pas être ignoré)",
+                                              "`SIGSTOP` (19) = suspendre le processus | `SIGCONT` (18) = reprendre",
+                                              "Toujours essayer `kill -15` (fin propre) **avant** `kill -9` (forcé)."
+                                        ]
+                                  }
+                            },
+                            {
+                                  "titre": "Les redirections de flux",
+                                  "type": "list",
+                                  "contenu": {
+                                        "description": "stdin (0), stdout (1), stderr (2).",
+                                        "items": [
+                                              "`>` = stdout vers fichier (écrase) | `>>` = stdout vers fichier (ajoute)",
+                                              "`2>` = stderr vers fichier | `2>/dev/null` = ignorer les erreurs",
+                                              "`> fichier 2>&1` = stdout + stderr dans un fichier",
+                                              "`<` = stdin depuis fichier"
+                                        ]
+                                  }
+                            },
+                            {
+                                  "titre": "Archive vs Compression",
+                                  "type": "list",
+                                  "contenu": {
+                                        "description": "Deux opérations distinctes souvent combinées.",
+                                        "items": [
+                                              "**Archiver** = regrouper plusieurs fichiers en un conteneur unique (pas nécessairement compressé). Ex : `.tar`",
+                                              "**Compresser** = réduire la taille d'un fichier. Ex : `gzip`, `bzip2`",
+                                              "**Les deux ensemble** : `.tar.gz`, `.tar.bz2`, `.zip`",
+                                              "Un fichier `.tar` seul n'est **PAS compressé** — erreur classique."
+                                        ]
+                                  }
+                            },
+                            {
+                                  "titre": "Les alias et variables avancées",
+                                  "type": "list",
+                                  "contenu": {
+                                        "description": "Raccourcis et export vers les sous-shells.",
+                                        "items": [
+                                              "Un alias = **raccourci de commande** — volatile par défaut, permanent dans `~/.bashrc`.",
+                                              "Rechargement sans fermer : `source ~/.bashrc`",
+                                              "**Variable locale** : accessible uniquement dans le shell courant.",
+                                              "**Variable exportée** (`export`) : disponible dans tous les **sous-shells** (shells enfants).",
+                                              "**Variable issue d'une commande** : `variable=$(commande)` — stocke le résultat."
+                                        ]
+                                  }
+                            },
+                            {
+                                  "titre": "Surveiller et gérer les processus",
+                                  "type": "code",
+                                  "contenu": {
+                                        "description": "",
+                                        "langage": "bash",
+                                        "code": "ps                  # Processus de la session courante\nps aux              # Tous les processus, tous utilisateurs\nps fax              # Vue arborescente des processus\ntop                 # Temps réel (quitter : q)\n\ncommande &          # Lancer en arrière-plan\njobs                # Lister les tâches en arrière-plan\nfg %1               # Ramener la tâche 1 au premier plan\nbg %1               # Reprendre la tâche 1 en arrière-plan\nCtrl+Z              # Suspendre le processus en cours\n\nkill 1234           # SIGTERM (15) sur le PID 1234 — fin propre\nkill -9 1234        # SIGKILL — arrêt forcé\nkillall nginx       # Terminer tous les processus nommés nginx\n\nnohup commande &    # Continue après fermeture du terminal"
+                                  }
+                            },
+                            {
+                                  "titre": "Archiver et compresser avec tar",
+                                  "type": "code",
+                                  "contenu": {
+                                        "description": "",
+                                        "langage": "bash",
+                                        "code": "# Créer une archive simple (sans compression)\ntar -cvf archive.tar dossier/\n\n# Créer avec compression gzip\ntar -cvzf archive.tar.gz dossier/\n\n# Créer avec compression bzip2 (meilleure compression, plus lent)\ntar -cvjf archive.tar.bz2 dossier/\n\n# Lister le contenu d'une archive\ntar -tvf archive.tar.gz\n\n# Extraire dans le répertoire courant\ntar -xvzf archive.tar.gz\n\n# Extraire dans un répertoire spécifique\ntar -xvzf archive.tar.gz -C /chemin/destination/"
+                                  }
+                            },
+                            {
+                                  "titre": "Gérer les alias et variables",
+                                  "type": "code",
+                                  "contenu": {
+                                        "description": "",
+                                        "langage": "bash",
+                                        "code": "alias                              # Lister tous les alias actifs\nalias ll='ls -l'                   # Créer un alias temporaire\nalias rm='rm -i'                   # Forcer la confirmation avant suppression\nunalias ll                         # Supprimer un alias\nvim ~/.bashrc                      # Éditer pour rendre les alias permanents\nsource ~/.bashrc                   # Recharger .bashrc sans fermer la session\n\nexport var                         # Exporter vers les sous-shells\nexport VARBJ=\"Bonjour tout le monde\"  # Créer et exporter en une commande\n\nheure=$(date +\"%H:%M\")             # Variable issue d'une commande\necho \"Il est $heure\""
+                                  }
+                            },
+                            {
+                                  "titre": "Commandes utiles",
+                                  "type": "table",
+                                  "contenu": {
+                                        "columns": [
+                                              "Commande",
+                                              "Description"
+                                        ],
+                                        "rows": [
+                                              [
+                                                    "`ps aux`",
+                                                    "Tous les processus du système"
+                                              ],
+                                              [
+                                                    "`ps fax`",
+                                                    "Vue arborescente des processus"
+                                              ],
+                                              [
+                                                    "`top`",
+                                                    "Surveillance temps réel"
+                                              ],
+                                              [
+                                                    "`kill -9 PID`",
+                                                    "Forcer l'arrêt d'un processus"
+                                              ],
+                                              [
+                                                    "`killall nom`",
+                                                    "Tuer tous les processus portant ce nom"
+                                              ],
+                                              [
+                                                    "`jobs`",
+                                                    "Lister les tâches en arrière-plan"
+                                              ],
+                                              [
+                                                    "`fg %n`",
+                                                    "Ramener la tâche n au premier plan"
+                                              ],
+                                              [
+                                                    "`bg %n`",
+                                                    "Relancer la tâche n en arrière-plan"
+                                              ],
+                                              [
+                                                    "`nohup cmd &`",
+                                                    "Lancer un processus qui survit à la déconnexion"
+                                              ],
+                                              [
+                                                    "`tar -cvzf archive.tar.gz dossier/`",
+                                                    "Créer une archive compressée gzip"
+                                              ],
+                                              [
+                                                    "`tar -xvzf archive.tar.gz -C dest/`",
+                                                    "Extraire vers un dossier destination"
+                                              ],
+                                              [
+                                                    "`tar -tvf archive.tar.gz`",
+                                                    "Lister le contenu"
+                                              ],
+                                              [
+                                                    "`tee fichier.txt`",
+                                                    "Afficher ET sauvegarder simultanément"
+                                              ],
+                                              [
+                                                    "`tee -a fichier.txt`",
+                                                    "Afficher ET ajouter à un fichier"
+                                              ],
+                                              [
+                                                    "`source ~/.bashrc`",
+                                                    "Recharger la configuration Bash"
+                                              ]
+                                        ]
+                                  }
+                            },
+                            {
+                                  "titre": "Options tar — synthèse",
+                                  "type": "table",
+                                  "contenu": {
+                                        "columns": [
+                                              "Option",
+                                              "Rôle"
+                                        ],
+                                        "rows": [
+                                              [
+                                                    "`-c`",
+                                                    "Créer une archive"
+                                              ],
+                                              [
+                                                    "`-x`",
+                                                    "Extraire une archive"
+                                              ],
+                                              [
+                                                    "`-t`",
+                                                    "Lister le contenu"
+                                              ],
+                                              [
+                                                    "`-u`",
+                                                    "Ajouter/mettre à jour des fichiers"
+                                              ],
+                                              [
+                                                    "`-v`",
+                                                    "Mode verbeux (afficher les fichiers traités)"
+                                              ],
+                                              [
+                                                    "`-f`",
+                                                    "Spécifier le nom du fichier (toujours suivi du nom)"
+                                              ],
+                                              [
+                                                    "`-z`",
+                                                    "Compression gzip (.tar.gz)"
+                                              ],
+                                              [
+                                                    "`-j`",
+                                                    "Compression bzip2 (.tar.bz2)"
+                                              ],
+                                              [
+                                                    "`-C`",
+                                                    "Extraire dans un répertoire cible"
+                                              ]
+                                        ]
+                                  }
+                            },
+                            {
+                                  "titre": "Comparatif formats de compression",
+                                  "type": "table",
+                                  "contenu": {
+                                        "columns": [
+                                              "Format",
+                                              "Extension",
+                                              "Option tar",
+                                              "Taux",
+                                              "Vitesse"
+                                        ],
+                                        "rows": [
+                                              [
+                                                    "Aucune",
+                                                    ".tar",
+                                                    "—",
+                                                    "Aucun",
+                                                    "Très rapide"
+                                              ],
+                                              [
+                                                    "gzip",
+                                                    ".tar.gz",
+                                                    "-z",
+                                                    "Bon",
+                                                    "Rapide"
+                                              ],
+                                              [
+                                                    "bzip2",
+                                                    ".tar.bz2",
+                                                    "-j",
+                                                    "Meilleur",
+                                                    "Plus lent"
+                                              ],
+                                              [
+                                                    "xz",
+                                                    ".tar.xz",
+                                                    "-J",
+                                                    "Excellent",
+                                                    "Lent"
+                                              ]
+                                        ]
+                                  }
+                            },
+                            {
+                                  "titre": "Redirections — synthèse",
+                                  "type": "table",
+                                  "contenu": {
+                                        "columns": [
+                                              "Opérateur",
+                                              "Flux redirigé",
+                                              "Effet"
+                                        ],
+                                        "rows": [
+                                              [
+                                                    "`>`",
+                                                    "stdout (1)",
+                                                    "Écrase le fichier"
+                                              ],
+                                              [
+                                                    "`>>`",
+                                                    "stdout (1)",
+                                                    "Ajoute au fichier"
+                                              ],
+                                              [
+                                                    "`2>`",
+                                                    "stderr (2)",
+                                                    "Redirige les erreurs"
+                                              ],
+                                              [
+                                                    "`2>/dev/null`",
+                                                    "stderr (2)",
+                                                    "Supprime les erreurs"
+                                              ],
+                                              [
+                                                    "`> fichier 2>&1`",
+                                                    "stdout + stderr",
+                                                    "Tout dans un fichier"
+                                              ],
+                                              [
+                                                    "`<`",
+                                                    "stdin (0)",
+                                                    "Lire depuis un fichier"
+                                              ],
+                                              [
+                                                    "`|`",
+                                                    "stdout → stdin",
+                                                    "Enchaîner les commandes"
+                                              ]
+                                        ]
+                                  }
+                            },
+                            {
+                                  "titre": "Variables — locales vs exportées",
+                                  "type": "table",
+                                  "contenu": {
+                                        "columns": [
+                                              "Type",
+                                              "Visible dans",
+                                              "Commande"
+                                        ],
+                                        "rows": [
+                                              [
+                                                    "Variable locale",
+                                                    "Shell courant uniquement",
+                                                    "`var=\"valeur\"`"
+                                              ],
+                                              [
+                                                    "Variable exportée",
+                                                    "Shell courant + sous-shells",
+                                                    "`export var=\"valeur\"`"
+                                              ],
+                                              [
+                                                    "Variable d'environnement",
+                                                    "Tous les shells dès la session",
+                                                    "Générées au login"
+                                              ]
+                                        ]
+                                  }
+                            },
+                            {
+                                  "titre": "Pièges & erreurs fréquentes",
+                                  "type": "table",
+                                  "contenu": {
+                                        "columns": [
+                                              "Symptôme",
+                                              "Cause",
+                                              "Solution"
+                                        ],
+                                        "rows": [
+                                              [
+                                                    "> écrase accidentellement un fichier",
+                                                    "Redirection sans vérification",
+                                                    "Toujours vérifier avec ls avant, ou utiliser >>"
+                                              ],
+                                              [
+                                                    "`kill PID` sans effet",
+                                                    "Processus ignorant SIGTERM",
+                                                    "Utiliser kill -9 PID (SIGKILL) en dernier recours"
+                                              ],
+                                              [
+                                                    "Variable vide dans un sous-shell",
+                                                    "Variable locale non exportée",
+                                                    "Ajouter export avant la variable"
+                                              ],
+                                              [
+                                                    "`tar` sans -f → sortie vers stdout",
+                                                    "-f non spécifié",
+                                                    "Toujours préciser -f nom_archive"
+                                              ],
+                                              [
+                                                    "Archive .tar non compressée utilisée à tort",
+                                                    "Confusion archive/compression",
+                                                    ".tar seul = pas compressé — ajouter -z ou -j"
+                                              ],
+                                              [
+                                                    "Alias perdu après reconnexion",
+                                                    "Alias déclaré en session uniquement",
+                                                    "Inscrire dans ~/.bashrc et source ~/.bashrc"
+                                              ]
+                                        ]
+                                  }
+                            },
+                            {
+                                  "titre": "Glossaire",
+                                  "type": "table",
+                                  "contenu": {
+                                        "columns": [
+                                              "Terme",
+                                              "Définition + exemple"
+                                        ],
+                                        "rows": [
+                                              [
+                                                    "**PID**",
+                                                    "Process ID — identifiant unique d'un processus. Ex : 1234"
+                                              ],
+                                              [
+                                                    "**Processus**",
+                                                    "Programme en cours d'exécution avec ses ressources et son état"
+                                              ],
+                                              [
+                                                    "**Zombie**",
+                                                    "Processus terminé dont le parent n'a pas récupéré le code de retour"
+                                              ],
+                                              [
+                                                    "**SIGTERM (15)**",
+                                                    "Signal de fin propre — le processus peut l'intercepter et se terminer normalement"
+                                              ],
+                                              [
+                                                    "**SIGKILL (9)**",
+                                                    "Signal de fin forcée — ne peut pas être ignoré par le processus"
+                                              ],
+                                              [
+                                                    "**`nohup`**",
+                                                    "No Hang Up — maintient un processus actif après déconnexion"
+                                              ],
+                                              [
+                                                    "**stdin**",
+                                                    "Flux d'entrée standard (0) — clavier par défaut"
+                                              ],
+                                              [
+                                                    "**stdout**",
+                                                    "Flux de sortie standard (1) — écran par défaut"
+                                              ],
+                                              [
+                                                    "**stderr**",
+                                                    "Flux d'erreur standard (2) — écran par défaut"
+                                              ],
+                                              [
+                                                    "**`/dev/null`**",
+                                                    "Fichier spécial poubelle — tout ce qui y est redirigé est ignoré"
+                                              ],
+                                              [
+                                                    "**`tee`**",
+                                                    "Duplique stdout vers l'écran ET un fichier simultanément"
+                                              ],
+                                              [
+                                                    "**TAR**",
+                                                    "Tape ARchiver — commande d'archivage Linux"
+                                              ],
+                                              [
+                                                    "**Alias**",
+                                                    "Raccourci de commande défini par l'utilisateur. Ex : alias ll='ls -l'"
+                                              ],
+                                              [
+                                                    "**`.bashrc`**",
+                                                    "Fichier de configuration Bash exécuté à chaque ouverture de session"
+                                              ],
+                                              [
+                                                    "**`export`**",
+                                                    "Rend une variable accessible dans les sous-shells"
+                                              ],
+                                              [
+                                                    "**`$(commande)`**",
+                                                    "Substitution de commande — stocke le résultat dans une variable"
+                                              ]
+                                        ]
+                                  }
+                            },
+                            {
+                                  "titre": "Checklist de révision",
+                                  "type": "highlight",
+                                  "contenu": {
+                                        "items": [
+                                              "Je connais les 4 états d'un processus (R, S, T, Z) et leur signification",
+                                              "Je sais afficher les processus avec ps aux et ps fax",
+                                              "Je sais lancer un processus en arrière-plan (&), le suspendre (Ctrl+Z), et le ramener (fg)",
+                                              "Je connais les signaux SIGTERM (15) et SIGKILL (9) et leur différence",
+                                              "Je sais utiliser nohup pour maintenir un processus après déconnexion",
+                                              "Je maîtrise les 5 opérateurs de redirection : >, >>, 2>, 2>/dev/null, > fichier 2>&1",
+                                              "Je sais utiliser tee pour afficher ET sauvegarder simultanément",
+                                              "Je distingue archivage (.tar) et compression (.gz, .bz2)",
+                                              "Je connais les options essentielles de tar : -c, -x, -t, -v, -f, -z, -j, -C",
+                                              "Je sais créer un alias temporaire et le rendre permanent dans .bashrc",
+                                              "Je connais la différence entre variable locale et variable exportée",
+                                              "Je sais créer une variable depuis une commande : var=$(commande)"
+                                        ]
+                                  }
+                            },
+                            {
+                                  "titre": "TL;DR — 10 points essentiels",
+                                  "type": "highlight",
+                                  "contenu": {
+                                        "items": [
+                                              "**PID** = identifiant unique de chaque processus | `ps aux` = vue globale | `ps fax` = arborescence",
+                                              "**`kill -15`** (fin propre) avant **`kill -9`** (force) — toujours tenter SIGTERM d'abord",
+                                              "**`&`** = arrière-plan | **`Ctrl+Z`** = suspendre | **`fg %1`** = reprendre au premier plan",
+                                              "**`nohup cmd &`** = processus qui survit à la fermeture du terminal",
+                                              "**`>`** écrase | **`>>`** ajoute | **`2>`** = stderr | **`2>/dev/null`** = ignorer les erreurs",
+                                              "**`tee`** = afficher ET écrire simultanément | **`tee -a`** = afficher ET ajouter",
+                                              "**`.tar`** = archive seule (non compressée) | **`.tar.gz`** (`-z`) = gzip | **`.tar.bz2`** (`-j`) = bzip2",
+                                              "`tar` : **`-c`** créer | **`-x`** extraire | **`-t`** lister | **`-f`** toujours suivi du nom | **`-C`** destination",
+                                              "**Alias** permanents → dans `~/.bashrc` | recharger avec **`source ~/.bashrc`**",
+                                              "**`export var`** = rend la variable disponible dans les sous-shells | **`$(commande)`** = capturer un résultat"
+                                        ]
+                                  }
+                            }
+                      ]
+                }
           ]
-        },
-        {
-          "id": "intro-linux-regex",
-          "fichier": "Expressions régulières.md",
-          "titre": "Expressions régulières",
-          "emoji": "🔍",
-          "description": "Syntaxe des regex, classes de caractères, quantificateurs, groupes.",
-          "sections": [
-            {
-              "id": "intro-linux-regex-s00-construite-l-aide-de-diff-rents-caract-r",
-              "titre": "Construite à l'aide de différents caractères : les atomes.",
-              "type": "mixed",
-              "contenu": {
-                "blocks": [
-                  {
-                    "type": "text",
-                    "paragraphs": [
-                      "**Les quantificateurs** :"
-                    ]
-                  },
-                  {
-                    "type": "text",
-                    "paragraphs": [
-                      "**\\*** = répétition du caractère qui prèce de 0 à n fois/ \ta* correspond à : rien ou a ou aa ou aaa etc.."
-                    ]
-                  },
-                  {
-                    "type": "text",
-                    "paragraphs": [
-                      "\\\\+ = répétition du caractère qui le précède de 1 à n fois. \ta\\\\+ correspond à a ou aa ou aaa etc.."
-                    ]
-                  },
-                  {
-                    "type": "text",
-                    "paragraphs": [
-                      "\\\\? = correspond à 0 ou 1 fois le caractère précédent. \ta\\\\? correspond à rien ou a."
-                    ]
-                  },
-                  {
-                    "type": "text",
-                    "paragraphs": [
-                      "\\\\{m,M\\\\}= le caractère précédant la commande répété au minimum m fois et au maximum M fois. \tab\\\\{1,3\\\\}c correspond à abc, abbc ou abbbc"
-                    ]
-                  },
-                  {
-                    "type": "text",
-                    "paragraphs": [
-                      "\\\\{n,\\\\} = un caractère répété au minimum n fois \tes\\\\{2,\\\\}ai correspond à essai, mais aussi esssai, essssai etc.."
-                    ]
-                  },
-                  {
-                    "type": "text",
-                    "paragraphs": [
-                      "\\\\{n\\\\} = un caractère répété n fois exactement \t\\[A-Z]\\\\{3\\\\} correspond à une chaîne de caractère composée de 3 majuscules."
-                    ]
-                  },
-                  {
-                    "type": "text",
-                    "paragraphs": [
-                      ". = un caractère quelconque. \".\" peut être a b c d ù 3 etc.. \t.* correspond à une séquence de caractère quelconques."
-                    ]
-                  },
-                  {
-                    "type": "text",
-                    "paragraphs": [
-                      "\\[...] = un caractère parmi la liste entre crochets. \t\\[abc12] correspond à : a ou b ou c ou 1 ou 2."
-                    ]
-                  },
-                  {
-                    "type": "text",
-                    "paragraphs": [
-                      "\\[...-...] = un caractère parmi l'intervalle défini entre crochets. \t\\[A-Z] correspond à une lettre en majuscule \t\\[A-Za-z] correspond à toutes les lettres minuscules et majuscules \t\\[0-9] correspond à un chiffre"
-                    ]
-                  },
-                  {
-                    "type": "text",
-                    "paragraphs": [
-                      "\\[^...] = un caractère sauf ceux de la liste entre crochets. \t\\[^ab1] correspond à tout sauf a ou b ou 1"
-                    ]
-                  },
-                  {
-                    "type": "text",
-                    "paragraphs": [
-                      "\\^motif = le caractère ^ symbolise le début d'une ligne. \t\\^B correspond à une ligne qui commence par B \t\\^\\[a\\\\t] correspond à une ligne qui commence par a ou par une tabulation (le \\\\t correspond à la tabulation, grace a \\\\)"
-                    ]
-                  },
-                  {
-                    "type": "text",
-                    "paragraphs": [
-                      "\\^\\[ \\\\t]* = une ligne qui commence par un espace ou une tabulation, répétée de 0 à n fois."
-                    ]
-                  },
-                  {
-                    "type": "text",
-                    "paragraphs": [
-                      "motif$ = le caractère $ symbolise d'une ligne. \t\\[\\^aeiouy]$ correspond à une ligne qui se termine par autre chose qu'une voyelle en minuscule \t\\^$ = une ligne vide \t\\^.\\*$ = une ligne quelconque"
-                    ]
-                  }
-                ]
-              }
-            },
-            {
-              "id": "intro-linux-regex-s01-classes-de-caract-res",
-              "titre": "Classes de caractères",
-              "type": "mixed",
-              "contenu": {
-                "blocks": [
-                  {
-                    "type": "text",
-                    "paragraphs": [
-                      "\\[\\[:alpha:]] = caractère alphabétique \\[\\[:lower:]] = Lettre minuscule \\[\\[:upper:]] = Lettre majuscule \\[\\[:alnum:]] = Caractère alphanumérique \\[\\[:digit:]] = Chiffre décimal \\[\\[:space:]] = Espace blanc \\[\\[:blank:]] = Espace ou tabulation ex = ls | grep \\^\\[\\[:upper]] Recherche un fichier qui commence par une majuscule"
-                    ]
-                  },
-                  {
-                    "type": "text",
-                    "paragraphs": [
-                      "**Caractères d'échappement**"
-                    ]
-                  },
-                  {
-                    "type": "text",
-                    "paragraphs": [
-                      "\\\\n = nouvelle ligne \\\\r = retour chariot \\\\t = une tabulation \\\\d = des chiffres \\\\D = tous sauf des chiffres \\\\s = séparateurs (espace et tab) \\\\w = tous les caractères alphanumériques + l'underscore \\\\W = tous les caractères sauf les alphanumériques + l'underscore \\\\ = banaliseur de caractères spéciaux \\\\u = transforme le caractère suivant en majuscule \\\\U = transforme tous les caractères suivants en majuscules (jusqu'a \\\\E) \\\\l = transforme le caractère suivant en minuscule \\\\L = transforme tous les caractères suivants en minuscules (jusqu'a \\\\E) \\\\E = termine les séquences \\\\L et \\\\U \\\\| = \"ou\" logique"
-                    ]
-                  },
-                  {
-                    "type": "text",
-                    "paragraphs": [
-                      "**Sous-expressions et références arrières**"
-                    ]
-                  },
-                  {
-                    "type": "text",
-                    "paragraphs": [
-                      "Sous expression : partie d'une expression régulière encadrée par \\\\( \\\\)"
-                    ]
-                  },
-                  {
-                    "type": "text",
-                    "paragraphs": [
-                      "Référence arrière : pour réutiliser des sous expressions, numérotées de 1 à 9. appelés également avec antislash"
-                    ]
-                  },
-                  {
-                    "type": "text",
-                    "paragraphs": [
-                      "a\\\\(\\[bc]\\\\)d\\\\1 correspond à abdb ou acdc, mais pas acdb Attention : la sous expression 1 n'est pas rejouée. si le deuxième caractère ici est un b, alors 1 = b. Si c'est un c, alors 1=c."
-                    ]
-                  },
-                  {
-                    "type": "text",
-                    "paragraphs": [
-                      "**Commande Locate**"
-                    ]
-                  },
-                  {
-                    "type": "text",
-                    "paragraphs": [
-                      "La commande `locate` fonctionne en utilisant une base de données, qui contient les chemins de tous les fichiers et répertoires sur le système. Lorsqu'on exécute la commande `locate`, elle interroge cette base de données pour trouver les fichiers correspondants au motif de recherche. Cela la rend beaucoup plus rapide que d'autres commandes de recherche, comme `find`, qui scrutent le système de fichiers en temps réel."
-                    ]
-                  },
-                  {
-                    "type": "text",
-                    "paragraphs": [
-                      "locate fichier.txt = recherche tous les fichiers dont le nom contient \"fichier.txt\"."
-                    ]
-                  },
-                  {
-                    "type": "text",
-                    "paragraphs": [
-                      "Elle ne recherche pas dans le contenu des fichiers."
-                    ]
-                  },
-                  {
-                    "type": "text",
-                    "paragraphs": [
-                      "Il faut que la base de donnée soit mis à jour régulièrement, soit en attedant une Maj  automatique, soit par un user root avec la commande updatedb."
-                    ]
-                  }
-                ]
-              }
-            }
-          ]
-        },
-        {
-          "id": "intro-linux-fichiers",
-          "fichier": "Manipulation de fichier.md",
-          "titre": "Manipulation de fichiers",
-          "emoji": "📁",
-          "description": "ls, cp, mv, rm, find, tar, compression et archivage.",
-          "sections": [
-            {
-              "id": "intro-linux-fichiers-s00-type-de-fichier-linux",
-              "titre": "Type de fichier Linux",
-              "type": "mixed",
-              "contenu": {
-                "blocks": [
-                  {
-                    "type": "text",
-                    "paragraphs": [
-                      "\\- = Fichier standard d = Répertoire/dossier l = Lien symbolique"
-                    ]
-                  },
-                  {
-                    "type": "text",
-                    "paragraphs": [
-                      "b = Périphérique type bloc (DD, partitions, clé usb, cd-rom etc..) c = Périphérique type caractère (clavier, écran, souris etc..) p = Tube nommé (pipe) s = Socket Unix"
-                    ]
-                  },
-                  {
-                    "type": "text",
-                    "paragraphs": [
-                      "Un fichier Linux est généralement composé de 3 parties:"
-                    ]
-                  },
-                  {
-                    "type": "list",
-                    "items": [
-                      "Nom du fichier",
-                      "Inode / métadonnées",
-                      "Données"
-                    ]
-                  }
-                ]
-              }
-            },
-            {
-              "id": "intro-linux-fichiers-s01-l-inode-contient-des-informations-telles",
-              "titre": "L'inode contient des informations telles que",
-              "type": "mixed",
-              "contenu": {
-                "blocks": [
-                  {
-                    "type": "list",
-                    "items": [
-                      "Le type de fichier",
-                      "Les identifiants de l'utilisateur et du groupe propriétaire du fichier",
-                      "Les permissions",
-                      "Les dates et heures de dernière modification",
-                      "La taille du fichier",
-                      "Les pointeurs vers les données du fichier",
-                      "NE contient PAS le nom du fichier"
-                    ]
-                  },
-                  {
-                    "type": "text",
-                    "paragraphs": [
-                      "file Nomdufichier = connaitre le type de données d'un fichier"
-                    ]
-                  },
-                  {
-                    "type": "text",
-                    "paragraphs": [
-                      "cat = Affiche l'intégralité d'un fichier à l'écran en une seule fois cat > nouveaufichier.txt = permet d'écrire les entrées qui suivent dans un nouveau fichier. Ctrl+D pour finir la saisie."
-                    ]
-                  },
-                  {
-                    "type": "text",
-                    "paragraphs": [
-                      "more = Lire un fichier, page par page. appuyez sur Espace pour faire défiler more -d = Affiche une aide succinte en bas de page more -s = Supprime les lignes blanche a l'intérieur du texte"
-                    ]
-                  },
-                  {
-                    "type": "text",
-                    "paragraphs": [
-                      "less = Lire un fichier page par page, possibilité de remonter dans le fichier, et de faire des recherches. less -s = Supprime les lignes blanche a l'intérieur du texte less -i = Ignore la casse (maj et min) commande interne de less :"
-                    ]
-                  },
-                  {
-                    "type": "list",
-                    "items": [
-                      "space = faire défiler une page",
-                      "e = défiler une ligne vers le bas",
-                      "y = défiler une ligne vers le haut",
-                      "h = acceder a l'aide interne",
-                      "G = se déplacer en début de fichier",
-                      "gg = se déplacer en fin de fichier",
-                      "q = quitter",
-                      "/motif = chercher motif dans le texte a l'écran",
-                      "n = se déplacer à la prochaine occurence"
-                    ]
-                  },
-                  {
-                    "type": "text",
-                    "paragraphs": [
-                      "head = Affiche les 10 premières lignes d'un fichier head -n 4 = permet d'afficher les 4 premières lignes d'un fichier head -v = affiche le nom du fichier en entête"
-                    ]
-                  },
-                  {
-                    "type": "text",
-                    "paragraphs": [
-                      "tail = Affiche les 10 dernières lignes d'un fichier tail -v -n = Même chose que pour la commande head tail -f = Affiche les dernières lignes, en continue. Pratique pour les fichier logs. Ctrl + C pour arreter la commande."
-                    ]
-                  },
-                  {
-                    "type": "text",
-                    "paragraphs": [
-                      "wc = Compte un nombre de : wc -l = ligne wc -w = mots wc -m = caractères wc -c = octets"
-                    ]
-                  },
-                  {
-                    "type": "text",
-                    "paragraphs": [
-                      "touch = créer fichier vide touch (sur un fichier existant) = modifie l'horodatage"
-                    ]
-                  },
-                  {
-                    "type": "text",
-                    "paragraphs": [
-                      "ls = liste ls -l = liste format long ls -a = liste tout les fichier (cachés aussi) ls -A = Pareil que -a sans les . et .. ls /etc/\\*.conf = liste les fichiers qui contiennent .conf dans le dossier /etc ls -d = affiche les caractéristiques d'un dossier, pas son contenu ls -R = liste les dossiers et leur contenu li -i = affiche le numéro d'inode d'un fichier cd = change directory (se déplacer dans un dossier)"
-                    ]
-                  },
-                  {
-                    "type": "text",
-                    "paragraphs": [
-                      "mv = déplacer (move) ex : mv fich01 monrepertoire/ mv fic1 fich02.txt = Modifie le nom mv fich02.txt monrepertoire/fichier2 = déplace le fichier en le renommant"
-                    ]
-                  },
-                  {
-                    "type": "text",
-                    "paragraphs": [
-                      "mkdir = créer un dossier"
-                    ]
-                  },
-                  {
-                    "type": "text",
-                    "paragraphs": [
-                      "cp = copie cp fichier02 fich2.txt = copie le fichier cp -r scripts/ scripts.sav = copie le dossier (le -r pour récursivité, nécessaire pour la copie de dossier non vide) cp -rv scripts/ scripts.d = copie du dossier et du contenu (le -v pour avoir un message de réalisation) cp -p = conserves les informations du format long (permissions, groupe etc..)"
-                    ]
-                  },
-                  {
-                    "type": "text",
-                    "paragraphs": [
-                      "rm = remove / supprime rm fich2.txt = supprime ce fichier rm -v xxxx = supprime avec message de réalisation rm -f xxxx = supprime sans avoir besoin de confirmation à donner (le -f = force) rm -r xxxxxx = supprime le dossier et son contenu Attention rm -rf / = A ne jamais lancé. Supprime tout le systeme."
-                    ]
-                  },
-                  {
-                    "type": "text",
-                    "paragraphs": [
-                      "pwd = positionnement dans l'arborescence"
-                    ]
-                  }
-                ]
-              }
-            },
-            {
-              "id": "intro-linux-fichiers-s02-metacaract-re",
-              "titre": "Metacaractère",
-              "type": "mixed",
-              "contenu": {
-                "blocks": [
-                  {
-                    "type": "text",
-                    "paragraphs": [
-                      "\\* (Wildcard ou Joker) = remplace n'importe quel caractère, y compris 0 ou rien du tout. ex = ls \\*.txt ? = indique un caractère quelconque et un seul. ex = ls tel20?? \\[...] = indique la possibilité d'ultiliser un caractère parmis ceux indiqué. ex= ls tel20\\[12]. Fonctionne aussi avec des lettres \\[tT] \\[...-...] = indique la possibilité d'utiliser un caractère présent dans l'intervalle. ex= tel20\\[0-9]\\[0-9]. Fonctionne aussi avec des lettres \\[a-zA-Z] \\[^...] / \\[^...-...] = inverse la recherche \\[!...] / \\[!...-...] = idem, inverse la recherche. ex = \\[^tT] signifie tout ce qui n'est pas t ou T"
-                    ]
-                  },
-                  {
-                    "type": "text",
-                    "paragraphs": [
-                      "Spécifique au bash :"
-                    ]
-                  },
-                  {
-                    "type": "text",
-                    "paragraphs": [
-                      "' ' = Banalise tous les caractères situés entre quotes. \" \" = Banalise tous sauf $, \\ et ' $ = Permet d'afficher le contenu d'une variable \\ = Banalise le caractère qui le suit ($,\\*,?...) et permet de l'afficher sans interpréter $(...) = Récupère le résultat de la commande entre parenthèses, par ex dans une variable \\`...\\` = Meme résultat que ci dessus, mais syntaxe dépréciée (plus d'actualité aujourd'hui)"
-                    ]
-                  },
-                  {
-                    "type": "text",
-                    "paragraphs": [
-                      "Facteurs d'occurrence : (l'option du shell extglob doit être activée. Cela se vérifie avec la commande shopt, elle doit être sur on, et elle se fait avec la commande shopt -s extglob)"
-                    ]
-                  },
-                  {
-                    "type": "text",
-                    "paragraphs": [
-                      "?(...) = 0 à 1 fois : optionnel une seule fois \\*(...) = 0 à n fois : optionnel illimité en nombre +(...) = 1 à n fois : au moins une fois @(...) = 1 fois : exactement une fois !(...) = l'expression entre parenthèses ne sera pas présente"
-                    ]
-                  },
-                  {
-                    "type": "text",
-                    "paragraphs": [
-                      "exemple = ls -d +(\\[eE])\\* +(\\[eE])\\* indique que l'on veut au moins une fois le caractère e en maj ou en minuscule."
-                    ]
-                  },
-                  {
-                    "type": "text",
-                    "paragraphs": [
-                      "exemple = ls -d !(\\*.txt) !(\\*.txt) indique tous les fichiers sauf ceux se terminant par l'extention txt"
-                    ]
-                  },
-                  {
-                    "type": "text",
-                    "paragraphs": [
-                      "{...} = offre un choix parmi plusieurs possibilités. exemple = ls images/\\*.{jpeg,gif,png} Ne se limite pas à la recherche, ex = mkdir -v {image, video} permet de créer 2 dossier à la suite en une seule commande."
-                    ]
-                  },
-                  {
-                    "type": "text",
-                    "paragraphs": [
-                      "Lien sous Linux :"
-                    ]
-                  },
-                  {
-                    "type": "text",
-                    "paragraphs": [
-                      "2 types de liens :"
-                    ]
-                  },
-                  {
-                    "type": "list",
-                    "items": [
-                      "Symbolique (comme un raccourcis sous windows, il a un inode a lui)",
-                      "Physique (ne concerne que les fichiers standard et non les répertoires, il pointe directement vers l'inode du fichier source)"
-                    ]
-                  },
-                  {
-                    "type": "text",
-                    "paragraphs": [
-                      "ln \\[-s] <source> \\<source> \\<cible> = créer un lien du fichier ou dossier cible vers le fichier ou dossier source ln -s = créer un lien symbolique Attention : utiliser les chemins absolus, ça évite les problèmes."
-                    ]
-                  },
-                  {
-                    "type": "text",
-                    "paragraphs": [
-                      "Avantages des liens symboliques :"
-                    ]
-                  },
-                  {
-                    "type": "list",
-                    "items": [
-                      "Pas de limites en terme de partition, de DD.",
-                      "Facilité à reconnaitre un lien symbolique",
-                      "Lien possible sur des répertoires",
-                      "Utilisation transparente"
-                    ]
-                  },
-                  {
-                    "type": "text",
-                    "paragraphs": [
-                      "Contraintes :"
-                    ]
-                  },
-                  {
-                    "type": "list",
-                    "items": [
-                      "Si le fichier source est delete, le lien existe toujours mais invalide",
-                      "Risque de rendre le lien invalide en cas de déplacement",
-                      "Utilisation de deux inodes",
-                      "Théoriquement plus long à accèder aux données : lecture de deux fichiers"
-                    ]
-                  },
-                  {
-                    "type": "text",
-                    "paragraphs": [
-                      "Avantages des liens physiques :"
-                    ]
-                  },
-                  {
-                    "type": "list",
-                    "items": [
-                      "Pas de problème de chemins lord de déplacement de fichiers",
-                      "Pas de perte d'inodes",
-                      "Théoriquement, accès plus rapide aux données que le lien symbolique"
-                    ]
-                  },
-                  {
-                    "type": "text",
-                    "paragraphs": [
-                      "Contraintes :"
-                    ]
-                  },
-                  {
-                    "type": "list",
-                    "items": [
-                      "Limité à un espace de stockage, à un filesystem",
-                      "Les permissions, utilisateurs, groupes.. sont toutes les mêmes pour chaque lien puisque contenus dans l'inode unique",
-                      "Pas de lien physiques sur un répertoire",
-                      "Visibilité moins évidente avec la commande ls"
-                    ]
-                  }
-                ]
-              }
-            }
-          ]
-        },
-        {
-          "id": "intro-linux-mecanismes",
-          "fichier": "Mécanisme avancés de Linux et Bash.md",
-          "titre": "Mécanismes avancés Linux & Bash",
-          "emoji": "⚙️",
-          "description": "Redirections, pipes, processus, signaux, alias et variables d'environnement.",
-          "sections": [
-            {
-              "id": "intro-linux-mecanismes-s00-commande-ps",
-              "titre": "Commande ps",
-              "type": "mixed",
-              "contenu": {
-                "blocks": [
-                  {
-                    "type": "text",
-                    "paragraphs": [
-                      "ps \\[-aefux]"
-                    ]
-                  },
-                  {
-                    "type": "text",
-                    "paragraphs": [
-                      "ps = visualise les processus de l'utilisateur actuel 4 colonnes apparaissent :"
-                    ]
-                  },
-                  {
-                    "type": "list",
-                    "items": [
-                      "PID : Identifiant unique",
-                      "TTY : Nom du terminal auquel le processus est rattaché",
-                      "TIME : Temps cumulé d'éxécution",
-                      "COMMAND : Commande à l'origine du processus"
-                    ]
-                  },
-                  {
-                    "type": "text",
-                    "paragraphs": [
-                      "ps -e = Liste tous les processus de tous les utilisateurs"
-                    ]
-                  },
-                  {
-                    "type": "text",
-                    "paragraphs": [
-                      "ps -f = Ajoute les colonnes :"
-                    ]
-                  },
-                  {
-                    "type": "list",
-                    "items": [
-                      "UID : Identifiant unique de l'utilisateur",
-                      "PPID : Processus parent",
-                      "STIME : L'heure à laquelle le processus a commencé"
-                    ]
-                  },
-                  {
-                    "type": "text",
-                    "paragraphs": [
-                      "ps -uf = Visualise les processus de l'utilisateur sous forme d'arbre"
-                    ]
-                  },
-                  {
-                    "type": "text",
-                    "paragraphs": [
-                      "ps -faux = Visualise tous les processus sous forme d'arbre"
-                    ]
-                  }
-                ]
-              }
-            },
-            {
-              "id": "intro-linux-mecanismes-s01-commande-kill",
-              "titre": "Commande kill",
-              "type": "mixed",
-              "contenu": {
-                "blocks": [
-                  {
-                    "type": "text",
-                    "paragraphs": [
-                      "kill \\[-sig] \\<pid> (\\<pid> \\<pid>)"
-                    ]
-                  },
-                  {
-                    "type": "text",
-                    "paragraphs": [
-                      "kill = permet de tuer un processus en précisant le type d'arrêt (ex = kill -15) Sans précision, le signal envoyé est 15 ou SIGTERM"
-                    ]
-                  },
-                  {
-                    "type": "text",
-                    "paragraphs": [
-                      "Les 4 SIG les plus connus (à utiliser dans cet ordre là) :"
-                    ]
-                  },
-                  {
-                    "type": "list",
-                    "items": [
-                      "SIGTERM : ID NUM 15 : Envoie une instruction pour que le processus se termine proprement. Valeur par défaut et valeur à privilégier.",
-                      "SIGINT : ID NUM 2 : Envoi d'un signal d'interruption (equivalent à ctrl+C dans un terminal)",
-                      "SIGHUNT : ID NUM 1 : Envoi d'un signal d'arrêt de session terminal (HangUp)",
-                      "SIGKILL : ID NUM 9 : Arrêt inconditionnel. Tue directement le processus (dangereux)"
-                    ]
-                  },
-                  {
-                    "type": "text",
-                    "paragraphs": [
-                      "pkill \\[-sig] \\<processname> = Pareil que kill, mais utilise le nom du processus au lieu du pid. ex = pkill firefox"
-                    ]
-                  },
-                  {
-                    "type": "text",
-                    "paragraphs": [
-                      "time \\<commande> = Visualise le temps d'exécution d'une commande"
-                    ]
-                  }
-                ]
-              }
-            },
-            {
-              "id": "intro-linux-mecanismes-s02-processus-en-arri-re-plan",
-              "titre": "Processus en arrière-plan",
-              "type": "mixed",
-              "contenu": {
-                "blocks": [
-                  {
-                    "type": "text",
-                    "paragraphs": [
-                      "commande \\[opt] \\<arg> & = Lance une commande en arrière plan grâce à &"
-                    ]
-                  },
-                  {
-                    "type": "text",
-                    "paragraphs": [
-                      "jobs = liste les processus en arrière-plan. Dans la liste, on voit le numéro de tache. jobs \\[numérodelatache] = visualise les processus en arrière-plan"
-                    ]
-                  },
-                  {
-                    "type": "text",
-                    "paragraphs": [
-                      "Ctrl+z = Reprend la main sur le terminal en laissant le processus en cours, en arrière-plan et en pause."
-                    ]
-                  },
-                  {
-                    "type": "text",
-                    "paragraphs": [
-                      "bg numérodelatache = Repasse le processus arrière plan en pause, en cours de fonctionnement, en arrière-plan."
-                    ]
-                  },
-                  {
-                    "type": "text",
-                    "paragraphs": [
-                      "fg numérodelatache = Repasse un processus en avant-plan"
-                    ]
-                  },
-                  {
-                    "type": "text",
-                    "paragraphs": [
-                      "nuhup processus & = Permet de détacher le processus du terminal où il est lancé. Cela évite que le processus s'arrête à la fermeture du terminal ou de la session putty, par exemple."
-                    ]
-                  }
-                ]
-              }
-            },
-            {
-              "id": "intro-linux-mecanismes-s03-mecanisme-de-rediction",
-              "titre": "MECANISME DE REDICTION",
-              "type": "mixed",
-              "contenu": {
-                "blocks": [
-                  {
-                    "type": "text",
-                    "paragraphs": [
-                      "Le pipeline | sert a rediriger le résultat de la première commande dans la seconde."
-                    ]
-                  },
-                  {
-                    "type": "text",
-                    "paragraphs": [
-                      "commande \\> fichier.txt = Ecrase le contenu du fichier commande \\>> fichier.txt = Ajoute le contenu au fichier"
-                    ]
-                  },
-                  {
-                    "type": "text",
-                    "paragraphs": [
-                      "Pour rediriger les erreurs : commande 2\\> errors.log"
-                    ]
-                  },
-                  {
-                    "type": "text",
-                    "paragraphs": [
-                      "commande 2\\>&1 = Redirige le flux d'erreur vers le flux de sortie standard \tEn bash, commande &\\> est une syntaxe plus courte pour le meme effet. \tcommande 2\\>&1 >fichier.txt \tcommande &\\>fichier.txt (spécifique au bash)"
-                    ]
-                  }
-                ]
-              }
-            },
-            {
-              "id": "intro-linux-mecanismes-s04-m-canismes-avanc-s-linux-bash",
-              "titre": "Mécanismes avancés Linux & Bash",
-              "type": "mixed",
-              "contenu": {
-                "blocks": [
-                  {
-                    "type": "text",
-                    "paragraphs": [
-                      "commande | tee \\[-a] fichier.txt = Double la sortie standard à l'écran ET dans un fichier. \tL'option -a permet d'ajouter a la suite d'un fichier existant, au lieu d'écraser."
-                    ]
-                  },
-                  {
-                    "type": "text",
-                    "paragraphs": [
-                      "commande < ficsource.txt = redirige le flux d'entrée depuis un fichier \twall < modeles/warning.txt = wall permet d'envoyer un message sur tout les utilisateurs."
-                    ]
-                  },
-                  {
-                    "type": "text",
-                    "paragraphs": [
-                      "cat FichLonf Monfic2 2>/dev/null = Redirige les potentielles erreurs dans le puits sans fond (néant)"
-                    ]
-                  }
-                ]
-              }
-            },
-            {
-              "id": "intro-linux-mecanismes-s05-archivage-et-compression",
-              "titre": "ARCHIVAGE ET COMPRESSION",
-              "type": "mixed",
-              "contenu": {
-                "blocks": [
-                  {
-                    "type": "text",
-                    "paragraphs": [
-                      "tar \\[ctxzjvf] archive.tar"
-                    ]
-                  },
-                  {
-                    "type": "text",
-                    "paragraphs": [
-                      "-c : Créer une archive -t : Lister le contenu -x : Extraire le contenu -z : préciser l'utilisation de la compression avec gzip -j : préciser l'utilisation de la compression avec bzip2 -u : mettre a jour une archive existante \tObligation de se déplacer avec cd / pour éviter les soucis de compression. \tPas de slash au début du chemin. \tcd / => tar uvf archive.tar home/user30/\\*txt -v : activer le mode verbeux -f : préciser le nom du fichier"
-                    ]
-                  },
-                  {
-                    "type": "text",
-                    "paragraphs": [
-                      "tar xvf archive.tar.gz -C restau.d = extrait le contenu d'une archive en mode verbeux, dans le dossier restau.d (grâce a -C, on précise l'emplacement de destination)"
-                    ]
-                  },
-                  {
-                    "type": "text",
-                    "paragraphs": [
-                      "tar -cvf archive.tar Edition \\*.txt = créer un fichier archive.tar qui contient le fichier edition et tous les fichier txt."
-                    ]
-                  },
-                  {
-                    "type": "text",
-                    "paragraphs": [
-                      "extention .tgz = version raccourcie de tar.gz"
-                    ]
-                  },
-                  {
-                    "type": "text",
-                    "paragraphs": [
-                      "bzip2 = format e compression alternatif. Plus efficace en terme de compression que Gzip mais demande plus de calcul au processeur."
-                    ]
-                  }
-                ]
-              }
-            },
-            {
-              "id": "intro-linux-mecanismes-s06-gestion-des-alias-avec-bash",
-              "titre": "GESTION DES ALIAS AVEC BASH",
-              "type": "mixed",
-              "contenu": {
-                "blocks": [
-                  {
-                    "type": "text",
-                    "paragraphs": [
-                      "alias ll=\"ls -l\""
-                    ]
-                  },
-                  {
-                    "type": "text",
-                    "paragraphs": [
-                      "alias ipa=\"ip address show dev ens33 | grep 'inet'\""
-                    ]
-                  },
-                  {
-                    "type": "text",
-                    "paragraphs": [
-                      "Pour conserver les alias d'une session à une autre, il faut éditer le fichier de paramètre des alias. => vim ./.bashrc \tDans le fichier bashrc, on peut activer les alias présente en enlevant le # devant l'alias concerné. On peut en ajouter d'autres dans \"mes propres alias.\" \tLes alias créent ne s'active pas de suite, il faut soit relancer une session, soit forcer par la commande \". .bashrc\""
-                    ]
-                  },
-                  {
-                    "type": "text",
-                    "paragraphs": [
-                      "unalias nomdelalias = suppression de l'alias"
-                    ]
-                  }
-                ]
-              }
-            },
-            {
-              "id": "intro-linux-mecanismes-s07-plus-loin-avec-les-variables",
-              "titre": "PLUS LOIN AVEC LES VARIABLES",
-              "type": "mixed",
-              "contenu": {
-                "blocks": [
-                  {
-                    "type": "text",
-                    "paragraphs": [
-                      "La donnée d'une variable n'existe que dans la mémoire vive du système."
-                    ]
-                  },
-                  {
-                    "type": "text",
-                    "paragraphs": [
-                      "Pour lire une variable, on accole le caractère $ avant le nom de la variable. \tvar=\"ceci est une variable\" \techo $var \tceci est une variable"
-                    ]
-                  },
-                  {
-                    "type": "text",
-                    "paragraphs": [
-                      "export var = Transforme (exporte) une variable locale en variable d'environnement. Une variable d'environnement est une variable qui sera disponible dans tout les sous shell et autre session."
-                    ]
-                  },
-                  {
-                    "type": "text",
-                    "paragraphs": [
-                      "export departement=\"comptabilite\" = créer une variable d'environnement."
-                    ]
-                  },
-                  {
-                    "type": "text",
-                    "paragraphs": [
-                      "unset departement = détruis une variable."
-                    ]
-                  },
-                  {
-                    "type": "text",
-                    "paragraphs": [
-                      "heure=$(date +%Hh%M) = créer une variable à partir d'une commande"
-                    ]
-                  },
-                  {
-                    "type": "text",
-                    "paragraphs": [
-                      "**La variable PATH**"
-                    ]
-                  },
-                  {
-                    "type": "text",
-                    "paragraphs": [
-                      "which ls = Demande le chemin de la commande ls, qui est contenu dans la variable $PATH (/usr/local/bin:/usr/bin:/bin:/usr/local/games:/usr/games)"
-                    ]
-                  }
-                ]
-              }
-            }
-          ]
-        },
-        {
-          "id": "intro-linux-bash",
-          "fichier": "Spécificités du shell Bash.md",
-          "titre": "Spécificités du shell Bash",
-          "emoji": "🖥️",
-          "description": "Historique, complétion, raccourcis, .bashrc et personnalisation.",
-          "sections": [
-            {
-              "id": "intro-linux-bash-s00-sp-cificit-s-du-shell-bash",
-              "titre": "Spécificités du shell Bash",
-              "type": "mixed",
-              "contenu": {
-                "blocks": [
-                  {
-                    "type": "text",
-                    "paragraphs": [
-                      "Le symbole | (pipe) permet d'envoyer le résultat de la première commande à la deuxième."
-                    ]
-                  },
-                  {
-                    "type": "text",
-                    "paragraphs": [
-                      "Ex = commande 1 | commande 2"
-                    ]
-                  },
-                  {
-                    "type": "text",
-                    "paragraphs": [
-                      "grep = sert à rechercher du texte selon un mot-clé ou une expression régulière. ls | grep .txt"
-                    ]
-                  },
-                  {
-                    "type": "text",
-                    "paragraphs": [
-                      "Le résultat de ls est envoyé à la commande grep. On peut utiliser le pipe plusieurs fois : ls | grep .txt | wc -l = compte le nombre de ligne du nombre de fichier contenant .txt dans la liste ls. ls | grep -v \"\\[Tt]el\" = retire l'affichage des fichiers qui contiennent Tel ou tel."
-                    ]
-                  },
-                  {
-                    "type": "text",
-                    "paragraphs": [
-                      "grep -i = ignore la casse grep -e = permet de faire plusieurs recherches qui vont être chacune précèder de ce -e grep -l = affiche le nom des fichier où le motif est présent et pas leur contenu grep -n = affiche le numéro des lignes où le motif est présent grep -v = inverse la recherche (récupère toutes les lignes sauf celles qui contiennent le motif) grep -E = passe en regex avancées, identique a egrep grep -s = supprime les messages d'erreur"
-                    ]
-                  },
-                  {
-                    "type": "text",
-                    "paragraphs": [
-                      "Recherches avancées :"
-                    ]
-                  },
-                  {
-                    "type": "text",
-                    "paragraphs": [
-                      "find \\<chemin> \\[critères de recherches] (\\[action à effectuer sur le résultat])"
-                    ]
-                  },
-                  {
-                    "type": "text",
-                    "paragraphs": [
-                      "find . -name \"\\[Tt]el*\" find s'appliquera sur le chemin . (répertoire courant) Le -name indique une recherche par nom de fichier La commande find est nativement récursive, donc ne se limite pas au dossier courant."
-                    ]
-                  },
-                  {
-                    "type": "text",
-                    "paragraphs": [
-                      "Quelques critères de recherches les + utilisés :"
-                    ]
-                  },
-                  {
-                    "type": "list",
-                    "items": [
-                      "-name \"ficnom\" = Recherche en fonction du nom. Peut être générique, doit être protégé par des double quotes.",
-                      "mount = Esquive les partitions montées et autre répertoire annexes au répertoire de base.",
-                      "-user nom = Recherche des fichiers par nom de l'utilisateur propriétaire",
-                      "-group groupe = Recherche des fichiers par nom du groupe propriétaire",
-                      "-type \\[fdlcbp] = Recherche par type de fichier. Les arguments représentent les divers types de fichiers.",
-                      "-size \\[+-]nb = Recherche en fonction de la taille (possibilité de préciser k, M ou G). Le caractère + ou - permet d'indiquer \"plus grand que\" ou \"plus petit que\".",
-                      "-mtime nb = Recherche des fichiers sur date de dernière modification, nb correspond au nombre de jour (1 pour la veille, 2 jours avant...).",
-                      "-ctime = Date de création du fichier",
-                      "-atime = Date d'accès du fichier"
-                    ]
-                  },
-                  {
-                    "type": "text",
-                    "paragraphs": [
-                      "ex = find . -type d -name \"\\*test*\" Recherche un dossier dans le répertoire courant dont le nom contient le mot test."
-                    ]
-                  },
-                  {
-                    "type": "text",
-                    "paragraphs": [
-                      "Actions sur les résultats :"
-                    ]
-                  },
-                  {
-                    "type": "list",
-                    "items": [
-                      "-print = Affiche le nom complet des fichiers trouver. C'est l'action par défaut.",
-                      "-printf = Affiche le résultat avec les possibilités de formatage de la fonction printf du langage C (voir man find)",
-                      "-exec command {} \\\\; = Exécute séquentiellement la commande command sur le résultat représentée par {}. Doit se terminer par \\\\;"
-                    ]
-                  },
-                  {
-                    "type": "text",
-                    "paragraphs": [
-                      "Ex = find . -type f -mtime -1 -exec ls -li {} \\\\; qui permet de préciser l'affichage en ls -li"
-                    ]
-                  },
-                  {
-                    "type": "list",
-                    "items": [
-                      "-ok command {} \\\\; = Même fonctionnement que -exec mais avec demande de confirmation à chaque exécution."
-                    ]
-                  }
-                ]
-              }
-            }
-          ]
-        }
-      ]
     },
     {
       "id": "infra-reseau",

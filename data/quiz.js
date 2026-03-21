@@ -17139,6 +17139,3366 @@ const QUIZ_DATA = {
       ],
       "reponse": 1,
       "explication": "Avec un RTO de 2 heures, la vitesse de restauration est critique. La stratégie full + différentielle ne nécessite que 2 fichiers pour restaurer (la full + la dernière différentielle), contre une chaîne potentiellement longue avec les incrémentielles. La proposition D est fausse : la différentielle devient plus volumineuse que l'incrémentale au fil de la semaine."
+    },
+    {
+      "id": "q1461",
+      "module": "admin-linux-m01",
+      "difficulte": "moyen",
+      "question": "En quelle année et avec quelles valeurs fondatrices Debian a-t-elle été créée ?",
+      "choix": [
+        "1991, liberté et performance",
+        "1993, qualité et caractère non commercial",
+        "1995, stabilité et open source",
+        "1992, sécurité et communauté"
+      ],
+      "reponse": 1,
+      "explication": "Debian est née en août 1993, un an après le noyau Linux de Torvalds. Ses deux piliers fondateurs sont la qualité et le caractère non commercial. Les autres propositions utilisent des dates ou des valeurs incorrectes qui ne correspondent pas au contexte historique officiel."
+    },
+    {
+      "id": "q1462",
+      "module": "admin-linux-m01",
+      "difficulte": "moyen",
+      "question": "Quel est le nom permanent de la branche unstable de Debian, quel que soit le cycle de publication ?",
+      "choix": [
+        "Trixie",
+        "Bookworm",
+        "Sid",
+        "Buster"
+      ],
+      "reponse": 2,
+      "explication": "Sid est toujours le nom de la branche unstable, en référence au personnage de Toy Story. Contrairement aux autres branches, ce nom ne change jamais. Trixie est la branche testing actuelle, Bookworm est la stable actuelle, et Buster est une ancienne release."
+    },
+    {
+      "id": "q1463",
+      "module": "admin-linux-m01",
+      "difficulte": "moyen",
+      "question": "Quelle est la version stable actuelle de Debian au moment du cours ?",
+      "choix": [
+        "Debian 11 Bullseye",
+        "Debian 10 Buster",
+        "Debian 13 Trixie",
+        "Debian 12 Bookworm"
+      ],
+      "reponse": 3,
+      "explication": "Debian 12 Bookworm est la version stable actuelle. Bullseye (Debian 11) est en statut oldstable, Buster (Debian 10) est une ancienne LTS, et Trixie correspond à la branche testing en préparation de Debian 13."
+    },
+    {
+      "id": "q1464",
+      "module": "admin-linux-m01",
+      "difficulte": "moyen",
+      "question": "D'où proviennent les noms de versions des releases Debian ?",
+      "choix": [
+        "Des constellations astronomiques",
+        "Des personnages de la saga Star Wars",
+        "Des personnages du film Toy Story",
+        "Des noms de villes américaines"
+      ],
+      "reponse": 2,
+      "explication": "Les noms de versions Debian sont tous tirés des personnages du film Toy Story (Buzz, Jessie, Stretch, Buster, Bullseye, Bookworm…). Ce choix est une tradition constante depuis les premières releases et constitue un classique des QCM d'examen."
+    },
+    {
+      "id": "q1465",
+      "module": "admin-linux-m01",
+      "difficulte": "moyen",
+      "question": "Quelle commande permet d'afficher la version du noyau Linux en cours d'exécution ?",
+      "choix": [
+        "cat /etc/debian_version",
+        "lsb_release -a",
+        "uname -a",
+        "ls -l /boot"
+      ],
+      "reponse": 2,
+      "explication": "uname -a affiche les informations complètes sur le noyau en cours d'exécution. cat /etc/debian_version affiche la version Debian, lsb_release -a donne les infos de la distribution, et ls -l /boot liste simplement le contenu du répertoire boot."
+    },
+    {
+      "id": "q1466",
+      "module": "admin-linux-m01",
+      "difficulte": "moyen",
+      "question": "Combien de points composent le contrat social de Debian ?",
+      "choix": [
+        "3",
+        "4",
+        "5",
+        "7"
+      ],
+      "reponse": 2,
+      "explication": "Le contrat social de Debian comprend exactement 5 engagements : liberté totale, reversement à la communauté, transparence totale, priorité aux utilisateurs et au logiciel libre, et tolérance des logiciels non libres dans des sections séparées."
+    },
+    {
+      "id": "q1467",
+      "module": "admin-linux-m01",
+      "difficulte": "moyen",
+      "question": "Quelle branche Debian est recommandée pour un environnement de production ?",
+      "choix": [
+        "unstable",
+        "testing",
+        "sid",
+        "stable"
+      ],
+      "reponse": 3,
+      "explication": "La branche stable est la seule recommandée en production car elle est figée et ne reçoit que des correctifs de sécurité, garantissant un système prévisible et fiable. Les branches testing et unstable/Sid évoluent continuellement et introduisent des risques de régression."
+    },
+    {
+      "id": "q1468",
+      "module": "admin-linux-m01",
+      "difficulte": "moyen",
+      "question": "Quelle commande affiche les informations complètes de la distribution Debian installée ?",
+      "choix": [
+        "uname -r",
+        "cat /proc/version",
+        "lsb_release -a",
+        "dpkg --version"
+      ],
+      "reponse": 2,
+      "explication": "lsb_release -a affiche l'ensemble des informations de la distribution : nom, version, codename, description. uname -r ne donne que la version du noyau, cat /proc/version affiche des infos noyau, et dpkg --version concerne le gestionnaire de paquets."
+    },
+    {
+      "id": "q1469",
+      "module": "admin-linux-m01",
+      "difficulte": "moyen",
+      "question": "Dans la syntaxe d'une commande Linux, que représentent les crochets [] dans la documentation ?",
+      "choix": [
+        "Des arguments obligatoires à saisir tels quels",
+        "Des éléments optionnels, marqueurs de documentation à ne pas saisir",
+        "Des options longues précédées de --",
+        "Des chemins absolus vers des fichiers système"
+      ],
+      "reponse": 1,
+      "explication": "Les crochets [] dans la documentation indiquent des éléments optionnels. Ils ne doivent jamais être saisis dans le terminal. Les saisir tels quels provoque une erreur de syntaxe. Les chevrons <> indiquent quant à eux des arguments obligatoires, mais restent eux aussi des marqueurs documentaires."
+    },
+    {
+      "id": "q1470",
+      "module": "admin-linux-m01",
+      "difficulte": "moyen",
+      "question": "Quel fichier contient la configuration des dépôts APT sur un système Debian ?",
+      "choix": [
+        "/etc/apt/preferences",
+        "/etc/dpkg/sources",
+        "/etc/apt/sources.list",
+        "/var/lib/apt/lists"
+      ],
+      "reponse": 2,
+      "explication": "/etc/apt/sources.list est le fichier de configuration principal des dépôts APT. /etc/apt/preferences gère les priorités de paquets, /var/lib/apt/lists contient les listes de paquets téléchargées, et /etc/dpkg/sources n'est pas un fichier standard."
+    },
+    {
+      "id": "q1471",
+      "module": "admin-linux-m01",
+      "difficulte": "difficile",
+      "question": "Un administrateur configure sources.list avec l'alias 'stable' au lieu du nom 'bookworm'. Quel risque principal encourt-il lors d'une future mise à jour ?",
+      "choix": [
+        "APT refusera de fonctionner car l'alias est invalide",
+        "Le système basculera automatiquement vers testing lors de la sortie de Debian 13",
+        "Lors de la sortie de Debian 13, 'stable' pointera vers la nouvelle version et pourrait déclencher une mise à jour majeure non voulue",
+        "Les paquets non-free ne seront plus accessibles"
+      ],
+      "reponse": 2,
+      "explication": "En utilisant l'alias 'stable' plutôt que le nom explicite 'bookworm', le fichier sources.list pointera automatiquement vers la prochaine version stable dès sa publication. Cela peut provoquer une mise à jour majeure non planifiée et déstabiliser le système de production. La bonne pratique est de nommer explicitement la version."
+    },
+    {
+      "id": "q1472",
+      "module": "admin-linux-m01",
+      "difficulte": "difficile",
+      "question": "Un technicien tente d'installer le firmware propriétaire d'une carte réseau avec 'apt install firmware-iwlwifi' mais obtient une erreur 'paquet introuvable'. Quelle est la cause la plus probable et la solution correcte ?",
+      "choix": [
+        "Le paquet est obsolète ; il faut compiler le driver depuis les sources",
+        "APT n'est pas à jour ; apt upgrade suffit à résoudre le problème",
+        "Le paquet est dans la section non-free, non activée par défaut ; il faut ajouter non-free dans sources.list puis apt update",
+        "Le noyau ne supporte pas ce firmware ; il faut changer de version Debian"
+      ],
+      "reponse": 2,
+      "explication": "Les firmwares propriétaires ne sont pas conformes au contrat social Debian et résident dans la section non-free. Elle n'est pas activée par défaut. Il faut modifier /etc/apt/sources.list pour y ajouter non-free (et éventuellement contrib), puis exécuter apt update pour rafraîchir les listes."
+    },
+    {
+      "id": "q1473",
+      "module": "admin-linux-m01",
+      "difficulte": "difficile",
+      "question": "Quelle distinction fondamentale existe-t-il entre les sections 'non-free' et 'contrib' dans les dépôts Debian ?",
+      "choix": [
+        "non-free contient des paquets payants, contrib contient des paquets gratuits mais non maintenus",
+        "non-free regroupe des paquets ne respectant pas les principes du logiciel libre ; contrib regroupe des paquets libres mais qui dépendent de composants non libres",
+        "non-free est réservé aux firmwares matériels, contrib aux applications desktop",
+        "Les deux sections sont identiques, seule leur nomenclature diffère selon l'architecture cible"
+      ],
+      "reponse": 1,
+      "explication": "La distinction est précise : non-free héberge des logiciels qui ne respectent pas les critères du logiciel libre (ex. : firmwares Intel), tandis que contrib contient des paquets libres dont les dépendances sont non libres. Cette nuance est importante pour comprendre la politique de Debian vis-à-vis de son contrat social."
+    },
+    {
+      "id": "q1474",
+      "module": "admin-linux-m01",
+      "difficulte": "difficile",
+      "question": "Un administrateur souhaite disposer d'un paquet plus récent que celui proposé par la branche stable, sans migrer vers testing. Quelle solution est la plus adaptée ?",
+      "choix": [
+        "Modifier manuellement le numéro de version dans le paquet .deb",
+        "Utiliser les backports disponibles pour la version stable concernée",
+        "Basculer sources.list vers la branche unstable uniquement pour ce paquet",
+        "Recompiler le paquet depuis les sources de la branche testing"
+      ],
+      "reponse": 1,
+      "explication": "Les backports sont des paquets issus de versions plus récentes, recompilés pour fonctionner sur la branche stable actuelle. C'est la solution officielle et sécurisée recommandée par Debian pour obtenir une version plus récente d'un paquet sans compromettre la stabilité du système."
+    },
+    {
+      "id": "q1475",
+      "module": "admin-linux-m01",
+      "difficulte": "difficile",
+      "question": "Pourquoi Debian est-elle privilégiée en datacenter par rapport à Ubuntu ou Linux Mint, alors que ces dernières en sont dérivées ?",
+      "choix": [
+        "Debian supporte davantage d'architectures matérielles que ses dérivées",
+        "Debian intègre nativement des outils de supervision absents dans Ubuntu",
+        "Debian est conçue dès l'origine pour les serveurs avec des cycles LTS longs et une stabilité maximale, au détriment de l'ergonomie desktop",
+        "Debian dispose d'un support commercial officiel contrairement à Ubuntu"
+      ],
+      "reponse": 2,
+      "explication": "Debian est pensée serveur dès sa conception : cycles de publication longs, stabilité prioritaire sur la nouveauté, peu d'évolutions côté interface graphique. Ubuntu et Linux Mint, bien que dérivées de Debian, ajoutent des couches d'ergonomie et des cycles plus courts adaptés aux postes utilisateurs, ce qui les rend moins adaptées à des environnements datacenter critiques."
+    },
+    {
+      "id": "q1476",
+      "module": "admin-linux-m01",
+      "difficulte": "difficile",
+      "question": "Un utilisateur saisit la commande suivante : ls -l [/home/user]. Quel sera le résultat ?",
+      "choix": [
+        "La commande s'exécute normalement et liste le contenu de /home/user",
+        "Une erreur de syntaxe est générée car les crochets ne doivent pas être saisis dans le terminal",
+        "La commande liste uniquement les fichiers cachés de /home/user",
+        "Le shell interprète les crochets comme un pattern glob et liste les fichiers correspondants"
+      ],
+      "reponse": 1,
+      "explication": "Les crochets [] sont des marqueurs de documentation indiquant un élément optionnel. Les saisir dans le terminal provoque une erreur de syntaxe. Seuls la commande ls, l'option -l et l'argument /home/user doivent être saisis. Attention : le shell peut aussi interpréter [] comme un glob, rendant le comportement imprévisible."
+    },
+    {
+      "id": "q1477",
+      "module": "admin-linux-m01",
+      "difficulte": "difficile",
+      "question": "Parmi les affirmations suivantes sur le contrat social Debian, laquelle est exacte concernant les logiciels non libres ?",
+      "choix": [
+        "Les logiciels non libres sont totalement interdits et ne peuvent jamais figurer sur les miroirs Debian",
+        "Les logiciels non libres peuvent être intégrés dans le système officiel Debian si leur code source est disponible",
+        "Les logiciels non libres peuvent exister dans des sections séparées (non-free, contrib) mais ne font pas partie du système Debian officiel",
+        "Les logiciels non libres sont acceptés dans la branche testing uniquement, pas en stable"
+      ],
+      "reponse": 2,
+      "explication": "Le contrat social prévoit explicitement que les logiciels non libres peuvent coexister dans des sections séparées, mais ils ne sont pas inclus dans le système Debian officiel. Cela explique pourquoi les dépôts non-free et contrib doivent être activés manuellement et ne sont pas présents par défaut."
+    },
+    {
+      "id": "q1478",
+      "module": "admin-linux-m01",
+      "difficulte": "difficile",
+      "question": "Quelle est la différence entre la branche 'testing' et la branche 'unstable' dans le cycle de développement Debian ?",
+      "choix": [
+        "testing reçoit tous les paquets en temps réel, unstable n'est mise à jour que mensuellement",
+        "unstable alimente testing après une période de maturation et de validation ; testing deviendra la prochaine stable",
+        "testing et unstable sont identiques en contenu, seule leur accessibilité réseau diffère",
+        "unstable est réservée aux développeurs Debian, testing est ouverte au public"
+      ],
+      "reponse": 1,
+      "explication": "Dans le cycle Debian, unstable (Sid) reçoit en continu les nouvelles versions de paquets. Après une période de maturation et si aucun bug critique n'est détecté, ces paquets migrent vers testing, qui constitue la préparation de la prochaine release stable. testing sera ensuite gelée et publiée comme nouvelle stable."
+    },
+    {
+      "id": "q1479",
+      "module": "admin-linux-m01",
+      "difficulte": "difficile",
+      "question": "Un administrateur constate qu'un paquet critique est bloqué en version ancienne sur sa Debian 12 stable. Quelle est la bonne analyse de cette situation ?",
+      "choix": [
+        "C'est un bug d'APT ; apt-get dist-upgrade corrigera le problème",
+        "C'est le comportement attendu de la branche stable, qui est figée par conception et ne reçoit que des correctifs de sécurité",
+        "Il faut recompiler le paquet manuellement car Debian ne maintient plus les vieilles versions",
+        "La branche stable est corrompue ; il faut réinstaller le système depuis la branche testing"
+      ],
+      "reponse": 1,
+      "explication": "La branche stable est volontairement figée : seuls les correctifs de sécurité y sont intégrés, pas les nouvelles fonctionnalités ou versions. C'est une contrainte assumée qui garantit la stabilité en production. La solution appropriée est soit d'accepter cette contrainte, soit d'utiliser les backports si disponibles pour ce paquet."
+    },
+    {
+      "id": "q1480",
+      "module": "admin-linux-m01",
+      "difficulte": "difficile",
+      "question": "Un nom de dossier contient un espace : 'Mon Serveur'. Quelle syntaxe est correcte pour lister son contenu en format détaillé ?",
+      "choix": [
+        "ls -l Mon Serveur",
+        "ls -l /home/Mon\\ Serveur ou ls -l \"/home/Mon Serveur\"",
+        "ls [-l] <Mon Serveur>",
+        "ls --long \"Mon\" \"Serveur\""
+      ],
+      "reponse": 1,
+      "explication": "Lorsqu'un argument contient des espaces, il faut soit échapper l'espace avec un antislash, soit encadrer l'argument complet entre guillemets. Sans cela, le shell interprète chaque mot séparé par une espace comme un argument distinct, ce qui provoque une erreur. Les propositions A, C et D illustrent des erreurs classiques de syntaxe."
+    },
+    {
+      "id": "q1481",
+      "module": "admin-linux-m02",
+      "difficulte": "moyen",
+      "question": "Quelles sont les deux partitions minimales obligatoires lors d'une installation Debian ?",
+      "choix": [
+        "/boot et /home",
+        "/ et swap",
+        "/usr et swap",
+        "/ et /boot"
+      ],
+      "reponse": 1,
+      "explication": "Toute installation Debian requiert au minimum une partition racine / qui contient l'intégralité du système de fichiers, et une partition swap servant d'extension virtuelle à la RAM. /boot et /home sont recommandées en production mais non obligatoires pour une installation fonctionnelle."
+    },
+    {
+      "id": "q1482",
+      "module": "admin-linux-m02",
+      "difficulte": "moyen",
+      "question": "Que signifie choisir 'Graphical Install' lors du démarrage de l'installateur Debian ?",
+      "choix": [
+        "Le système final disposera obligatoirement d'une interface graphique",
+        "GNOME sera installé par défaut en plus des paquets de base",
+        "Seul le mode d'affichage de l'installateur est graphique ; le système final dépend des paquets sélectionnés",
+        "L'installation sera plus rapide grâce à l'accélération graphique"
+      ],
+      "reponse": 2,
+      "explication": "Graphical Install désigne uniquement le mode visuel de l'outil d'installation, pas le résultat final. Le système installé sera graphique ou non selon les paquets choisis pendant l'installation (GNOME, KDE, etc.). C'est un piège classique de QCM TSSR."
+    },
+    {
+      "id": "q1483",
+      "module": "admin-linux-m02",
+      "difficulte": "moyen",
+      "question": "Quelle est la différence entre 'su -' et 'su' sans tiret ?",
+      "choix": [
+        "su - demande le mot de passe root, su celui de l'utilisateur courant",
+        "su - charge l'environnement complet de root ; su bascule vers root sans charger son environnement",
+        "su - ouvre un shell temporaire, su ouvre une session permanente",
+        "Il n'y a aucune différence fonctionnelle entre les deux commandes"
+      ],
+      "reponse": 1,
+      "explication": "Le tiret dans su - est obligatoire pour charger l'intégralité de l'environnement de root, notamment le $PATH. Sans lui, certaines commandes système sont introuvables car le $PATH reste celui de l'utilisateur précédent. C'est une erreur fréquente en production."
+    },
+    {
+      "id": "q1484",
+      "module": "admin-linux-m02",
+      "difficulte": "moyen",
+      "question": "Sur quel emplacement doit être installé GRUB lors d'une installation Debian standard ?",
+      "choix": [
+        "Sur la partition /boot",
+        "Sur la partition /",
+        "Sur /dev/sda (le disque principal)",
+        "Sur /dev/sda1 (la première partition)"
+      ],
+      "reponse": 2,
+      "explication": "GRUB doit être installé sur le disque entier /dev/sda, et non sur une partition spécifique. L'installer sur une partition comme /dev/sda1 peut rendre le système inamorçable. Omettre cette étape est une cause classique de système non démarrable après installation."
+    },
+    {
+      "id": "q1485",
+      "module": "admin-linux-m02",
+      "difficulte": "moyen",
+      "question": "Lors de l'installation Debian, aucun mot de passe root n'est défini. Quelle est la conséquence directe ?",
+      "choix": [
+        "Le compte root est désactivé et ne peut jamais être utilisé",
+        "Le premier utilisateur créé devient sudoer et peut exécuter des commandes root via sudo",
+        "L'installation échoue car root est obligatoire",
+        "Un mot de passe root aléatoire est généré automatiquement"
+      ],
+      "reponse": 1,
+      "explication": "Laisser le mot de passe root vide à l'installation active le mécanisme sudo : le premier utilisateur standard créé reçoit automatiquement les droits sudoer. Il peut alors utiliser sudo -i ou sudo -s pour obtenir un shell root."
+    },
+    {
+      "id": "q1486",
+      "module": "admin-linux-m02",
+      "difficulte": "moyen",
+      "question": "Quelle image ISO est la plus adaptée pour installer Debian sur une machine disposant d'une connexion Internet stable, avec les paquets les plus récents ?",
+      "choix": [
+        "ISO DVD complète (~4 Go)",
+        "Debian Live",
+        "NetInstall (~400 Mo)",
+        "Image PXE"
+      ],
+      "reponse": 2,
+      "explication": "La NetInstall est une image légère d'environ 400 Mo qui télécharge les paquets directement depuis les dépôts Internet au moment de l'installation. Elle garantit des paquets à jour et une installation minimale personnalisable. L'ISO DVD embarque tous les paquets localement mais ils peuvent être anciens."
+    },
+    {
+      "id": "q1487",
+      "module": "admin-linux-m02",
+      "difficulte": "moyen",
+      "question": "Pourquoi est-il recommandé d'installer Debian en anglais sur un serveur de production, tout en conservant un clavier AZERTY ?",
+      "choix": [
+        "Debian ne supporte pas le français en environnement serveur",
+        "Les messages d'erreur en anglais facilitent la recherche de solutions sur Internet",
+        "L'anglais améliore les performances du système de journalisation",
+        "Les paquets non-free ne sont disponibles qu'en anglais"
+      ],
+      "reponse": 1,
+      "explication": "Les messages d'erreur système et applicatifs en anglais produisent des résultats de recherche bien plus pertinents sur Internet. Conserver le clavier AZERTY permet au technicien de travailler confortablement. C'est une bonne pratique professionnelle courante en datacenter."
+    },
+    {
+      "id": "q1488",
+      "module": "admin-linux-m02",
+      "difficulte": "moyen",
+      "question": "Quelle commande permet de lister les disques et partitions disponibles sur un système Linux ?",
+      "choix": [
+        "fdisk /dev/sda",
+        "df -h",
+        "lsblk",
+        "mount -a"
+      ],
+      "reponse": 2,
+      "explication": "lsblk liste l'ensemble des disques et partitions de manière arborescente et lisible. fdisk /dev/sda ouvre l'éditeur de partition (interactif et risqué), df -h affiche l'espace utilisé sur les systèmes montés, et mount -a monte les systèmes de fichiers définis dans /etc/fstab."
+    },
+    {
+      "id": "q1489",
+      "module": "admin-linux-m02",
+      "difficulte": "moyen",
+      "question": "Quel outil de création de média USB bootable supporte plusieurs images ISO sur une même clé USB ?",
+      "choix": [
+        "Rufus",
+        "Balena Etcher",
+        "Ventoy",
+        "Unetbootin"
+      ],
+      "reponse": 2,
+      "explication": "Ventoy est l'outil qui se distingue par sa capacité à héberger plusieurs fichiers ISO sur une même clé USB. Il crée un menu de démarrage permettant de choisir l'ISO à utiliser. Rufus et Balena Etcher écrasent la clé avec une seule image à la fois."
+    },
+    {
+      "id": "q1490",
+      "module": "admin-linux-m02",
+      "difficulte": "moyen",
+      "question": "Quelle table de partitionnement est requise pour un système utilisant UEFI avec LVM ?",
+      "choix": [
+        "MBR",
+        "GPT",
+        "FAT32",
+        "EXT4"
+      ],
+      "reponse": 1,
+      "explication": "GPT (GUID Partition Table) est la table de partitionnement moderne compatible avec les systèmes UEFI. MBR est réservé aux BIOS classiques et est limité à 4 partitions primaires et des disques de 2 To maximum. EXT4 et FAT32 sont des systèmes de fichiers, pas des tables de partitionnement."
+    },
+    {
+      "id": "q1491",
+      "module": "admin-linux-m02",
+      "difficulte": "difficile",
+      "question": "Un technicien installe Debian et oublie d'installer GRUB. L'installation se termine sans erreur. Quel sera le comportement du système au premier démarrage ?",
+      "choix": [
+        "Le système démarre mais en mode dégradé sans interface graphique",
+        "Le système démarre sur un shell minimal de récupération",
+        "Le système ne démarre pas ; la machine affiche une erreur de boot ou un écran noir",
+        "Linux se charge partiellement mais / est inaccessible"
+      ],
+      "reponse": 2,
+      "explication": "Sans GRUB installé sur le disque principal, le BIOS/UEFI ne trouve aucun bootloader valide et ne peut pas charger le noyau Linux. La machine affiche une erreur de boot. La solution est de redémarrer depuis le média d'installation en mode rescue et d'exécuter grub-install /dev/sda."
+    },
+    {
+      "id": "q1492",
+      "module": "admin-linux-m02",
+      "difficulte": "difficile",
+      "question": "Un administrateur utilise 'su' sans tiret pour passer root, puis tente d'exécuter 'apt update' et obtient 'commande introuvable'. Quelle est la cause exacte ?",
+      "choix": [
+        "apt n'est pas installé sur le système",
+        "Le compte root n'a pas les droits suffisants pour exécuter apt",
+        "su sans tiret ne charge pas l'environnement de root, le $PATH est incomplet et ne contient pas /usr/sbin",
+        "apt nécessite une connexion réseau active qui est coupée lors du changement d'utilisateur"
+      ],
+      "reponse": 2,
+      "explication": "su sans tiret conserve le $PATH de l'utilisateur précédent, qui n'inclut pas /usr/sbin où se trouve apt. La commande est donc introuvable malgré le fait d'être root. su - avec le tiret charge l'environnement complet de root et résout ce problème."
+    },
+    {
+      "id": "q1493",
+      "module": "admin-linux-m02",
+      "difficulte": "difficile",
+      "question": "Un serveur Debian de production présente un système bloqué à cause d'un disque plein. L'analyse montre que / est saturée par les logs. Quelle erreur de partitionnement initiale explique cette situation ?",
+      "choix": [
+        "La partition swap est trop petite",
+        "/var n'a pas été isolée dans une partition dédiée, les logs ont saturé /",
+        "GRUB a été installé sur une mauvaise partition, réduisant l'espace disponible",
+        "LVM n'a pas été activé, empêchant l'extension dynamique du disque"
+      ],
+      "reponse": 1,
+      "explication": "En production, /var contient les logs système et applicatifs qui peuvent croître indéfiniment. Sans partition dédiée, cette croissance sature la partition /, bloquant l'intégralité du système. Isoler /var (et /tmp) dans des partitions séparées est une bonne pratique fondamentale en architecture serveur."
+    },
+    {
+      "id": "q1494",
+      "module": "admin-linux-m02",
+      "difficulte": "difficile",
+      "question": "Quelle est la différence fonctionnelle entre 'sudo -i' et 'sudo -s' ?",
+      "choix": [
+        "sudo -i exécute une seule commande root, sudo -s ouvre un shell permanent",
+        "sudo -i ouvre un shell root interactif complet équivalent à su - ; sudo -s ouvre un shell root sans charger le profil complet de root",
+        "sudo -i nécessite le mot de passe root, sudo -s celui de l'utilisateur",
+        "sudo -i est réservé aux sudoers déclarés dans /etc/sudoers, sudo -s fonctionne pour tous"
+      ],
+      "reponse": 1,
+      "explication": "sudo -i est l'équivalent fonctionnel de su - : il ouvre un shell root interactif en chargeant l'intégralité de l'environnement root. sudo -s ouvre un shell root mais conserve l'environnement de l'utilisateur appelant, similaire à su sans tiret. La distinction est importante pour le diagnostic de problèmes liés au $PATH."
+    },
+    {
+      "id": "q1495",
+      "module": "admin-linux-m02",
+      "difficulte": "difficile",
+      "question": "Un technicien configure sources.list avec le nom de la branche 'testing' pour bénéficier de paquets récents en production. Quel risque majeur encourt-il lors du déploiement d'une nouvelle Debian ?",
+      "choix": [
+        "Les paquets testing sont chiffrés et ne peuvent pas être installés en production",
+        "APT refusera les paquets testing car leur signature GPG est différente",
+        "Lors du gel de testing pour devenir la nouvelle stable, le système pourrait recevoir des mises à jour non voulues vers la prochaine branche testing",
+        "La branche testing ne contient pas les paquets de sécurité, exposant le serveur"
+      ],
+      "reponse": 2,
+      "explication": "Utiliser l'alias testing dans sources.list expose le système à des transitions automatiques : quand testing est gelée pour devenir stable, une nouvelle branche testing prend sa place. Le système pourrait alors recevoir des mises à jour vers cette nouvelle branche instable. En production, il faut toujours nommer explicitement la version."
+    },
+    {
+      "id": "q1496",
+      "module": "admin-linux-m02",
+      "difficulte": "difficile",
+      "question": "Lors d'une installation Debian, un technicien souhaite déployer simultanément 50 machines avec la même configuration. Quelle méthode est la plus adaptée ?",
+      "choix": [
+        "NetInstall répété manuellement sur chaque machine",
+        "Clé USB Ventoy avec l'ISO DVD copiée sur chaque poste",
+        "Boot PXE combiné avec FAI (Fully Automatic Installation) ou préconfiguration",
+        "Debian Live déployée depuis un partage réseau NFS"
+      ],
+      "reponse": 2,
+      "explication": "PXE permet de démarrer les machines depuis le réseau sans média physique, et FAI ou les fichiers de préconfiguration (preseed) automatisent entièrement l'installation. C'est la solution professionnelle pour le déploiement en masse. Les autres méthodes nécessitent une intervention manuelle sur chaque poste."
+    },
+    {
+      "id": "q1497",
+      "module": "admin-linux-m02",
+      "difficulte": "difficile",
+      "question": "Un technicien venant d'un environnement Windows configure le champ 'domaine' lors de l'installation Debian en entrant le nom de son domaine Active Directory. Quelle erreur commet-il ?",
+      "choix": [
+        "Aucune erreur, le domaine AD est compatible avec le domaine DNS Debian",
+        "Il confond domaine DNS et domaine Active Directory ; le champ attendu est un domaine DNS, pas un domaine AD",
+        "Debian ne supporte pas les domaines Windows, le champ doit rester vide",
+        "Le domaine AD ne peut être renseigné qu'après installation via realm join"
+      ],
+      "reponse": 1,
+      "explication": "Le champ domaine de l'installateur Debian correspond à un domaine DNS (ex. : entreprise.local), pas à un domaine Active Directory au sens Windows. Bien que les valeurs puissent être identiques, la confusion de concepts est fréquente. Le domaine AD implique des mécanismes d'authentification Kerberos/LDAP distincts, configurables après installation."
+    },
+    {
+      "id": "q1498",
+      "module": "admin-linux-m02",
+      "difficulte": "difficile",
+      "question": "Un administrateur installe Debian sur une VM et constate que le réseau ne fonctionne pas après l'installation, bien que la configuration soit correcte. Quelle cause liée à la virtualisation doit-il vérifier en priorité ?",
+      "choix": [
+        "Le nom d'hôte n'a pas été défini correctement pendant l'installation",
+        "Le mode réseau de la VM (Bridge/NAT) n'est pas correctement configuré dans les paramètres de l'hyperviseur",
+        "GRUB n'a pas chargé les modules réseau au démarrage",
+        "La partition /var est trop petite pour stocker les fichiers de configuration réseau"
+      ],
+      "reponse": 1,
+      "explication": "Dans un environnement virtualisé (VMware, VirtualBox), le mode réseau de la carte virtuelle est configuré au niveau de l'hyperviseur, indépendamment de Debian. Si la carte est en mode NAT non configuré ou dans un réseau hôte uniquement, la connectivité sera absente. La première vérification est toujours le mode Bridge ou NAT dans les paramètres VM."
+    },
+    {
+      "id": "q1499",
+      "module": "admin-linux-m02",
+      "difficulte": "difficile",
+      "question": "Un technicien a oublié le mot de passe root mais dispose d'un compte sudoer actif. Quelle commande lui permet de définir un nouveau mot de passe root sans redémarrer en mode rescue ?",
+      "choix": [
+        "su --reset-password root",
+        "sudo passwd root",
+        "sudo su --change-password",
+        "sudo usermod -p root"
+      ],
+      "reponse": 1,
+      "explication": "sudo passwd root permet à un utilisateur sudoer de définir ou réinitialiser le mot de passe du compte root sans accès physique ni redémarrage en mode rescue. usermod -p attend un hash chiffré et non un mot de passe en clair. Les autres commandes n'existent pas sous cette forme."
+    },
+    {
+      "id": "q1500",
+      "module": "admin-linux-m02",
+      "difficulte": "difficile",
+      "question": "Un serveur est installé avec uniquement / et swap. Six mois après, /tmp sature l'espace disque. Quelle architecture aurait évité ce problème, et quel avantage apporte LVM ?",
+      "choix": [
+        "Ajouter une partition /boot dédiée ; LVM n'apporte rien dans ce cas",
+        "Isoler /tmp dans une partition dédiée dès l'installation ; LVM permet de redimensionner cette partition à chaud sans réinstallation",
+        "Augmenter la taille du swap ; LVM permet de convertir le swap en espace /tmp",
+        "Déplacer /tmp vers /var/tmp par un lien symbolique ; LVM n'est utile que pour les bases de données"
+      ],
+      "reponse": 1,
+      "explication": "Isoler /tmp dans une partition dédiée empêche sa saturation de bloquer le reste du système. LVM apporte ici une valeur essentielle : si la partition /tmp s'avère trop petite, elle peut être agrandie à chaud sans redémarrage ni réinstallation en réallouant de l'espace depuis le groupe de volumes LVM. C'est l'argument principal pour adopter LVM en production."
+    },
+    {
+      "id": "q1501",
+      "module": "admin-linux-m03",
+      "difficulte": "moyen",
+      "question": "Quelle est la séquence de démarrage correcte d'un système Debian ?",
+      "choix": [
+        "BIOS → initrd → GRUB → vmlinuz → Systemd",
+        "BIOS → GRUB Stage 1 → GRUB Stage 2 → vmlinuz → initrd → Systemd",
+        "BIOS → vmlinuz → GRUB → initrd → Systemd",
+        "BIOS → Systemd → GRUB → vmlinuz → initrd"
+      ],
+      "reponse": 1,
+      "explication": "La séquence complète est : BIOS/UEFI → GRUB Stage 1 (MBR) → GRUB Stage 2 (/boot/grub) → noyau (vmlinuz) → initrd → Systemd (PID 1). Chaque maillon a un rôle distinct et l'ordre est strict. Toute autre séquence est incorrecte et constitue un piège classique d'examen."
+    },
+    {
+      "id": "q1502",
+      "module": "admin-linux-m03",
+      "difficulte": "moyen",
+      "question": "Où est logé GRUB Stage 1 et quelle est sa taille ?",
+      "choix": [
+        "Dans /boot/grub/, taille variable",
+        "Dans le MBR, les 512 premiers octets du disque",
+        "Dans la partition /boot, les 1024 premiers octets",
+        "Dans l'UEFI, intégré au firmware de la carte mère"
+      ],
+      "reponse": 1,
+      "explication": "GRUB Stage 1 réside dans le MBR (Master Boot Record), qui correspond aux 512 premiers octets du disque. Son unique rôle est de charger GRUB Stage 2. La taille de 512 octets et l'emplacement MBR sont des données classiquement testées à l'examen."
+    },
+    {
+      "id": "q1503",
+      "module": "admin-linux-m03",
+      "difficulte": "moyen",
+      "question": "Quel fichier contient les paramètres GRUB que l'administrateur doit modifier ?",
+      "choix": [
+        "/boot/grub/grub.cfg",
+        "/etc/grub.d/00_header",
+        "/etc/default/grub",
+        "/boot/grub/menu.lst"
+      ],
+      "reponse": 2,
+      "explication": "/etc/default/grub est le fichier source des paramètres GRUB à modifier (timeout, options noyau, résolution...). /boot/grub/grub.cfg est généré automatiquement par update-grub et ne doit jamais être édité directement. Les modifications manuelles de grub.cfg sont écrasées à chaque mise à jour du noyau."
+    },
+    {
+      "id": "q1504",
+      "module": "admin-linux-m03",
+      "difficulte": "moyen",
+      "question": "Quelle commande permet de régénérer le fichier de configuration GRUB après modification des paramètres sur Debian ?",
+      "choix": [
+        "grub-install /dev/sda",
+        "grub-mkconfig",
+        "update-grub",
+        "grub-update --rebuild"
+      ],
+      "reponse": 2,
+      "explication": "update-grub est le raccourci Debian pour régénérer grub.cfg à partir de /etc/default/grub et des scripts dans /etc/grub.d/. C'est l'équivalent de grub-mkconfig -o /boot/grub/grub.cfg, qui est la commande universelle disponible sur toutes les distributions."
+    },
+    {
+      "id": "q1505",
+      "module": "admin-linux-m03",
+      "difficulte": "moyen",
+      "question": "Quel est le rôle du fichier initrd.img dans la séquence de démarrage ?",
+      "choix": [
+        "Contenir l'image compressée du noyau Linux",
+        "Stocker la configuration de GRUB Stage 2",
+        "Fournir un système de fichiers temporaire en RAM pour charger les modules matériels au démarrage",
+        "Contenir la table de partitionnement du disque principal"
+      ],
+      "reponse": 2,
+      "explication": "initrd (Initial RAM Disk) est un système de fichiers temporaire chargé en mémoire RAM au démarrage. Il contient les modules matériels nécessaires pour initialiser le matériel avant que le vrai système de fichiers racine soit monté. vmlinuz est l'image du noyau, non initrd."
+    },
+    {
+      "id": "q1506",
+      "module": "admin-linux-m03",
+      "difficulte": "moyen",
+      "question": "Depuis quelle version de Debian Systemd remplace-t-il SysVinit ?",
+      "choix": [
+        "Debian 6",
+        "Debian 7",
+        "Debian 8",
+        "Debian 10"
+      ],
+      "reponse": 2,
+      "explication": "Systemd remplace SysVinit comme système d'init par défaut depuis Debian 8 (Jessie). Une compatibilité SysV subsiste sous Debian 10 mais ne doit plus être utilisée. C'est une date à retenir impérativement pour l'examen."
+    },
+    {
+      "id": "q1507",
+      "module": "admin-linux-m03",
+      "difficulte": "moyen",
+      "question": "Quelle est la différence entre 'systemctl start sshd' et 'systemctl enable sshd' ?",
+      "choix": [
+        "start active SSH au démarrage, enable le démarre immédiatement",
+        "start démarre le service immédiatement, enable l'active au prochain démarrage",
+        "Les deux commandes sont équivalentes mais enable nécessite les droits root",
+        "start redémarre le service, enable l'arrête puis le redémarre"
+      ],
+      "reponse": 1,
+      "explication": "start et stop ont un effet immédiat sur le service en cours d'exécution. enable et disable modifient le comportement au prochain démarrage du système. Pour qu'un service soit actif maintenant ET au prochain boot, les deux commandes doivent être utilisées conjointement."
+    },
+    {
+      "id": "q1508",
+      "module": "admin-linux-m03",
+      "difficulte": "moyen",
+      "question": "Quelle cible Systemd correspond au mode multi-utilisateur sans interface graphique ?",
+      "choix": [
+        "rescue.target",
+        "graphical.target",
+        "multi-user.target",
+        "default.target"
+      ],
+      "reponse": 2,
+      "explication": "multi-user.target correspond au runlevel 3 de SysVinit : système multi-utilisateur en réseau, sans interface graphique. C'est la cible recommandée pour les serveurs. graphical.target (runlevel 5) ajoute la couche graphique, et rescue.target est le mode maintenance mono-utilisateur."
+    },
+    {
+      "id": "q1509",
+      "module": "admin-linux-m03",
+      "difficulte": "moyen",
+      "question": "Quelle commande permet de basculer immédiatement en mode maintenance sans redémarrer le système ?",
+      "choix": [
+        "systemctl set-default rescue.target",
+        "systemctl isolate rescue.target",
+        "shutdown -r rescue",
+        "systemctl start rescue.target"
+      ],
+      "reponse": 1,
+      "explication": "systemctl isolate permet de changer de cible immédiatement, sans redémarrage. set-default ne fait que définir la cible par défaut pour le prochain boot sans effet immédiat. isolate rescue.target est la commande correcte pour passer en mode maintenance en urgence."
+    },
+    {
+      "id": "q1510",
+      "module": "admin-linux-m03",
+      "difficulte": "moyen",
+      "question": "Quelle commande annule un arrêt programmé avec shutdown ?",
+      "choix": [
+        "shutdown --abort",
+        "shutdown -k",
+        "shutdown -c",
+        "kill shutdown"
+      ],
+      "reponse": 2,
+      "explication": "shutdown -c annule un arrêt ou redémarrage programmé en attente. -k envoie uniquement le message d'avertissement aux utilisateurs sans déclencher réellement l'arrêt. --abort et kill shutdown ne sont pas des syntaxes valides pour cette opération."
+    },
+    {
+      "id": "q1511",
+      "module": "admin-linux-m03",
+      "difficulte": "difficile",
+      "question": "Un administrateur modifie directement /boot/grub/grub.cfg pour augmenter le timeout GRUB à 30 secondes. Après une mise à jour du noyau, le timeout revient à 5 secondes. Quelle est la cause et la solution correcte ?",
+      "choix": [
+        "La mise à jour du noyau réinitialise le BIOS ; il faut modifier le firmware",
+        "grub.cfg est généré automatiquement à chaque mise à jour du noyau, écrasant les modifications manuelles ; il faut modifier /etc/default/grub et lancer update-grub",
+        "La valeur maximale du timeout dans GRUB est 10 secondes ; 30 est ignoré",
+        "Le fichier grub.cfg est en lecture seule et les modifications ne sont jamais sauvegardées"
+      ],
+      "reponse": 1,
+      "explication": "/boot/grub/grub.cfg est généré automatiquement par grub-mkconfig lors de chaque mise à jour du noyau. Toute modification directe est donc systématiquement écrasée. La bonne pratique est de définir GRUB_TIMEOUT=30 dans /etc/default/grub puis de lancer update-grub pour que la configuration soit persistante."
+    },
+    {
+      "id": "q1512",
+      "module": "admin-linux-m03",
+      "difficulte": "difficile",
+      "question": "Un technicien exécute 'systemctl enable apache2' sur un serveur mais Apache ne démarre pas après la commande. Pourquoi, et que doit-il faire pour qu'Apache soit actif immédiatement ?",
+      "choix": [
+        "enable nécessite un redémarrage complet du système pour prendre effet immédiatement",
+        "enable active uniquement le démarrage automatique au prochain boot ; il faut aussi exécuter systemctl start apache2",
+        "Le service apache2 est corrompu ; il faut le réinstaller",
+        "enable ne fonctionne que si le service est déjà en cours d'exécution"
+      ],
+      "reponse": 1,
+      "explication": "systemctl enable crée uniquement les liens symboliques nécessaires pour le démarrage automatique au prochain boot. Il n'a aucun effet sur le service en cours de session. Pour démarrer Apache immédiatement et l'activer au démarrage, les deux commandes systemctl start apache2 et systemctl enable apache2 doivent être exécutées."
+    },
+    {
+      "id": "q1513",
+      "module": "admin-linux-m03",
+      "difficulte": "difficile",
+      "question": "Sur un serveur Debian 10 sans interface graphique installée, 'systemctl get-default' retourne 'graphical.target'. Quel est l'impact réel et que faut-il faire ?",
+      "choix": [
+        "Le système tente de charger une interface graphique et échoue, causant des erreurs au boot",
+        "Il n'y a aucun impact fonctionnel car la couche graphique n'est pas chargée si elle n'est pas installée ; cependant, il est recommandé de passer à multi-user.target pour des raisons de clarté",
+        "graphical.target est identique à multi-user.target sur Debian 10 — aucune action requise",
+        "Le serveur sera inaccessible en SSH car graphical.target désactive les connexions réseau"
+      ],
+      "reponse": 1,
+      "explication": "Sous Debian 10, graphical.target est la cible par défaut même sur un serveur sans GUI. Comme la couche graphique n'est pas installée, elle n'est simplement pas chargée et le système fonctionne normalement. Par bonne pratique, systemctl set-default multi-user.target est recommandé pour refléter l'état réel du serveur."
+    },
+    {
+      "id": "q1514",
+      "module": "admin-linux-m03",
+      "difficulte": "difficile",
+      "question": "Quelle est la différence fondamentale entre 'update-grub' et 'grub-mkconfig -o /boot/grub/grub.cfg' ?",
+      "choix": [
+        "update-grub écrase tous les paramètres personnalisés, contrairement à grub-mkconfig",
+        "update-grub est spécifique à Debian/Ubuntu ; grub-mkconfig est la commande universelle disponible sur toutes les distributions Linux",
+        "grub-mkconfig génère une configuration pour UEFI uniquement, update-grub pour BIOS",
+        "Les deux commandes sont strictement équivalentes sur toutes les distributions Linux"
+      ],
+      "reponse": 1,
+      "explication": "update-grub est un script propre à Debian et Ubuntu qui appelle en réalité grub-mkconfig -o /boot/grub/grub.cfg. Sur d'autres distributions (Red Hat, Arch, etc.), update-grub n'existe pas et il faut utiliser directement grub-mkconfig. Cette distinction est régulièrement testée à l'examen."
+    },
+    {
+      "id": "q1515",
+      "module": "admin-linux-m03",
+      "difficulte": "difficile",
+      "question": "Un administrateur remplace le paramètre 'ro' par 'rw' dans la ligne noyau GRUB. Quelle conséquence majeure encourt-il ?",
+      "choix": [
+        "Le système démarre en mode lecture seule malgré le paramètre rw",
+        "Le système de fichiers ne pourra pas être vérifié (fsck) au démarrage, risquant une corruption non détectée",
+        "GRUB refusera de charger le noyau car rw est un paramètre invalide",
+        "Le système démarrera normalement sans aucun risque particulier"
+      ],
+      "reponse": 1,
+      "explication": "Le paramètre ro (read-only) est obligatoire au démarrage car il permet à fsck d'effectuer les vérifications d'intégrité du système de fichiers avant le montage en lecture-écriture. Le remplacer par rw empêche ces vérifications, exposant le système à des corruptions silencieuses non détectées."
+    },
+    {
+      "id": "q1516",
+      "module": "admin-linux-m03",
+      "difficulte": "difficile",
+      "question": "Un technicien veut programmer l'arrêt d'un serveur dans 15 minutes en avertissant les utilisateurs connectés. Quelle commande est correcte ?",
+      "choix": [
+        "shutdown -h 15",
+        "shutdown -h +15 \"Arrêt serveur dans 15 minutes pour maintenance\"",
+        "shutdown --halt 15m \"maintenance\"",
+        "systemctl poweroff --delay=15"
+      ],
+      "reponse": 1,
+      "explication": "La syntaxe correcte est shutdown -h +15 \"message\" où +15 indique un délai de 15 minutes. Le message entre guillemets est diffusé à tous les utilisateurs connectés via wall. La syntaxe -h 15 sans le + serait interprétée comme 15h00 (heure fixe) et non un délai. Les options C et D n'existent pas."
+    },
+    {
+      "id": "q1517",
+      "module": "admin-linux-m03",
+      "difficulte": "difficile",
+      "question": "Quelle distinction précise existe-t-il entre systemd et systemctl, et pourquoi ne peut-on pas appeler systemd directement en ligne de commande ?",
+      "choix": [
+        "systemd et systemctl sont deux noms du même binaire ; l'un est un alias de l'autre",
+        "systemd est le démon PID 1 lancé par le noyau ; systemctl est la commande de contrôle pour interagir avec lui. On n'appelle pas systemd directement car il est réservé au noyau comme premier processus",
+        "systemd est la version serveur, systemctl la version desktop du gestionnaire de services",
+        "systemctl remplace systemd depuis Debian 10 ; les deux coexistent pour compatibilité"
+      ],
+      "reponse": 1,
+      "explication": "systemd est le processus PID 1 lancé par le noyau Linux, qui orchestre l'intégralité du démarrage. systemctl est l'outil en ligne de commande permettant à l'administrateur d'interagir avec systemd (démarrer/arrêter services, changer de cible, etc.). Appeler systemd directement n'a aucun sens en administration courante."
+    },
+    {
+      "id": "q1518",
+      "module": "admin-linux-m03",
+      "difficulte": "difficile",
+      "question": "Un service SSH est démarré et activé au démarrage. Après un 'systemctl disable sshd', le serveur est redémarré. Quel est l'état du service SSH après le reboot ?",
+      "choix": [
+        "SSH est arrêté et ne redémarre pas",
+        "SSH est démarré car disable n'a d'effet que si stop est aussi exécuté",
+        "SSH redémarre automatiquement car il est toujours listé dans /etc/systemd/system/",
+        "SSH est arrêté définitivement et son unité est supprimée"
+      ],
+      "reponse": 0,
+      "explication": "systemctl disable supprime les liens symboliques qui déclenchent le démarrage automatique du service. Après un reboot, le service ne démarre plus. Il reste installé sur le système et peut être relancé manuellement avec systemctl start, mais il ne s'activera plus au boot sans un nouveau systemctl enable."
+    },
+    {
+      "id": "q1519",
+      "module": "admin-linux-m03",
+      "difficulte": "difficile",
+      "question": "Lors du démarrage, le système se bloque après le chargement de initrd avec un message 'cannot mount root filesystem'. Quelle est la cause la plus probable ?",
+      "choix": [
+        "GRUB Stage 1 est corrompu dans le MBR",
+        "Le fichier vmlinuz est absent de /boot/",
+        "Les modules du système de fichiers racine ne sont pas inclus dans initrd, ou la partition racine est incorrectement référencée",
+        "Systemd ne trouve pas sa cible par défaut dans /lib/systemd/system/"
+      ],
+      "reponse": 2,
+      "explication": "Le rôle d'initrd est précisément de charger les modules nécessaires au montage du système de fichiers racine. Si les modules sont absents ou si l'UUID/le chemin de la partition racine est incorrect (notamment dans /etc/fstab ou les paramètres GRUB), le montage échoue. Un initrd corrompu ou mal régénéré après une mise à jour du noyau est une cause fréquente."
+    },
+    {
+      "id": "q1520",
+      "module": "admin-linux-m03",
+      "difficulte": "difficile",
+      "question": "Un administrateur exécute 'systemctl set-default multi-user.target'. Quelle action complémentaire est nécessaire pour que le changement prenne effet immédiatement sans attendre le prochain reboot ?",
+      "choix": [
+        "Exécuter update-grub pour mettre à jour la configuration du bootloader",
+        "Exécuter systemctl isolate multi-user.target pour basculer immédiatement vers cette cible",
+        "Modifier /etc/default/grub pour ajouter systemd.unit=multi-user.target",
+        "Aucune action complémentaire n'est nécessaire, set-default prend effet immédiatement"
+      ],
+      "reponse": 1,
+      "explication": "systemctl set-default ne modifie que la cible par défaut pour les prochains boots, sans effet sur la session en cours. Pour appliquer le changement immédiatement, systemctl isolate multi-user.target bascule le système vers cette cible sans redémarrage. Les deux commandes sont complémentaires et doivent être utilisées conjointement."
+    },
+    {
+      "id": "q1521",
+      "module": "admin-linux-m04",
+      "difficulte": "moyen",
+      "question": "Quelle méthode de démarrage en mode maintenance permet d'accéder à un shell root sans connaître le mot de passe root ?",
+      "choix": [
+        "GRUB single",
+        "GRUB init=/bin/bash",
+        "systemctl isolate rescue.target",
+        "su - depuis un compte sudoer"
+      ],
+      "reponse": 1,
+      "explication": "La méthode init=/bin/bash remplace Systemd par un shell bash minimal, donnant un accès root direct sans demande de mot de passe. La méthode single requiert impérativement le mot de passe root. systemctl isolate nécessite un système fonctionnel, et su - nécessite également le mot de passe root."
+    },
+    {
+      "id": "q1522",
+      "module": "admin-linux-m04",
+      "difficulte": "moyen",
+      "question": "Dans quel endroit doit-on effectuer la modification pour démarrer en mode maintenance via GRUB ?",
+      "choix": [
+        "/boot/grub/grub.cfg",
+        "/etc/default/grub",
+        "La ligne linux dans le menu GRUB, en appuyant sur e au démarrage",
+        "/etc/grub.d/10_linux"
+      ],
+      "reponse": 2,
+      "explication": "La modification pour le mode maintenance est temporaire et se fait directement dans le menu GRUB au démarrage : on appuie sur e pour éditer l'entrée, on modifie la ligne linux, puis on valide avec Ctrl+X ou F10. Cette modification n'est pas persistante et ne modifie aucun fichier de configuration."
+    },
+    {
+      "id": "q1523",
+      "module": "admin-linux-m04",
+      "difficulte": "moyen",
+      "question": "Quelle disposition de clavier est active par défaut en mode maintenance GRUB (méthodes single et init=/bin/bash) ?",
+      "choix": [
+        "AZERTY français",
+        "QWERTZ allemand",
+        "QWERTY américain (en_US)",
+        "La disposition configurée lors de l'installation Debian"
+      ],
+      "reponse": 2,
+      "explication": "Dès le basculement en mode maintenance via GRUB, le clavier adopte automatiquement la disposition QWERTY américaine (en_US), indépendamment de la configuration définie à l'installation. Cela peut rendre la saisie du mot de passe root délicate si celui-ci contient des caractères spéciaux."
+    },
+    {
+      "id": "q1524",
+      "module": "admin-linux-m04",
+      "difficulte": "moyen",
+      "question": "Pourquoi est-il impératif d'exécuter 'mount -o remount,rw /' en mode init=/bin/bash avant toute modification ?",
+      "choix": [
+        "Pour activer la connexion réseau nécessaire aux modifications",
+        "Pour charger les modules noyau manquants dans ce mode minimal",
+        "Parce que le système de fichiers est monté en lecture seule par défaut et toute écriture serait silencieusement ignorée",
+        "Pour synchroniser les volumes LVM avant modification"
+      ],
+      "reponse": 2,
+      "explication": "En mode init=/bin/bash, le système de fichiers racine est monté en lecture seule (ro). Tenter d'écrire sans remontage produit une erreur Read-only file system ou les modifications semblent s'appliquer mais ne sont pas écrites sur le disque. Le remontage rw est donc une étape obligatoire avant tout changement."
+    },
+    {
+      "id": "q1525",
+      "module": "admin-linux-m04",
+      "difficulte": "moyen",
+      "question": "Quelle commande doit impérativement être exécutée avant l'extinction forcée en mode init=/bin/bash ?",
+      "choix": [
+        "umount -a",
+        "fsck /",
+        "sync",
+        "shutdown -h now"
+      ],
+      "reponse": 2,
+      "explication": "sync force l'écriture de tous les tampons mémoire (buffers) sur le disque physique. Sans cette commande, des données récemment modifiées (comme un nouveau mot de passe root) pourraient ne pas être persistées, rendant les modifications inefficaces après redémarrage. shutdown ne fonctionne pas dans ce mode."
+    },
+    {
+      "id": "q1526",
+      "module": "admin-linux-m04",
+      "difficulte": "moyen",
+      "question": "Parmi les trois méthodes de mode maintenance, laquelle nécessite un matériel supplémentaire ?",
+      "choix": [
+        "GRUB single",
+        "GRUB init=/bin/bash",
+        "CD-ROM Rescue Mode",
+        "systemctl isolate rescue.target"
+      ],
+      "reponse": 2,
+      "explication": "Le CD-ROM Rescue Mode nécessite un média externe (CD, ISO, clé USB) contenant l'image Debian. Les méthodes single et init=/bin/bash n'utilisent que le bootloader déjà présent sur le disque. En contrepartie, le CD Rescue est la méthode la plus complète et la plus propre."
+    },
+    {
+      "id": "q1527",
+      "module": "admin-linux-m04",
+      "difficulte": "moyen",
+      "question": "Quelle commande permet de modifier le mot de passe root une fois en shell de maintenance ?",
+      "choix": [
+        "usermod -p root",
+        "chpasswd root",
+        "passwd",
+        "shadow -reset root"
+      ],
+      "reponse": 2,
+      "explication": "passwd sans argument modifie le mot de passe de l'utilisateur courant, qui est root en mode maintenance. passwd [user] permet de modifier le mot de passe d'un utilisateur spécifique. usermod -p attend un hash chiffré, pas un mot de passe en clair, et shadow -reset n'existe pas."
+    },
+    {
+      "id": "q1528",
+      "module": "admin-linux-m04",
+      "difficulte": "moyen",
+      "question": "Quelle touche appuyer dans le menu GRUB pour accéder au mode édition d'une entrée de démarrage ?",
+      "choix": [
+        "m",
+        "i",
+        "e",
+        "F2"
+      ],
+      "reponse": 2,
+      "explication": "Dans le menu GRUB, appuyer sur e ouvre le mode édition de l'entrée sélectionnée. C'est depuis ce mode que l'on modifie la ligne linux pour ajouter single ou init=/bin/bash. On valide ensuite avec Ctrl+X ou F10 pour démarrer avec les paramètres modifiés."
+    },
+    {
+      "id": "q1529",
+      "module": "admin-linux-m04",
+      "difficulte": "moyen",
+      "question": "Quel est l'avantage principal du CD-ROM Rescue Mode par rapport aux méthodes GRUB ?",
+      "choix": [
+        "Il est plus rapide à mettre en œuvre que les modifications GRUB",
+        "Il ne nécessite pas d'accès physique à la machine",
+        "Il offre la langue française, pas de mot de passe requis, un arrêt propre possible et l'accès à /boot pour reconstruire GRUB",
+        "Il permet de démarrer sans disque dur fonctionnel"
+      ],
+      "reponse": 2,
+      "explication": "Le CD Rescue cumule tous les avantages : interface en français, accès root sans mot de passe, arrêt propre possible, et accès complet aux partitions du système défaillant y compris /boot pour reconstruire GRUB. C'est la méthode la plus complète, mais elle requiert le média d'installation."
+    },
+    {
+      "id": "q1530",
+      "module": "admin-linux-m04",
+      "difficulte": "moyen",
+      "question": "Pourquoi LVM facilite-t-il l'identification des partitions en mode CD Rescue ?",
+      "choix": [
+        "LVM chiffre automatiquement les partitions, les rendant plus sécurisées en mode rescue",
+        "Avec LVM, les volumes portent des noms explicites (LVRoot, LVHome…) au lieu de noms génériques comme /dev/sda1",
+        "LVM monte automatiquement toutes les partitions lors du démarrage en mode rescue",
+        "Sans LVM, le mode rescue ne peut pas accéder aux partitions"
+      ],
+      "reponse": 1,
+      "explication": "Sans LVM, les partitions portent des noms génériques peu explicites (/dev/sda1, /dev/sda2…). Avec LVM, les volumes logiques sont nommés selon leur rôle (LVRoot, LVHome, LVVar…), ce qui facilite considérablement leur identification dans le menu de sélection du mode rescue."
+    },
+    {
+      "id": "q1531",
+      "module": "admin-linux-m04",
+      "difficulte": "difficile",
+      "question": "Un administrateur utilise init=/bin/bash, modifie le mot de passe root, puis éteint brutalement la machine sans autre étape. Au redémarrage, l'ancien mot de passe root est toujours actif. Quelle étape a-t-il omise ?",
+      "choix": [
+        "Il n'a pas remplacé quiet par init=/bin/bash correctement dans GRUB",
+        "Il n'a pas exécuté mount -o remount,rw / avant la modification",
+        "Il n'a pas exécuté sync avant l'extinction forcée — les modifications n'ont pas été écrites sur le disque",
+        "La commande passwd ne fonctionne pas en mode init=/bin/bash"
+      ],
+      "reponse": 2,
+      "explication": "Sans sync, les modifications effectuées (comme le nouveau hash de mot de passe dans /etc/shadow) restent dans les tampons mémoire et ne sont pas persistées sur le disque physique. L'extinction forcée vide la mémoire sans écriture, rendant toutes les modifications ineffectives. sync est l'étape critique et non négociable avant toute extinction forcée."
+    },
+    {
+      "id": "q1532",
+      "module": "admin-linux-m04",
+      "difficulte": "difficile",
+      "question": "Un technicien tente d'utiliser la méthode single pour récupérer l'accès root, mais le système demande un mot de passe qu'il ne connaît pas. Quelle configuration explique ce comportement et quelle alternative doit-il utiliser ?",
+      "choix": [
+        "Le BIOS a un mot de passe — il faut contacter le constructeur",
+        "Le système a été configuré sans mot de passe root (mode sudo activé) ; la méthode single requiert le mot de passe root qui n'existe pas ; il faut utiliser init=/bin/bash ou le CD Rescue",
+        "GRUB est protégé par un mot de passe ; il faut réinstaller GRUB depuis un CD",
+        "Le mode single est désactivé dans /etc/default/grub ; il faut l'activer manuellement"
+      ],
+      "reponse": 1,
+      "explication": "Sur un système Debian installé sans mot de passe root (mode sudo), il n'existe aucun mot de passe root à saisir. La méthode single devient donc inutilisable. La méthode init=/bin/bash contourne ce problème en remplaçant Systemd par un shell bash direct, sans authentification. Le CD Rescue est également une alternative valide."
+    },
+    {
+      "id": "q1533",
+      "module": "admin-linux-m04",
+      "difficulte": "difficile",
+      "question": "En mode init=/bin/bash, un administrateur tente de redémarrer proprement avec reboot après ses modifications. La commande ne répond pas. Quelle est la cause et la procédure correcte ?",
+      "choix": [
+        "reboot nécessite les droits root ; il faut utiliser sudo reboot",
+        "Ce mode démarre un shell minimal sans Systemd ; reboot et shutdown sont indisponibles. Il faut exécuter sync puis forcer l'extinction physiquement",
+        "Le service systemd-reboot doit être démarré manuellement avec systemctl start reboot.target",
+        "Il faut d'abord démonter tous les systèmes de fichiers avec umount -a avant de pouvoir redémarrer"
+      ],
+      "reponse": 1,
+      "explication": "En mode init=/bin/bash, Systemd est remplacé par un shell bash minimal. Les commandes reboot, shutdown et init 0 dépendent de Systemd et sont donc non fonctionnelles. La seule procédure correcte est d'exécuter sync pour sécuriser les données, puis de forcer l'extinction via le bouton d'alimentation ou l'équivalent dans un environnement virtualisé."
+    },
+    {
+      "id": "q1534",
+      "module": "admin-linux-m04",
+      "difficulte": "difficile",
+      "question": "Un technicien saisit son mot de passe root en mode maintenance GRUB mais obtient Authentication failure alors que le mot de passe est pourtant correct. Quelle est la cause la plus probable ?",
+      "choix": [
+        "Le fichier /etc/shadow est corrompu",
+        "Le clavier est en disposition QWERTY (en_US) — les caractères spéciaux du mot de passe ne correspondent pas aux touches physiques d'un clavier AZERTY",
+        "Le mode single nécessite un double hachage du mot de passe",
+        "Le compte root est verrouillé dans /etc/passwd"
+      ],
+      "reponse": 1,
+      "explication": "En mode maintenance GRUB, le clavier bascule automatiquement en QWERTY américain. Si le mot de passe contient des caractères dont la position diffère entre AZERTY et QWERTY (chiffres avec Maj, caractères spéciaux…), la saisie sera incorrecte malgré la frappe habituelle. La solution est de saisir en tenant compte de la disposition QWERTY, ou d'ajouter keyboard=fr à la ligne de démarrage."
+    },
+    {
+      "id": "q1535",
+      "module": "admin-linux-m04",
+      "difficulte": "difficile",
+      "question": "Après réparation via CD Rescue, le technicien redémarre mais le système redemarre sur le CD au lieu du disque dur. Quelle est la cause et la solution ?",
+      "choix": [
+        "GRUB a été écrasé pendant la réparation ; il faut le réinstaller",
+        "Le CD/ISO est toujours en premier dans l'ordre de boot BIOS/UEFI ; il faut retirer le média ou remettre le disque dur en premier",
+        "La partition racine n'a pas été correctement sélectionnée pendant le rescue",
+        "Le fichier /boot/grub/grub.cfg n'a pas été régénéré après la réparation"
+      ],
+      "reponse": 1,
+      "explication": "Après une intervention via CD Rescue, le BIOS/UEFI conserve son ordre de démarrage prioritaire sur le lecteur CD ou USB. Si le média n'est pas retiré, le système redemarre sur celui-ci. La solution est de retirer physiquement le média ou de modifier l'ordre de démarrage dans le BIOS/UEFI pour replacer le disque dur en premier."
+    },
+    {
+      "id": "q1536",
+      "module": "admin-linux-m04",
+      "difficulte": "difficile",
+      "question": "Pourquoi les méthodes init=/bin/bash et CD Rescue sont-elles toutes deux considérées comme des risques de sécurité en production ?",
+      "choix": [
+        "init=/bin/bash est sécurisé car il nécessite un accès réseau ; le CD Rescue est risqué car il permet l'accès hors réseau",
+        "Les deux méthodes donnent un accès root sans mot de passe à quiconque ayant un accès physique à la machine, ce qui représente un risque majeur si les serveurs ne sont pas physiquement sécurisés",
+        "Seul le CD Rescue est risqué ; init=/bin/bash est protégé par le mot de passe GRUB par défaut",
+        "Ces méthodes ne représentent aucun risque car elles nécessitent de connaître la version Debian installée"
+      ],
+      "reponse": 1,
+      "explication": "Les deux méthodes accordent un accès root sans authentification à toute personne ayant accès physique à la machine. C'est pourquoi la sécurité physique des serveurs (salle sécurisée, rack verrouillé) est indispensable, et pourquoi un mot de passe GRUB peut être configuré pour protéger l'accès au mode édition."
+    },
+    {
+      "id": "q1537",
+      "module": "admin-linux-m04",
+      "difficulte": "difficile",
+      "question": "Après init=/bin/bash, remount rw, modification du mot de passe et sync, l'administrateur force l'extinction. Au redémarrage, le système affiche des erreurs de système de fichiers. Quelle étape supplémentaire aurait évité ce problème ?",
+      "choix": [
+        "Exécuter update-grub avant l'extinction pour mettre à jour le bootloader",
+        "Exécuter umount / proprement avant l'extinction forcée",
+        "Exécuter fsck -f / avant l'extinction pour vérifier l'intégrité du système",
+        "Utiliser mount -o remount,ro / avant l'extinction pour remonter en lecture seule, réduisant le risque de corruption"
+      ],
+      "reponse": 3,
+      "explication": "Remonter le système de fichiers en lecture seule (mount -o remount,ro /) juste avant l'extinction forcée réduit significativement le risque de corruption. Cela garantit que toutes les écritures en cours sont terminées et que le système de fichiers se retrouve dans un état cohérent avant la coupure brutale de l'alimentation."
+    },
+    {
+      "id": "q1538",
+      "module": "admin-linux-m04",
+      "difficulte": "difficile",
+      "question": "Un technicien remplace 'ro quiet' par 'rw init=/bin/bash' dans GRUB au lieu de 'ro init=/bin/bash'. Quelle différence et quel risque introduit-il ?",
+      "choix": [
+        "Aucune différence ; ro et rw sont équivalents en mode init=/bin/bash",
+        "En remplaçant ro par rw, le système de fichiers est monté en lecture/écriture dès le départ, ce qui supprime la nécessité du remount mais empêche fsck de vérifier le système de fichiers au démarrage",
+        "La modification rw init=/bin/bash est invalide et empêche le démarrage",
+        "rw en mode init=/bin/bash désactive le swap, causant des erreurs mémoire"
+      ],
+      "reponse": 1,
+      "explication": "Remplacer ro par rw monte directement le système de fichiers en lecture/écriture, évitant l'étape remount. Cependant, cela contourne les vérifications fsck qui ne peuvent s'exécuter que sur un système de fichiers monté en lecture seule. La pratique correcte reste de conserver ro et d'effectuer le remontage rw manuellement."
+    },
+    {
+      "id": "q1539",
+      "module": "admin-linux-m04",
+      "difficulte": "difficile",
+      "question": "Un serveur de production tombe en panne. L'administrateur dispose d'un accès à l'hyperviseur VMware mais pas d'accès physique. Quelle méthode de récupération est la plus adaptée ?",
+      "choix": [
+        "GRUB single via la console VMware, car c'est la plus rapide",
+        "GRUB init=/bin/bash via la console VMware, car elle ne nécessite pas de mot de passe",
+        "CD Rescue en montant une ISO Debian dans le lecteur virtuel de la VM, car c'est la méthode la plus propre avec arrêt propre possible",
+        "Aucune méthode n'est applicable à distance ; un accès physique est obligatoire"
+      ],
+      "reponse": 2,
+      "explication": "Dans un environnement virtualisé, le CD Rescue est la méthode idéale en accès distant : l'ISO Debian peut être montée directement dans le lecteur CD virtuel depuis la console de l'hyperviseur. Cette méthode offre en plus l'arrêt propre, la langue française et l'accès complet aux partitions, ce qui en fait la solution la plus professionnelle."
+    },
+    {
+      "id": "q1540",
+      "module": "admin-linux-m04",
+      "difficulte": "difficile",
+      "question": "En mode init=/bin/bash, un administrateur ne peut pas saisir correctement son nouveau mot de passe root car il contient @, & et !. Quelle est la meilleure stratégie ?",
+      "choix": [
+        "Redémarrer en mode single qui supporte le clavier AZERTY",
+        "Ajouter keyboard=fr à la ligne noyau GRUB pour forcer la disposition française, ou définir un mot de passe temporaire sans caractères spéciaux le temps de l'intervention",
+        "Utiliser uniquement des chiffres dans le nouveau mot de passe car ils sont identiques en QWERTY et AZERTY",
+        "Copier-coller le mot de passe depuis un fichier texte sur le système de fichiers"
+      ],
+      "reponse": 1,
+      "explication": "Deux approches sont valides : ajouter keyboard=fr à la ligne noyau GRUB pour forcer la disposition française dès le démarrage en mode maintenance, ou définir temporairement un mot de passe simple sans caractères spéciaux pour l'intervention, puis le remplacer par un mot de passe robuste une fois le système redémarré normalement en AZERTY."
+    },
+    {
+      "id": "q1541",
+      "module": "admin-linux-m05",
+      "difficulte": "moyen",
+      "question": "Quels sont les 4 paramètres réseau indispensables à configurer sur une interface en IP statique ?",
+      "choix": [
+        "Adresse IP, masque, DNS, nom d'hôte",
+        "Adresse IP, masque, passerelle, serveur DNS",
+        "Adresse IP, passerelle, DNS, adresse MAC",
+        "Masque, passerelle, DNS, suffixe de recherche"
+      ],
+      "reponse": 1,
+      "explication": "Les 4 paramètres fondamentaux sont : l'adresse IP (identifiant la machine), le masque de sous-réseau (délimitant le réseau local), la passerelle (routeur de sortie vers d'autres réseaux) et le serveur DNS (résolution des noms). Sans passerelle, pas d'accès externe ; sans DNS, pas de résolution de noms."
+    },
+    {
+      "id": "q1542",
+      "module": "admin-linux-m05",
+      "difficulte": "moyen",
+      "question": "Quelle adresse IP est systématiquement associée à l'interface loopback `lo` en IPv4 ?",
+      "choix": [
+        "192.168.0.1",
+        "10.0.0.1",
+        "127.0.0.1",
+        "172.16.0.1"
+      ],
+      "reponse": 2,
+      "explication": "L'interface loopback `lo` porte toujours l'adresse `127.0.0.1/8` en IPv4, également appelée `localhost`. Elle est indispensable à la communication inter-processus interne au système. Sa désactivation ou suppression casse le fonctionnement du système. En IPv6, l'équivalent est `::1/128`."
+    },
+    {
+      "id": "q1543",
+      "module": "admin-linux-m05",
+      "difficulte": "moyen",
+      "question": "Quel fichier contient la configuration réseau d'un serveur Debian sans interface graphique ?",
+      "choix": [
+        "/etc/NetworkManager/NetworkManager.conf",
+        "/etc/network/interfaces",
+        "/etc/resolv.conf",
+        "/etc/sysconfig/network"
+      ],
+      "reponse": 1,
+      "explication": "Sur un serveur Debian sans GUI, la configuration réseau est gérée par le service `networking` via le fichier `/etc/network/interfaces`. NetworkManager est réservé aux machines avec interface graphique. `/etc/resolv.conf` ne contient que la configuration DNS, pas les paramètres IP."
+    },
+    {
+      "id": "q1544",
+      "module": "admin-linux-m05",
+      "difficulte": "moyen",
+      "question": "Quelle est la différence entre `auto ens33` et `allow-hotplug ens33` dans `/etc/network/interfaces` ?",
+      "choix": [
+        "`auto` active l'interface en DHCP, `allow-hotplug` en IP statique",
+        "`auto` active l'interface à chaque démarrage du service réseau, `allow-hotplug` uniquement au démarrage de la machine ou à la connexion physique du câble",
+        "`auto` s'applique aux interfaces filaires, `allow-hotplug` aux interfaces Wi-Fi uniquement",
+        "Les deux directives sont strictement équivalentes sur Debian"
+      ],
+      "reponse": 1,
+      "explication": "`auto` monte l'interface dès que le service `networking` démarre, y compris lors d'un `systemctl restart networking`. `allow-hotplug` est plus conservateur : il n'active l'interface qu'au démarrage de la machine ou lorsqu'une connexion physique est détectée, évitant des remontées intempestives lors de redémarrages du service."
+    },
+    {
+      "id": "q1545",
+      "module": "admin-linux-m05",
+      "difficulte": "moyen",
+      "question": "Quelle commande remplace `ifconfig` pour afficher les interfaces réseau et leurs adresses IP sur Debian ?",
+      "choix": [
+        "netstat -i",
+        "ifconfig -a",
+        "ip a",
+        "route -n"
+      ],
+      "reponse": 2,
+      "explication": "`ip a` (ou `ip address`) est la commande moderne remplaçant `ifconfig`, désormais obsolète sur les systèmes Debian récents. De même, `ip r` remplace `route` pour la table de routage. `netstat -i` affiche des statistiques réseau et non la configuration des interfaces."
+    },
+    {
+      "id": "q1546",
+      "module": "admin-linux-m05",
+      "difficulte": "moyen",
+      "question": "Quel fichier contient la configuration des serveurs DNS sur un système Linux ?",
+      "choix": [
+        "/etc/hosts",
+        "/etc/hostname",
+        "/etc/network/interfaces",
+        "/etc/resolv.conf"
+      ],
+      "reponse": 3,
+      "explication": "`/etc/resolv.conf` contient les directives `nameserver` pointant vers les serveurs DNS, ainsi que la directive `search` pour le suffixe de recherche DNS. `/etc/hosts` permet une résolution locale sans DNS, et `/etc/hostname` contient simplement le nom de la machine."
+    },
+    {
+      "id": "q1547",
+      "module": "admin-linux-m05",
+      "difficulte": "moyen",
+      "question": "Quel est le comportement de la commande `ping` sous Linux par rapport à Windows ?",
+      "choix": [
+        "Sous Linux, `ping` envoie 4 paquets puis s'arrête automatiquement, comme sous Windows",
+        "Sous Linux, `ping` est limité à 10 paquets ; sous Windows il est infini",
+        "Sous Linux, `ping` envoie des paquets indéfiniment ; il faut `Ctrl+C` pour l'arrêter",
+        "Sous Linux, `ping` nécessite l'option `-t` pour fonctionner en continu"
+      ],
+      "reponse": 2,
+      "explication": "Contrairement à Windows qui envoie 4 paquets ICMP puis s'arrête, `ping` sous Linux est infini par défaut. Il faut impérativement appuyer sur `Ctrl+C` pour l'interrompre. Sous Windows, c'est l'option `-t` qui rend le ping continu."
+    },
+    {
+      "id": "q1548",
+      "module": "admin-linux-m05",
+      "difficulte": "moyen",
+      "question": "Quelle notation CIDR correspond au masque de sous-réseau `255.255.255.0` ?",
+      "choix": [
+        "/8",
+        "/16",
+        "/24",
+        "/32"
+      ],
+      "reponse": 2,
+      "explication": "`/24` correspond à `255.255.255.0`, soit 24 bits à 1 dans le masque. Ce réseau permet 254 adresses hôtes utilisables. `/8` = `255.0.0.0`, `/16` = `255.255.0.0`, `/32` = `255.255.255.255` (adresse hôte unique). Ces conversions sont classiquement testées à l'examen."
+    },
+    {
+      "id": "q1549",
+      "module": "admin-linux-m05",
+      "difficulte": "moyen",
+      "question": "Quelle commande affiche la table de routage et permet de vérifier la passerelle par défaut ?",
+      "choix": [
+        "ip a",
+        "ip r",
+        "cat /etc/resolv.conf",
+        "ping 127.0.0.1"
+      ],
+      "reponse": 1,
+      "explication": "`ip r` (ou `ip route`) affiche la table de routage, incluant la ligne `default via [IP_passerelle]` qui indique la passerelle par défaut. `ip a` affiche les adresses des interfaces, pas le routage. La passerelle est le paramètre à vérifier en priorité lorsque l'accès à d'autres réseaux est défaillant."
+    },
+    {
+      "id": "q1550",
+      "module": "admin-linux-m05",
+      "difficulte": "moyen",
+      "question": "Après modification de `/etc/resolv.conf`, quand la nouvelle configuration DNS est-elle prise en compte ?",
+      "choix": [
+        "Après un redémarrage complet du système",
+        "Après `systemctl restart networking`",
+        "Immédiatement, sans redémarrage de service",
+        "Après `systemctl restart NetworkManager`"
+      ],
+      "reponse": 2,
+      "explication": "Les modifications de `/etc/resolv.conf` sont prises en compte immédiatement par le système, sans nécessiter de redémarrage de service. C'est l'un des rares fichiers de configuration réseau dont les changements sont appliqués en temps réel, ce qui en fait un outil pratique pour le diagnostic rapide."
+    },
+    {
+      "id": "q1551",
+      "module": "admin-linux-m05",
+      "difficulte": "difficile",
+      "question": "Un administrateur configure une IP statique dans `/etc/network/interfaces` mais l'interface ne monte pas au démarrage. La ligne `iface ens33 inet static` est correctement renseignée avec `address`, `netmask` et `gateway`. Quelle est la cause probable ?",
+      "choix": [
+        "Le service `networking` n'est pas activé au démarrage",
+        "La directive `auto ens33` est absente avant la ligne `iface`, empêchant le montage automatique de l'interface",
+        "La notation CIDR a été utilisée au lieu du masque décimal",
+        "Le fichier `/etc/resolv.conf` ne contient pas de `nameserver`"
+      ],
+      "reponse": 1,
+      "explication": "Sans la directive `auto ens33` avant la définition de l'interface, le service `networking` ne monte pas automatiquement cette interface au démarrage. La configuration `iface` est présente mais inactive. L'ajout de `auto ens33` au-dessus de la ligne `iface` résout le problème. C'est une erreur fréquente lors de la configuration manuelle."
+    },
+    {
+      "id": "q1552",
+      "module": "admin-linux-m05",
+      "difficulte": "difficile",
+      "question": "Sur un serveur Debian sans GUI, les services `networking` et `NetworkManager` sont tous deux actifs et gèrent `ens33`. Quel problème peut survenir et quelle est la solution ?",
+      "choix": [
+        "Les deux services fusionnent leur configuration, produisant une IP dupliquée sur l'interface",
+        "Les deux services entrent en conflit pour gérer la même interface, causant des comportements imprévisibles ; il faut désactiver `NetworkManager` sur un serveur sans GUI",
+        "`NetworkManager` prend toujours la priorité sur `networking` ; il faut désactiver `networking`",
+        "Ce fonctionnement en parallèle est prévu et recommandé par Debian pour la redondance"
+      ],
+      "reponse": 1,
+      "explication": "Deux services gérant simultanément la même interface provoquent des conflits : l'interface peut être reconfigurée intempestivement, les paramètres statiques peuvent être écrasés par DHCP, etc. Sur un serveur sans GUI, `NetworkManager` doit être désactivé avec `systemctl disable NetworkManager` pour laisser `networking` seul maître de la configuration."
+    },
+    {
+      "id": "q1553",
+      "module": "admin-linux-m05",
+      "difficulte": "difficile",
+      "question": "Un technicien modifie manuellement `/etc/resolv.conf` pour ajouter un serveur DNS sur une machine Debian avec GNOME. Après redémarrage, la modification a disparu. Quelle est la cause ?",
+      "choix": [
+        "/etc/resolv.conf est en lecture seule sur les systèmes avec GUI",
+        "Le fichier est regénéré automatiquement par NetworkManager au redémarrage, écrasant les modifications manuelles",
+        "Le serveur DNS ajouté était invalide et a été rejeté par le système",
+        "La directive `nameserver` est réservée à `/etc/hosts` sur les systèmes avec GUI"
+      ],
+      "reponse": 1,
+      "explication": "Sur les systèmes avec NetworkManager (GUI), `/etc/resolv.conf` est généré automatiquement à chaque démarrage ou reconnexion réseau, comme indiqué par le commentaire `# Generated by NetworkManager` en tête du fichier. Les modifications manuelles sont donc systématiquement écrasées. La configuration DNS doit se faire via l'interface GNOME ou `nmtui`."
+    },
+    {
+      "id": "q1554",
+      "module": "admin-linux-m05",
+      "difficulte": "difficile",
+      "question": "Un technicien exécute `systemctl restart networking` pour appliquer une nouvelle configuration IP sur un serveur distant accessible en SSH. La session SSH est coupée et ne se rétablit pas. Quelle erreur a-t-il commise et quelle commande aurait été plus sûre ?",
+      "choix": [
+        "Il aurait dû utiliser `systemctl reload networking` qui applique la config sans couper le réseau",
+        "`restart` coupe le réseau avant de le relancer, interrompant la session SSH. La commande `systemctl stop networking && systemctl start networking` permet plus de contrôle mais reste risquée à distance",
+        "Il aurait dû redémarrer le serveur complet avec `reboot` plutôt que le service réseau",
+        "`restart` ne fonctionne pas sur le service `networking` ; seul `reload` est supporté"
+      ],
+      "reponse": 1,
+      "explication": "`systemctl restart networking` équivaut à un stop suivi d'un start, coupant toutes les connexions réseau actives dont la session SSH. La commande `stop && start` offre un léger avantage de contrôle mais reste risquée à distance. Sur un serveur de production distant, toute modification réseau doit être planifiée avec un mécanisme de retour automatique (script de rollback, accès console IPMI, etc.)."
+    },
+    {
+      "id": "q1555",
+      "module": "admin-linux-m05",
+      "difficulte": "difficile",
+      "question": "Un administrateur peut joindre `8.8.8.8` avec `ping` mais pas `google.com`. Quelle est la conclusion logique et la vérification à effectuer ?",
+      "choix": [
+        "La passerelle est mal configurée ; vérifier `ip r`",
+        "L'adresse IP de la machine est incorrecte ; vérifier `ip a`",
+        "La connectivité IP est fonctionnelle mais la résolution DNS est défaillante ; vérifier `/etc/resolv.conf`",
+        "Le pare-feu bloque les paquets ICMP vers les noms de domaine"
+      ],
+      "reponse": 2,
+      "explication": "Si `ping 8.8.8.8` fonctionne, la pile réseau, la passerelle et la connectivité Internet sont opérationnelles. L'échec de `ping google.com` indique uniquement une défaillance DNS : le nom ne peut pas être résolu en adresse IP. La vérification immédiate est `cat /etc/resolv.conf` pour s'assurer qu'un `nameserver` valide est configuré."
+    },
+    {
+      "id": "q1556",
+      "module": "admin-linux-m05",
+      "difficulte": "difficile",
+      "question": "Dans `/etc/network/interfaces`, un technicien saisit `adress 192.168.1.10` au lieu de `address 192.168.1.10`. Quel sera le résultat lors du redémarrage du service réseau ?",
+      "choix": [
+        "Le service corrige automatiquement la faute de frappe et applique la configuration",
+        "Le service réseau démarre mais ignore la ligne mal orthographiée, laissant l'interface sans adresse IP ou en DHCP selon la configuration précédente",
+        "Le service réseau refuse de démarrer et logue une erreur critique dans `journalctl`",
+        "L'adresse IP est appliquée correctement car Linux est insensible à la casse dans ce fichier"
+      ],
+      "reponse": 2,
+      "explication": "Une faute d'orthographe dans `/etc/network/interfaces` provoque une erreur de syntaxe qui empêche le service `networking` de traiter correctement la configuration. Le service peut refuser de démarrer ou sauter l'interface défaillante. La vérification des logs via `journalctl -u networking` permet d'identifier l'erreur. La syntaxe exacte `address` (deux `d`) est impérative."
+    },
+    {
+      "id": "q1557",
+      "module": "admin-linux-m05",
+      "difficulte": "difficile",
+      "question": "Un serveur est configuré avec `address 10.1.1.10/24` dans `/etc/network/interfaces`. Un collègue affirme que cette notation est incorrecte et qu'il faut obligatoirement utiliser `netmask 255.255.255.0` sur une ligne séparée. Qui a raison ?",
+      "choix": [
+        "Le collègue a raison ; la notation CIDR n'est pas supportée dans `/etc/network/interfaces`",
+        "Les deux notations sont acceptées ; `address 10.1.1.10/24` est une notation CIDR valide dans `/etc/network/interfaces` et équivaut à `address 10.1.1.10` + `netmask 255.255.255.0`",
+        "La notation CIDR est uniquement supportée dans NetworkManager, pas dans `networking`",
+        "La notation CIDR fonctionne mais désactive IPv6 sur l'interface concernée"
+      ],
+      "reponse": 1,
+      "explication": "Debian accepte les deux notations dans `/etc/network/interfaces` : la notation classique avec `address` et `netmask` sur des lignes séparées, ou la notation CIDR compacte `address 10.1.1.10/24`. Les deux sont fonctionnellement identiques. Connaître les deux formes est important pour lire et écrire des configurations en production."
+    },
+    {
+      "id": "q1558",
+      "module": "admin-linux-m05",
+      "difficulte": "difficile",
+      "question": "La séquence de diagnostic réseau recommandée commence par `ip a`. Pourquoi est-il important de tester `ping 127.0.0.1` avant `ping [passerelle]` dans cette séquence ?",
+      "choix": [
+        "`ping 127.0.0.1` est plus rapide et consomme moins de bande passante",
+        "Tester la loopback valide que la pile TCP/IP locale est fonctionnelle, indépendamment de toute carte réseau physique ou configuration externe. Un échec ici indique un problème système profond",
+        "`ping 127.0.0.1` vérifie que le serveur DNS local répond correctement",
+        "La loopback doit être testée pour s'assurer que le DHCP est actif sur l'interface"
+      ],
+      "reponse": 1,
+      "explication": "Tester `ping 127.0.0.1` valide le fonctionnement de la pile réseau logicielle (TCP/IP) indépendamment du matériel. Si ce test échoue, le problème est interne au système (pile réseau corrompue, interface `lo` désactivée). Ce n'est qu'après avoir validé la loopback qu'il est utile de tester la passerelle, car un échec vers la passerelle avec une loopback fonctionnelle oriente vers un problème de configuration IP ou de câblage."
+    },
+    {
+      "id": "q1559",
+      "module": "admin-linux-m05",
+      "difficulte": "difficile",
+      "question": "Un administrateur configure deux serveurs DNS dans `/etc/resolv.conf` : `nameserver 192.168.0.254` et `nameserver 9.9.9.9`. Le DNS interne `192.168.0.254` tombe en panne. Quel sera le comportement du système pour la résolution DNS ?",
+      "choix": [
+        "Toutes les résolutions DNS échouent immédiatement car le DNS principal est indisponible",
+        "Le système bascule automatiquement sur `9.9.9.9` après un délai de timeout sur le premier serveur, assurant la continuité de la résolution",
+        "Le système alterne en permanence entre les deux serveurs en round-robin",
+        "Le second DNS `9.9.9.9` n'est utilisé que pour les requêtes extérieures, pas pour le domaine interne"
+      ],
+      "reponse": 1,
+      "explication": "Le résolveur Linux interroge les serveurs DNS dans l'ordre de leur déclaration dans `resolv.conf`. Si le premier ne répond pas, le système attend un timeout (quelques secondes) puis bascule automatiquement sur le suivant. Déclarer un DNS public en secours (`9.9.9.9` ou `8.8.8.8`) est une bonne pratique pour assurer la continuité de service en cas de panne du DNS interne."
+    },
+    {
+      "id": "q1560",
+      "module": "admin-linux-m05",
+      "difficulte": "difficile",
+      "question": "Un technicien configure une machine Debian en IP statique via `/etc/network/interfaces`. Après redémarrage, `ip a` affiche bien l'adresse IP, mais `ip r` ne montre aucune route par défaut. Les machines externes sont injoignables. Quelle est la cause et la correction dans le fichier de configuration ?",
+      "choix": [
+        "La directive `auto ens33` est manquante ; l'ajouter résoudra le problème de routage",
+        "La directive `gateway` est absente de la section `iface ens33` dans `/etc/network/interfaces` ; l'ajouter avec l'adresse du routeur puis redémarrer le service réseau",
+        "Le masque de sous-réseau est incorrect, empêchant le calcul de la route par défaut",
+        "Il faut ajouter manuellement la route avec `ip route add default via [IP_passerelle]` dans `/etc/rc.local`"
+      ],
+      "reponse": 1,
+      "explication": "L'absence de route par défaut dans `ip r` alors que l'adresse IP est correctement appliquée indique que la directive `gateway` est manquante dans `/etc/network/interfaces`. Sans elle, le service `networking` ne configure pas de route par défaut au démarrage. La correction consiste à ajouter `gateway 192.168.x.x` dans la section de l'interface, puis à redémarrer le service réseau."
+    },
+    {
+      "id": "q1561",
+      "module": "admin-linux-m06",
+      "difficulte": "moyen",
+      "question": "Quelle commande rafraîchit le catalogue local des paquets disponibles sans effectuer aucune mise à jour ?",
+      "choix": [
+        "apt upgrade",
+        "apt refresh",
+        "apt update",
+        "apt full-upgrade"
+      ],
+      "reponse": 2,
+      "explication": "`apt update` contacte les dépôts configurés dans `sources.list` et rafraîchit uniquement le catalogue local des paquets disponibles. Il ne met à jour aucun paquet installé. C'est la première commande à exécuter avant toute installation ou mise à jour. Confondre `update` et `upgrade` est un piège classique d'examen."
+    },
+    {
+      "id": "q1562",
+      "module": "admin-linux-m06",
+      "difficulte": "moyen",
+      "question": "Quelle est la différence entre `apt remove` et `apt purge` ?",
+      "choix": [
+        "`apt remove` supprime le paquet et ses dépendances, `apt purge` supprime uniquement le paquet",
+        "`apt remove` désinstalle le paquet en conservant ses fichiers de configuration, `apt purge` désinstalle le paquet et supprime tous ses fichiers de configuration",
+        "`apt remove` nécessite les droits root, `apt purge` fonctionne en utilisateur standard",
+        "Les deux commandes sont identiques depuis Debian 10"
+      ],
+      "reponse": 1,
+      "explication": "`apt remove` conserve les fichiers de configuration après désinstallation, ce qui peut créer des conflits lors d'une réinstallation ultérieure. `apt purge` supprime également les fichiers de configuration, assurant une désinstallation propre. En production, `purge` est systématiquement recommandé."
+    },
+    {
+      "id": "q1563",
+      "module": "admin-linux-m06",
+      "difficulte": "moyen",
+      "question": "Parmi les 4 sections d'un dépôt Debian, laquelle est la seule activée par défaut ?",
+      "choix": [
+        "contrib",
+        "non-free",
+        "non-free-firmware",
+        "main"
+      ],
+      "reponse": 3,
+      "explication": "La section `main` contient uniquement des paquets 100% libres et conformes aux principes du logiciel libre Debian. C'est la seule section activée par défaut. Les sections `contrib`, `non-free` et `non-free-firmware` doivent être ajoutées manuellement dans `sources.list` puis suivies d'un `apt update`."
+    },
+    {
+      "id": "q1564",
+      "module": "admin-linux-m06",
+      "difficulte": "moyen",
+      "question": "Quelle est la séquence correcte pour installer un logiciel depuis ses sources sous Linux ?",
+      "choix": [
+        "`make` → `./configure` → `make install`",
+        "`./configure` → `make install` → `make`",
+        "`./configure` → `make` → `make install`",
+        "`make install` → `./configure` → `make`"
+      ],
+      "reponse": 2,
+      "explication": "La séquence universelle est : `./configure` (vérifie les dépendances de compilation), puis `make` (compile les sources en binaires), puis `make install` (installe les binaires dans le système). Seule la dernière étape requiert les droits root. L'ordre est strict et non interchangeable."
+    },
+    {
+      "id": "q1565",
+      "module": "admin-linux-m06",
+      "difficulte": "moyen",
+      "question": "Quel fichier contient la liste des dépôts APT configurés sur un système Debian ?",
+      "choix": [
+        "/etc/apt/apt.conf",
+        "/etc/apt/sources.list",
+        "/var/lib/apt/lists/",
+        "/etc/dpkg/sources"
+      ],
+      "reponse": 1,
+      "explication": "`/etc/apt/sources.list` est le fichier de configuration principal des dépôts APT. Chaque ligne y définit un dépôt avec son type, URL, branche et sections. Des fichiers supplémentaires peuvent être placés dans `/etc/apt/sources.list.d/`. `/var/lib/apt/lists/` contient les catalogues téléchargés après `apt update`."
+    },
+    {
+      "id": "q1566",
+      "module": "admin-linux-m06",
+      "difficulte": "moyen",
+      "question": "Quelle commande permet de vérifier si le paquet `nginx` est installé sur le système via `dpkg` ?",
+      "choix": [
+        "apt search nginx",
+        "dpkg -i nginx",
+        "dpkg -l nginx",
+        "apt show nginx"
+      ],
+      "reponse": 2,
+      "explication": "`dpkg -l nginx` liste les informations d'installation du paquet `nginx` : s'il est installé, la ligne commence par `ii` ; s'il n'est pas installé, par `un`. `dpkg -i` installe un fichier `.deb` local, `apt search` recherche dans les dépôts, et `apt show` affiche les métadonnées sans indiquer l'état d'installation."
+    },
+    {
+      "id": "q1567",
+      "module": "admin-linux-m06",
+      "difficulte": "moyen",
+      "question": "Quelle est la différence fondamentale entre `apt upgrade` et `apt full-upgrade` ?",
+      "choix": [
+        "`apt upgrade` met à jour tous les paquets y compris le noyau, `apt full-upgrade` exclut le noyau",
+        "`apt upgrade` met à jour les paquets sans en supprimer aucun, `apt full-upgrade` met à jour et peut supprimer les paquets devenus obsolètes",
+        "`apt full-upgrade` télécharge les paquets sans les installer, `apt upgrade` les installe directement",
+        "Les deux commandes sont identiques, `full-upgrade` est simplement un alias récent"
+      ],
+      "reponse": 1,
+      "explication": "`apt upgrade` est conservatif : il ne supprime jamais un paquet existant. `apt full-upgrade` est plus complet : il met à jour les paquets et supprime ceux devenus obsolètes ou en conflit. En production, `full-upgrade` est recommandé pour maintenir un système propre, mais doit être utilisé avec prudence car des paquets peuvent être supprimés."
+    },
+    {
+      "id": "q1568",
+      "module": "admin-linux-m06",
+      "difficulte": "moyen",
+      "question": "Quel outil de la famille APT est recommandé pour les scripts d'automatisation plutôt que pour l'usage interactif ?",
+      "choix": [
+        "apt",
+        "aptitude",
+        "apt-get",
+        "dpkg"
+      ],
+      "reponse": 2,
+      "explication": "`apt-get` est recommandé pour les scripts et l'automatisation car son interface et sa sortie sont stables et prévisibles. `apt` est conçu pour l'usage interactif avec une sortie plus lisible pour l'humain. Mélanger `apt` et `apt-get` sur un même système est déconseillé car ils ont des solvers différents."
+    },
+    {
+      "id": "q1569",
+      "module": "admin-linux-m06",
+      "difficulte": "moyen",
+      "question": "Quelle commande supprime les dépendances devenues inutiles après une désinstallation ?",
+      "choix": [
+        "apt clean",
+        "apt purge --deps",
+        "apt autoremove",
+        "dpkg --remove-orphans"
+      ],
+      "reponse": 2,
+      "explication": "`apt autoremove` supprime automatiquement les paquets qui ont été installés comme dépendances mais qui ne sont plus nécessaires suite à la désinstallation d'autres paquets. `apt clean` vide uniquement le cache local des fichiers `.deb` téléchargés, sans désinstaller aucun paquet."
+    },
+    {
+      "id": "q1570",
+      "module": "admin-linux-m06",
+      "difficulte": "moyen",
+      "question": "Quel fichier de log conserve l'historique des actions effectuées par `apt` et `apt-get` ?",
+      "choix": [
+        "/var/log/dpkg.log",
+        "/var/log/apt/history.log",
+        "/var/log/syslog",
+        "/etc/apt/apt.log"
+      ],
+      "reponse": 1,
+      "explication": "`/var/log/apt/history.log` enregistre l'historique des actions APT : installations, mises à jour, suppressions avec horodatage. `/var/log/dpkg.log` enregistre les actions effectuées directement par `dpkg`. Ces deux fichiers sont complémentaires pour auditer les modifications de paquets sur un système."
+    },
+    {
+      "id": "q1571",
+      "module": "admin-linux-m06",
+      "difficulte": "difficile",
+      "question": "Un administrateur ajoute `non-free` dans `sources.list` mais `apt install firmware-iwlwifi` échoue toujours avec \"Unable to locate package\". Quelle étape a-t-il oublié ?",
+      "choix": [
+        "Il faut redémarrer le service `apt-daemon` après modification de `sources.list`",
+        "Il faut exécuter `apt update` après modification de `sources.list` pour rafraîchir le catalogue local",
+        "Il faut également ajouter la section `contrib` car les firmwares en dépendent",
+        "Il faut vider le cache avec `apt clean` avant de pouvoir accéder aux nouvelles sections"
+      ],
+      "reponse": 1,
+      "explication": "Modifier `sources.list` ne suffit pas : APT utilise un catalogue local mis en cache. Sans `apt update` après la modification, APT interroge toujours l'ancien catalogue qui ne contient pas les paquets `non-free`. L'exécution de `apt update` synchronise le catalogue local avec les nouveaux dépôts configurés."
+    },
+    {
+      "id": "q1572",
+      "module": "admin-linux-m06",
+      "difficulte": "difficile",
+      "question": "Sur un serveur Debian 12, un technicien exécute `apt remove apache2` puis réinstalle apache2 et constate que l'ancienne configuration est toujours présente, causant un conflit. Quelle erreur a-t-il commise et comment l'éviter ?",
+      "choix": [
+        "Il aurait dû utiliser `dpkg -r apache2` qui supprime également les configurations",
+        "Il aurait dû utiliser `apt purge apache2` qui supprime le paquet ET ses fichiers de configuration, évitant ainsi tout résidu lors de la réinstallation",
+        "Le comportement est normal ; il faut supprimer manuellement `/etc/apache2/` après `apt remove`",
+        "Il aurait dû exécuter `apt autoremove` avant la réinstallation"
+      ],
+      "reponse": 1,
+      "explication": "`apt remove` conserve intentionnellement les fichiers de configuration pour permettre une réinstallation rapide avec les paramètres précédents. Quand cette configuration est source de conflits, `apt purge` aurait dû être utilisé : il supprime le paquet ET tous ses fichiers de configuration, garantissant une réinstallation dans un état vierge."
+    },
+    {
+      "id": "q1573",
+      "module": "admin-linux-m06",
+      "difficulte": "difficile",
+      "question": "Quelle est la structure correcte d'une ligne dans `/etc/apt/sources.list` pour activer les sections `main`, `contrib` et `non-free` sur Debian 12 Bookworm ?",
+      "choix": [
+        "apt bookworm http://ftp.fr.debian.org/debian/ main contrib non-free",
+        "deb http://ftp.fr.debian.org/debian/ bookworm main contrib non-free",
+        "deb-src bookworm http://ftp.fr.debian.org/debian/ main contrib non-free",
+        "deb http://ftp.fr.debian.org/debian/ main contrib non-free bookworm"
+      ],
+      "reponse": 1,
+      "explication": "La structure d'une ligne `sources.list` est strictement ordonnée : `type URL branche sections`. Le type `deb` indique des paquets binaires, l'URL pointe vers le miroir, `bookworm` désigne la branche, et les sections `main contrib non-free` suivent en dernier. Tout autre ordre provoque une erreur lors de `apt update`."
+    },
+    {
+      "id": "q1574",
+      "module": "admin-linux-m06",
+      "difficulte": "difficile",
+      "question": "Un administrateur installe un logiciel depuis les sources. `./configure` réussit, mais `make` échoue avec une erreur \"gcc: command not found\". Quelle est la cause et la solution ?",
+      "choix": [
+        "Le code source est incompatible avec Debian ; il faut utiliser `apt install` à la place",
+        "Les outils de compilation ne sont pas installés ; il faut installer le paquet `build-essential` qui fournit `gcc`, `make` et les librairies essentielles",
+        "`make` doit être exécuté en root car `gcc` nécessite les droits administrateur",
+        "Il faut ajouter la section `non-free` dans `sources.list` car `gcc` est propriétaire"
+      ],
+      "reponse": 1,
+      "explication": "`gcc` est le compilateur C indispensable pour `make`. Il fait partie du paquet `build-essential`, qui est le méta-paquet Debian regroupant tous les outils de compilation essentiels (`gcc`, `make`, `libc6-dev`…). Il n'est pas installé par défaut sur un serveur minimal et doit être ajouté explicitement avant toute compilation depuis les sources."
+    },
+    {
+      "id": "q1575",
+      "module": "admin-linux-m06",
+      "difficulte": "difficile",
+      "question": "Lors d'un `apt update`, plusieurs lignes d'erreur 404 apparaissent pour certains dépôts. Quelle est la cause la plus probable et comment la diagnostiquer ?",
+      "choix": [
+        "La connexion Internet est coupée ; vérifier avec `ping 8.8.8.8`",
+        "Les URLs dans `sources.list` sont invalides ou pointent vers une branche/version en fin de vie ; vérifier les URLs et consulter la liste des miroirs Debian",
+        "Le cache APT est corrompu ; exécuter `apt clean` puis relancer `apt update`",
+        "Les sections `non-free` ne sont pas disponibles sur le miroir sélectionné"
+      ],
+      "reponse": 1,
+      "explication": "Une erreur 404 indique que la ressource n'existe pas sur le serveur distant. Cela survient typiquement quand une version Debian est en fin de vie et ses dépôts archivés, ou quand une URL de miroir a changé. La démarche est de vérifier les URLs dans `sources.list` et de les corriger en consultant la liste des miroirs officiels Debian."
+    },
+    {
+      "id": "q1576",
+      "module": "admin-linux-m06",
+      "difficulte": "difficile",
+      "question": "Un administrateur utilise alternativement `apt` et `apt-get` sur le même serveur Debian selon ses préférences. Quel risque concret encourt-il ?",
+      "choix": [
+        "Aucun risque ; `apt` est simplement un wrapper moderne de `apt-get`",
+        "Les deux outils ayant des solvers de dépendances différents, leur utilisation alternée peut produire des états incohérents dans la base de paquets, notamment lors de résolutions de conflits ou de mises à jour complexes",
+        "`apt-get` peut désinstaller des paquets installés par `apt` car il ne les reconnaît pas",
+        "Le mélange est acceptable uniquement en lecture (`apt search` + `apt-get install`)"
+      ],
+      "reponse": 1,
+      "explication": "`apt` et `apt-get` implémentent des algorithmes de résolution de dépendances (solvers) différents. Lors d'opérations complexes impliquant des conflits ou des mises à niveau de paquets liés, les deux outils peuvent prendre des décisions divergentes. La bonne pratique est de choisir un seul outil et de s'y tenir sur l'ensemble du système."
+    },
+    {
+      "id": "q1577",
+      "module": "admin-linux-m06",
+      "difficulte": "difficile",
+      "question": "Un technicien exécute le workflow complet de mise à jour : `apt update`, `apt full-upgrade`, `apt autoremove`, `apt clean`. Dans quel ordre ces commandes doivent-elles être exécutées et pourquoi `apt clean` est-il placé en dernier ?",
+      "choix": [
+        "L'ordre n'a pas d'importance car chaque commande est indépendante",
+        "L'ordre est : `update` (catalogue) → `full-upgrade` (mise à jour) → `autoremove` (dépendances orphelines) → `clean` (cache). `apt clean` est en dernier car vider le cache avant les mises à jour obligerait à re-télécharger les paquets",
+        "`apt clean` doit être exécuté en premier pour libérer de l'espace avant le téléchargement",
+        "`apt autoremove` doit précéder `apt full-upgrade` pour éviter les conflits de dépendances"
+      ],
+      "reponse": 1,
+      "explication": "L'ordre est logique et séquentiel : on rafraîchit d'abord le catalogue, puis on applique les mises à jour, puis on supprime les dépendances orphelines créées par ces mises à jour, et enfin on vide le cache des fichiers `.deb` devenus inutiles. Vider le cache en premier forcerait un re-téléchargement inutile de tous les paquets."
+    },
+    {
+      "id": "q1578",
+      "module": "admin-linux-m06",
+      "difficulte": "difficile",
+      "question": "Quelle différence essentielle existe entre `apt` et `dpkg` en termes de gestion des dépendances lors de l'installation d'un paquet `.deb` local ?",
+      "choix": [
+        "`dpkg` gère les dépendances automatiquement depuis Internet, `apt` ne peut installer que des paquets déjà présents en cache",
+        "`apt` résout et installe automatiquement les dépendances manquantes depuis les dépôts, tandis que `dpkg -i` installe le paquet sans gérer les dépendances, pouvant laisser le système dans un état cassé",
+        "Les deux outils gèrent les dépendances de manière identique, seule l'interface diffère",
+        "`dpkg` est plus sûr que `apt` pour l'installation de fichiers `.deb` tiers car il vérifie les signatures GPG"
+      ],
+      "reponse": 1,
+      "explication": "`dpkg -i paquet.deb` installe le fichier localement sans résoudre les dépendances. Si des dépendances manquent, le paquet est installé en état cassé. `apt` s'appuie sur `dpkg` pour l'installation effective mais résout d'abord toutes les dépendances depuis les dépôts configurés. Après un `dpkg -i` avec dépendances manquantes, `apt install -f` peut réparer l'état."
+    },
+    {
+      "id": "q1579",
+      "module": "admin-linux-m06",
+      "difficulte": "difficile",
+      "question": "Un administrateur configure `sources.list` en utilisant l'alias `stable` comme branche au lieu de `bookworm`. Lors de la sortie de Debian 13, il exécute `apt full-upgrade`. Quel risque majeur encourt-il ?",
+      "choix": [
+        "`apt full-upgrade` refusera de s'exécuter car l'alias `stable` est invalide",
+        "L'alias `stable` pointera vers Debian 13 dès sa publication, et `apt full-upgrade` pourrait déclencher une migration majeure non planifiée vers la nouvelle version",
+        "Aucun risque : `stable` pointe toujours vers la même version une fois installée",
+        "Le système passera en branche `testing` automatiquement lors du changement de `stable`"
+      ],
+      "reponse": 1,
+      "explication": "L'alias `stable` dans `sources.list` suit dynamiquement la version stable actuelle de Debian. Lors de la publication de Debian 13, `stable` basculera vers cette nouvelle version. Un `apt full-upgrade` exécuté après ce changement pourrait déclencher une migration majeure complète et non voulue. La bonne pratique est de nommer explicitement la version (`bookworm`) dans `sources.list`."
+    },
+    {
+      "id": "q1580",
+      "module": "admin-linux-m06",
+      "difficulte": "difficile",
+      "question": "Un technicien installe un logiciel depuis les sources sur un serveur de production. `./configure` et `make` réussissent en tant qu'utilisateur standard, mais `make install` est refusé. Quelle est la cause et quelles sont les deux solutions possibles ?",
+      "choix": [
+        "`make install` est bloqué par AppArmor ; désactiver AppArmor pour continuer",
+        "`make install` nécessite les droits root car il écrit dans des répertoires système (`/usr/local/bin`, `/usr/local/lib`…) ; solutions : exécuter `sudo make install` ou passer en root avec `su -` avant l'exécution",
+        "`make install` ne fonctionne que si `./configure` a été exécuté en root au préalable",
+        "Le `Makefile` est corrompu ; re-télécharger les sources et recommencer depuis `./configure`"
+      ],
+      "reponse": 1,
+      "explication": "`make install` copie les binaires compilés dans des répertoires système (`/usr/local/bin`, `/usr/local/lib`, `/usr/local/share`…) qui appartiennent à root. Un utilisateur standard n'a pas les droits d'écriture dans ces répertoires. Les deux solutions valides sont `sudo make install` (si l'utilisateur est sudoer) ou se connecter en root via `su -` avant d'exécuter `make install`. Les étapes `./configure` et `make` peuvent et doivent être exécutées en utilisateur standard."
+    },
+    {
+      "id": "q1581",
+      "module": "admin-linux-m07",
+      "difficulte": "moyen",
+      "question": "Quelle est la taille totale du MBR et comment sont répartis ses octets ?",
+      "choix": [
+        "1024 octets : 512 pour GRUB, 256 pour la table, 256 pour la signature",
+        "512 octets : 446 pour le chargeur, 64 pour la table de partitions, 2 pour la signature",
+        "512 octets : 64 pour le chargeur, 446 pour la table de partitions, 2 pour la signature",
+        "256 octets : 128 pour GRUB, 126 pour la table, 2 pour la signature"
+      ],
+      "reponse": 1,
+      "explication": "Le MBR occupe exactement les 512 premiers octets du disque, répartis ainsi : 446 octets pour le chargeur de démarrage (GRUB Stage 1), 64 octets pour la table de partitions (4 entrées de 16 octets chacune), et 2 octets pour la signature `0x55AA`. Ces valeurs sont classiquement testées à l'examen."
+    },
+    {
+      "id": "q1582",
+      "module": "admin-linux-m07",
+      "difficulte": "moyen",
+      "question": "Quelle est la limite maximale de taille de disque adressable avec le partitionnement MBR ?",
+      "choix": [
+        "1 To",
+        "4 To",
+        "2,2 To",
+        "8 To"
+      ],
+      "reponse": 2,
+      "explication": "Le MBR utilise un adressage 32 bits pour les secteurs (LBA 32 bits). Avec des secteurs de 512 octets, la taille maximale adressable est 2³² × 512 octets = 2,2 To. Au-delà, il faut impérativement utiliser GPT qui emploie un adressage 64 bits permettant des disques de taille théorique de 9,44 Zo."
+    },
+    {
+      "id": "q1583",
+      "module": "admin-linux-m07",
+      "difficulte": "moyen",
+      "question": "Sur un disque MBR, quel numéro porte systématiquement la première partition logique, quelle que soit la configuration des partitions primaires ?",
+      "choix": [
+        "3",
+        "4",
+        "5",
+        "Le numéro dépend du nombre de partitions primaires existantes"
+      ],
+      "reponse": 2,
+      "explication": "Les numéros 1 à 4 sont réservés aux partitions primaires et à la partition étendue dans la table MBR. Les partitions logiques commencent toujours à partir du numéro 5, même si les emplacements 1 à 4 ne sont pas tous occupés. C'est un piège classique d'examen."
+    },
+    {
+      "id": "q1584",
+      "module": "admin-linux-m07",
+      "difficulte": "moyen",
+      "question": "Quelle commande `fdisk` permet d'afficher la table de partitions actuelle sans effectuer de modification ?",
+      "choix": [
+        "l",
+        "v",
+        "i",
+        "p"
+      ],
+      "reponse": 3,
+      "explication": "`p` (print) affiche la table de partitions actuelle du disque en cours d'édition dans `fdisk`. C'est la commande à utiliser systématiquement pour vérifier l'état avant d'écrire avec `w`. `l` liste les types de partitions disponibles, `v` vérifie la cohérence de la table, et `i` affiche les informations d'une partition spécifique."
+    },
+    {
+      "id": "q1585",
+      "module": "admin-linux-m07",
+      "difficulte": "moyen",
+      "question": "Quel code hexadécimal identifie une partition de type Linux LVM dans `fdisk` ?",
+      "choix": [
+        "83",
+        "82",
+        "fd",
+        "8e"
+      ],
+      "reponse": 3,
+      "explication": "Le code `8e` désigne une partition de type Linux LVM dans `fdisk`. `83` correspond à une partition Linux standard (ext4, xfs…), `82` au swap Linux, et `fd` au RAID logiciel Linux. Les codes `83` et `8e` sont les deux plus fréquemment testés à l'examen."
+    },
+    {
+      "id": "q1586",
+      "module": "admin-linux-m07",
+      "difficulte": "moyen",
+      "question": "Quelle est la conséquence de quitter `fdisk` avec la commande `q` après avoir créé plusieurs partitions ?",
+      "choix": [
+        "Les partitions sont sauvegardées car `fdisk` écrit automatiquement avant de quitter",
+        "Les partitions créées en mémoire sont perdues — aucune modification n'est écrite sur le disque",
+        "Les partitions sont sauvegardées dans un fichier temporaire récupérable",
+        "`fdisk` demande confirmation avant de quitter sans sauvegarder"
+      ],
+      "reponse": 1,
+      "explication": "Dans `fdisk`, toutes les modifications sont effectuées en mémoire jusqu'à l'exécution de `w` (write). Quitter avec `q` abandonne l'intégralité des modifications sans écriture sur le disque. C'est une sécurité importante qui permet d'annuler toute erreur commise en session."
+    },
+    {
+      "id": "q1587",
+      "module": "admin-linux-m07",
+      "difficulte": "moyen",
+      "question": "Quel est le nombre maximum de partitions primaires dans une table de partitionnement MBR ?",
+      "choix": [
+        "2",
+        "4",
+        "8",
+        "16"
+      ],
+      "reponse": 1,
+      "explication": "La table de partitions MBR contient exactement 4 entrées de 16 octets chacune, limitant à 4 le nombre de partitions primaires. Pour dépasser cette limite, la 4ème entrée peut être utilisée pour une partition étendue servant de conteneur à des partitions logiques numérotées à partir de 5."
+    },
+    {
+      "id": "q1588",
+      "module": "admin-linux-m07",
+      "difficulte": "moyen",
+      "question": "Quelle commande permet de lister tous les disques et leurs partitions depuis le shell Linux ?",
+      "choix": [
+        "lsblk -f",
+        "fdisk -l",
+        "blkid",
+        "parted -l"
+      ],
+      "reponse": 1,
+      "explication": "`fdisk -l` liste tous les disques détectés avec leurs partitions, types et tailles. `lsblk` affiche l'arborescence des périphériques blocs mais sans les détails de partitionnement. `blkid` affiche les UUID et types de systèmes de fichiers. `parted -l` est une alternative valide mais moins courante à l'examen."
+    },
+    {
+      "id": "q1589",
+      "module": "admin-linux-m07",
+      "difficulte": "moyen",
+      "question": "Pourquoi la partition étendue ne peut-elle pas être montée ni formatée directement ?",
+      "choix": [
+        "La partition étendue est protégée par un mécanisme de sécurité du noyau Linux",
+        "La partition étendue est un conteneur logiciel dont le seul rôle est d'accueillir des partitions logiques ; elle n'a pas de système de fichiers propre",
+        "La partition étendue nécessite un formatage spécial avec `mkfs.extended` avant utilisation",
+        "La partition étendue ne peut être utilisée qu'après activation avec `fdisk -e`"
+      ],
+      "reponse": 1,
+      "explication": "La partition étendue est une structure abstraite servant uniquement de conteneur pour les partitions logiques. Elle ne contient pas de système de fichiers et ne peut pas être montée. C'est un piège classique d'examen : on crée des partitions logiques à l'intérieur de l'étendue, pas l'étendue elle-même."
+    },
+    {
+      "id": "q1590",
+      "module": "admin-linux-m07",
+      "difficulte": "moyen",
+      "question": "Quelle commande dans `fdisk` permet de modifier le type d'une partition existante ?",
+      "choix": [
+        "m",
+        "n",
+        "t",
+        "c"
+      ],
+      "reponse": 2,
+      "explication": "`t` (type) permet de modifier le code type d'une partition existante dans `fdisk`. Après avoir saisi `t`, `fdisk` demande le numéro de la partition puis le nouveau code hexadécimal (ex. : `8e` pour LVM). `n` crée une nouvelle partition, `m` affiche l'aide, et `l` liste les types disponibles."
+    },
+    {
+      "id": "q1591",
+      "module": "admin-linux-m07",
+      "difficulte": "difficile",
+      "question": "Un disque `/dev/sdb` possède une partition primaire `/dev/sdb1` et une partition étendue `/dev/sdb2`. L'administrateur crée deux partitions logiques. Quels seront leurs noms ?",
+      "choix": [
+        "/dev/sdb3 et /dev/sdb4",
+        "/dev/sdb2a et /dev/sdb2b",
+        "/dev/sdb5 et /dev/sdb6",
+        "/dev/sdb3 et /dev/sdb5"
+      ],
+      "reponse": 2,
+      "explication": "Les numéros 1 à 4 sont réservés aux partitions primaires et étendue dans la table MBR, même si tous ne sont pas utilisés. La première partition logique porte donc systématiquement le numéro 5, la seconde le numéro 6. Avec `/dev/sdb1` (primaire) et `/dev/sdb2` (étendue), les logiques seront `/dev/sdb5` et `/dev/sdb6`."
+    },
+    {
+      "id": "q1592",
+      "module": "admin-linux-m07",
+      "difficulte": "difficile",
+      "question": "Un technicien ajoute un disque à chaud sur une VM et tente `fdisk /dev/sdb` mais obtient \"Impossible d'ouvrir /dev/sdb\". Quelle est la cause et la solution sans redémarrage ?",
+      "choix": [
+        "Le disque est défectueux ; le remplacer et redémarrer la VM",
+        "Le noyau n'a pas encore détecté le disque ; rescanner le bus SCSI avec `echo \"- - -\" > /sys/class/scsi_host/host2/scan` puis vérifier avec `fdisk -l`",
+        "`fdisk` ne supporte pas les disques ajoutés à chaud ; utiliser `parted` à la place",
+        "Le disque n'est pas formaté ; utiliser `mkfs` avant `fdisk`"
+      ],
+      "reponse": 1,
+      "explication": "Lors d'un ajout à chaud en environnement virtualisé, le noyau Linux ne détecte pas automatiquement le nouveau périphérique SCSI. La commande `echo \"- - -\" > /sys/class/scsi_host/host2/scan` force le rescan du bus SCSI sans redémarrage. Après cette opération, `fdisk -l` devrait afficher le nouveau disque."
+    },
+    {
+      "id": "q1593",
+      "module": "admin-linux-m07",
+      "difficulte": "difficile",
+      "question": "Un administrateur doit partitionner un disque de 4 To pour un serveur avec BIOS classique. Quel problème va-t-il rencontrer avec `fdisk` et quelle est la solution ?",
+      "choix": [
+        "Aucun problème ; `fdisk` supporte les disques de toute taille depuis Debian 10",
+        "`fdisk` utilisera le partitionnement MBR limité à 2,2 To, rendant 1,8 To inaccessibles ; il faut utiliser `gdisk` ou `parted` pour créer une table GPT",
+        "Un disque de 4 To nécessite une partition étendue obligatoire pour être entièrement utilisé",
+        "Il faut diviser le disque en deux volumes LVM de 2 To chacun pour contourner la limite MBR"
+      ],
+      "reponse": 1,
+      "explication": "La norme MBR est limitée à 2,2 To en raison de son adressage 32 bits. Avec `fdisk` en mode MBR, les secteurs au-delà de 2,2 To sont inaccessibles. La solution est d'utiliser `gdisk` (variante GPT de `fdisk`) ou `parted` pour créer une table de partitions GPT, qui supporte théoriquement jusqu'à 9,44 Zo."
+    },
+    {
+      "id": "q1594",
+      "module": "admin-linux-m07",
+      "difficulte": "difficile",
+      "question": "Dans `fdisk`, un technicien crée une partition primaire (`/dev/sdb1`), une étendue (`/dev/sdb2`), puis une logique (`/dev/sdb5`). Il modifie le type de `/dev/sdb5` en `8e`. Quelle configuration cela représente-t-il et dans quel contexte est-elle utilisée ?",
+      "choix": [
+        "/dev/sdb5 devient une partition swap utilisable comme espace d'échange",
+        "/dev/sdb5 devient une partition destinée à LVM ; ce type est requis pour que LVM puisse intégrer cette partition dans un groupe de volumes",
+        "/dev/sdb5 devient une partition RAID — `8e` est le code universel pour la haute disponibilité",
+        "Le type `8e` est uniquement informatif et n'a aucun impact fonctionnel sur l'utilisation de la partition"
+      ],
+      "reponse": 1,
+      "explication": "Le code `8e` désigne une partition Linux LVM. Ce typage est utilisé pour signaler explicitement au système que cette partition est destinée à être intégrée dans un groupe de volumes LVM via `pvcreate`. Sans ce type, LVM peut fonctionner mais la partition ne sera pas correctement identifiée par les outils de gestion LVM."
+    },
+    {
+      "id": "q1595",
+      "module": "admin-linux-m07",
+      "difficulte": "difficile",
+      "question": "Quelle différence fondamentale distingue GPT de MBR concernant la redondance de la table de partitions ?",
+      "choix": [
+        "MBR stocke une copie de la table en début et fin de disque, GPT n'en a qu'une seule",
+        "GPT stocke une copie de sauvegarde de la table de partitions en fin de disque, contrairement à MBR qui n'a qu'une seule table ; cela permet la récupération en cas de corruption du début du disque",
+        "Les deux normes stockent la table en deux emplacements distincts pour la redondance",
+        "GPT chiffre la table de partitions, ce qui constitue sa protection contre la corruption"
+      ],
+      "reponse": 1,
+      "explication": "GPT intègre nativement une copie de sauvegarde de la table de partitions en fin de disque (LBA -1). En cas de corruption du début du disque (secteur 1), la table peut être restaurée depuis cette sauvegarde. MBR ne dispose d'aucune redondance : la corruption de ses 64 octets de table de partitions peut rendre le disque inutilisable."
+    },
+    {
+      "id": "q1596",
+      "module": "admin-linux-m07",
+      "difficulte": "difficile",
+      "question": "Un technicien exécute `fdisk /dev/sda` sur le disque système en production pour ajouter une partition. Après `w`, le système redémarre difficilement et affiche des erreurs GRUB. Quelle erreur a-t-il probablement commise ?",
+      "choix": [
+        "`fdisk` a écrasé le swap, rendant le système instable sous charge mémoire",
+        "La modification de la table de partitions de `/dev/sda` (disque système) a perturbé l'alignement ou les références des partitions existantes, pouvant corrompre le MBR ou décaler les partitions système",
+        "L'ajout d'une partition sur un disque système est impossible avec `fdisk`",
+        "`w` a reformaté accidentellement `/dev/sda1`"
+      ],
+      "reponse": 1,
+      "explication": "Modifier la table de partitions du disque système actif (`/dev/sda`) est une opération à très haut risque. Toute erreur de numérotation, de chevauchement ou de modification des partitions existantes peut corrompre le système de fichiers racine ou décaler les partitions que GRUB référence. Cette opération doit être réalisée depuis un système live/rescue, jamais depuis le système en cours d'exécution."
+    },
+    {
+      "id": "q1597",
+      "module": "admin-linux-m07",
+      "difficulte": "difficile",
+      "question": "Combien de partitions au maximum peut-on créer sur un disque MBR, en utilisant une partition étendue contenant des partitions logiques ?",
+      "choix": [
+        "4 partitions",
+        "16 partitions",
+        "59 partitions",
+        "128 partitions"
+      ],
+      "reponse": 2,
+      "explication": "Avec MBR : 3 partitions primaires + 1 partition étendue (occupant le 4ème emplacement) + jusqu'à 56 partitions logiques dans l'étendue = 59 partitions au total. Les 128 partitions correspondent à GPT. Les 4 partitions représentent uniquement les primaires MBR sans étendue."
+    },
+    {
+      "id": "q1598",
+      "module": "admin-linux-m07",
+      "difficulte": "difficile",
+      "question": "Un administrateur doit créer sur `/dev/sdb` : une partition de 10 Go pour le système, une de 5 Go pour les logs, et une partition LVM utilisant tout l'espace restant (200 Go). Combien de partitions primaires seront créées et quel type attribuer à la partition LVM ?",
+      "choix": [
+        "3 partitions primaires ; la partition LVM reçoit le type `83`",
+        "2 partitions primaires + 1 partition étendue contenant la LVM en logique ; type `8e`",
+        "3 partitions primaires ; la partition LVM reçoit le type `8e`",
+        "4 partitions primaires dont une étendue ; les logiques reçoivent le type `8e`"
+      ],
+      "reponse": 2,
+      "explication": "Trois partitions primaires suffisent ici (numéros 1, 2, 3) : pas besoin de partition étendue car on reste sous la limite de 4. La partition destinée à LVM reçoit le type `8e` (Linux LVM) via la commande `t` dans `fdisk`. Il n'y a aucune raison d'utiliser une partition étendue quand 3 partitions primaires couvrent le besoin."
+    },
+    {
+      "id": "q1599",
+      "module": "admin-linux-m07",
+      "difficulte": "difficile",
+      "question": "Lors de la création d'une partition dans `fdisk`, le technicien appuie sur Entrée pour le premier secteur puis saisit `+10G` pour la taille. Quelle est la signification de cette saisie et que se passe-t-il si on appuie sur Entrée sans saisir de valeur pour le dernier secteur ?",
+      "choix": [
+        "`+10G` crée une partition de 10 Go ; Entrée sans valeur attribue 1 Go par défaut",
+        "`+10G` crée une partition de 10 Go depuis le premier secteur disponible ; Entrée sans valeur pour le dernier secteur utilise tout l'espace disque restant",
+        "`+10G` est invalide ; il faut saisir la taille en secteurs uniquement",
+        "`+10G` crée une partition de 10 secteurs ; Entrée utilise le dernier secteur du disque"
+      ],
+      "reponse": 1,
+      "explication": "Dans `fdisk`, la notation `+10G` crée une partition de exactement 10 Go en calculant automatiquement le dernier secteur correspondant. Appuyer sur Entrée sans saisie pour le dernier secteur utilise la valeur maximale disponible, c'est-à-dire tout l'espace restant sur le disque. Cette syntaxe `+taille` est plus pratique et moins risquée que de calculer manuellement les numéros de secteurs."
+    },
+    {
+      "id": "q1600",
+      "module": "admin-linux-m07",
+      "difficulte": "difficile",
+      "question": "Un technicien doit partitionner un disque `/dev/sdc` pour créer : une partition swap de 4 Go, une partition Linux de 20 Go, et une partition LVM pour le reste. Il exécute dans `fdisk` : `n p 1 Entrée +4G`, `t 1 82`, `n p 2 Entrée +20G`, `n p 3 Entrée Entrée`, `t 3 8e`, puis `w`. Quel problème va survenir lors de la création de la 3ème partition primaire ?",
+      "choix": [
+        "Aucun problème ; la procédure est correcte",
+        "Le type `8e` ne peut pas être appliqué à une partition primaire",
+        "La 3ème partition primaire peut être créée, mais il ne restera plus d'emplacement pour une éventuelle partition étendue si des partitions supplémentaires s'avèrent nécessaires ultérieurement ; cependant la procédure décrite est fonctionnelle pour le besoin actuel",
+        "`fdisk` refusera de créer une 3ème partition primaire si une partition étendue n'existe pas déjà"
+      ],
+      "reponse": 2,
+      "explication": "La procédure décrite est techniquement correcte pour le besoin actuel : 3 partitions primaires (swap, Linux, LVM) sont créées avec les bons types. La limite MBR de 4 partitions primaires n'est pas dépassée. Cependant, utiliser 3 des 4 emplacements primaires sans partition étendue signifie qu'il ne reste qu'un seul emplacement primaire disponible. Si des partitions supplémentaires s'avèrent nécessaires, il faudra soit utiliser le 4ème emplacement pour une étendue, soit reconsidérer l'architecture."
+    },
+    {
+      "id": "q1601",
+      "module": "admin-linux-m08",
+      "difficulte": "moyen",
+      "question": "Quelle est la hiérarchie correcte des trois niveaux LVM ?",
+      "choix": [
+        "VG → PV → LV",
+        "LV → VG → PV",
+        "PV → VG → LV",
+        "PV → LV → VG"
+      ],
+      "reponse": 2,
+      "explication": "La hiérarchie LVM est strictement ordonnée : Physical Volume (PV) → Volume Group (VG) → Logical Volume (LV). Les partitions physiques sont d'abord déclarées en PV, regroupées en VG (pool commun), puis découpées en LV utilisables. Cette séquence est le fondement de LVM et est incontournable à l'examen."
+    },
+    {
+      "id": "q1602",
+      "module": "admin-linux-m08",
+      "difficulte": "moyen",
+      "question": "Quel type doit être attribué à une partition dans `fdisk` avant de pouvoir l'initialiser avec `pvcreate` ?",
+      "choix": [
+        "`83` (Linux)",
+        "`82` (swap)",
+        "`8e` (Linux LVM)",
+        "`fd` (Linux RAID)"
+      ],
+      "reponse": 2,
+      "explication": "La partition doit être typée `8e` (Linux LVM) dans `fdisk` avant d'être déclarée comme volume physique avec `pvcreate`. Ce typage permet au système de reconnaître correctement la partition au redémarrage. Sans ce type, `pvcreate` peut échouer et la partition ne sera pas identifiée comme appartenant à LVM."
+    },
+    {
+      "id": "q1603",
+      "module": "admin-linux-m08",
+      "difficulte": "moyen",
+      "question": "Quelle commande crée un groupe de volumes nommé `vgdata` à partir de la partition `/dev/sdb1` ?",
+      "choix": [
+        "lvcreate -n vgdata /dev/sdb1",
+        "vgcreate vgdata /dev/sdb1",
+        "pvcreate vgdata /dev/sdb1",
+        "vgmake vgdata /dev/sdb1"
+      ],
+      "reponse": 1,
+      "explication": "`vgcreate vgdata /dev/sdb1` crée un groupe de volumes nommé `vgdata` à partir du PV `/dev/sdb1`. La syntaxe est `vgcreate [nom_VG] [PV(s)]`. Il est possible d'inclure plusieurs PV directement : `vgcreate vgdata /dev/sdb1 /dev/sdc1`. `pvcreate` n'initialise qu'un PV, sans créer de VG."
+    },
+    {
+      "id": "q1604",
+      "module": "admin-linux-m08",
+      "difficulte": "moyen",
+      "question": "Quelle commande affiche un résumé concis de tous les groupes de volumes LVM ?",
+      "choix": [
+        "vgdisplay",
+        "lvs",
+        "pvs",
+        "vgs"
+      ],
+      "reponse": 3,
+      "explication": "`vgs` affiche un résumé court des groupes de volumes (nom, nombre de PV, taille totale, espace libre…). `vgdisplay` affiche les détails complets. `pvs` est le résumé des volumes physiques et `lvs` celui des volumes logiques. Les commandes résumées (`pvs`, `vgs`, `lvs`) sont à distinguer des commandes détaillées (`pvdisplay`, `vgdisplay`, `lvdisplay`)."
+    },
+    {
+      "id": "q1605",
+      "module": "admin-linux-m08",
+      "difficulte": "moyen",
+      "question": "Quelle commande crée un volume logique nommé `lvweb` de 2 Go dans le groupe de volumes `vgdata` ?",
+      "choix": [
+        "lvcreate -n lvweb -L 2G vgdata",
+        "lvcreate -n lvweb -l 2G /dev/vgdata",
+        "vgcreate -n lvweb -L 2G vgdata",
+        "lvcreate lvweb 2G vgdata"
+      ],
+      "reponse": 0,
+      "explication": "La syntaxe correcte est `lvcreate -n [nom] -L [taille] [VG]`. L'option `-n` spécifie le nom du LV, `-L` la taille en notation absolue (G, M, T). `-l` (minuscule) est réservée aux extents ou pourcentages. Le VG est toujours spécifié en dernier argument."
+    },
+    {
+      "id": "q1606",
+      "module": "admin-linux-m08",
+      "difficulte": "moyen",
+      "question": "Quelle est la différence entre `lvextend -L +3G` et `lvextend -L 25G` ?",
+      "choix": [
+        "`+3G` ajoute 3 Go à la taille actuelle du LV, `25G` définit la taille absolue à exactement 25 Go",
+        "`+3G` définit une taille absolue de 3 Go, `25G` ajoute 25 Go à la taille actuelle",
+        "Les deux syntaxes sont équivalentes ; le `+` est optionnel",
+        "`+3G` fonctionne uniquement avec `ext4`, `25G` avec tous les systèmes de fichiers"
+      ],
+      "reponse": 0,
+      "explication": "Le préfixe `+` dans `-L +3G` indique une valeur relative : 3 Go sont ajoutés à la taille actuelle du LV. Sans `+`, `-L 25G` définit une taille absolue cible. Cette distinction est importante pour éviter de surdimensionner ou sous-dimensionner un volume logique lors d'une extension."
+    },
+    {
+      "id": "q1607",
+      "module": "admin-linux-m08",
+      "difficulte": "moyen",
+      "question": "Pourquoi l'option `-r` est-elle recommandée avec `lvextend` ?",
+      "choix": [
+        "Elle permet d'étendre un LV sans arrêter le service associé",
+        "Elle redimensionne automatiquement le système de fichiers ext3/ext4 après l'extension du LV, évitant d'oublier `resize2fs`",
+        "Elle crée automatiquement un snapshot avant l'extension pour permettre un rollback",
+        "Elle vérifie la cohérence du système de fichiers avant d'effectuer l'extension"
+      ],
+      "reponse": 1,
+      "explication": "Sans `-r`, `lvextend` agrandit le volume logique mais le système de fichiers ne voit pas le nouvel espace car il conserve sa taille d'origine. L'option `-r` appelle automatiquement `resize2fs` pour étendre le FS jusqu'aux nouvelles limites du LV. C'est la bonne pratique systématique pour éviter l'oubli de cette étape."
+    },
+    {
+      "id": "q1608",
+      "module": "admin-linux-m08",
+      "difficulte": "moyen",
+      "question": "Quelle commande permet d'ajouter le volume physique `/dev/sdc1` au groupe de volumes `vgdata` existant ?",
+      "choix": [
+        "vgcreate vgdata /dev/sdc1",
+        "pvextend vgdata /dev/sdc1",
+        "vgextend vgdata /dev/sdc1",
+        "lvcreate -n lvnew /dev/sdc1"
+      ],
+      "reponse": 2,
+      "explication": "`vgextend` est la commande dédiée à l'ajout d'un PV supplémentaire dans un VG existant. La syntaxe est `vgextend [nom_VG] [nouveau_PV]`. Avant d'exécuter `vgextend`, il faut impérativement avoir initialisé la partition avec `pvcreate /dev/sdc1`, sinon la commande échoue avec \"Device not found\"."
+    },
+    {
+      "id": "q1609",
+      "module": "admin-linux-m08",
+      "difficulte": "moyen",
+      "question": "Quels sont les deux chemins valides pour accéder au volume logique `lvweb` du groupe `vgdata` ?",
+      "choix": [
+        "/dev/vgdata/lvweb et /dev/lvm/vgdata-lvweb",
+        "/dev/vgdata/lvweb et /dev/mapper/vgdata-lvweb",
+        "/dev/lv/vgdata/lvweb et /dev/block/vgdata-lvweb",
+        "/dev/vgdata-lvweb et /dev/mapper/lvweb"
+      ],
+      "reponse": 1,
+      "explication": "Un volume logique LVM est accessible via deux chemins équivalents : `/dev/vgdata/lvweb` (chemin simplifié, le plus utilisé en pratique) et `/dev/mapper/vgdata-lvweb` (chemin via le device mapper, rencontré dans les logs et certains outils). Les deux pointent vers le même périphérique."
+    },
+    {
+      "id": "q1610",
+      "module": "admin-linux-m08",
+      "difficulte": "moyen",
+      "question": "Quelle option de `lvextend` utilise tout l'espace libre disponible dans le groupe de volumes ?",
+      "choix": [
+        "-L +MAX",
+        "-l 100%",
+        "-l +100%FREE",
+        "-L +all"
+      ],
+      "reponse": 2,
+      "explication": "`-l +100%FREE` (option `-l` minuscule) utilise l'intégralité de l'espace libre disponible dans le VG pour étendre le LV. La syntaxe `+100%FREE` signifie \"ajouter 100% de l'espace FREE\". `-l` (minuscule) travaille en extents ou pourcentages, tandis que `-L` (majuscule) travaille en tailles absolues (Go, Mo, To)."
+    },
+    {
+      "id": "q1611",
+      "module": "admin-linux-m08",
+      "difficulte": "difficile",
+      "question": "Un administrateur exécute `vgextend vgdata /dev/sdc1` mais obtient l'erreur \"Device /dev/sdc1 not found or rejected by a filter\". Quelle étape préalable a-t-il oublié ?",
+      "choix": [
+        "Il a oublié de partitionner `/dev/sdc` avec `fdisk` avant d'utiliser la partition",
+        "Il a oublié d'exécuter `pvcreate /dev/sdc1` pour initialiser la partition en volume physique avant de l'ajouter au VG",
+        "Il a oublié de monter `/dev/sdc1` avant de l'intégrer dans le VG",
+        "Il a oublié de formater `/dev/sdc1` avec `mkfs.ext4` avant `vgextend`"
+      ],
+      "reponse": 1,
+      "explication": "`vgextend` ne peut accepter que des PV déjà initialisés. La séquence correcte est : partitionner → typer `8e` → `pvcreate /dev/sdc1` → `vgextend vgdata /dev/sdc1`. Omettre `pvcreate` est l'erreur la plus fréquente lors de l'extension d'un VG, et provoque exactement ce message d'erreur."
+    },
+    {
+      "id": "q1612",
+      "module": "admin-linux-m08",
+      "difficulte": "difficile",
+      "question": "Un LV de 10 Go est étendu à 15 Go avec `lvextend -L 15G /dev/vgdata/lvweb`. L'administrateur vérifie avec `df -h` et constate toujours 10 Go disponibles. Quelle est la cause et la solution ?",
+      "choix": [
+        "`lvextend` a échoué silencieusement ; relancer la commande avec `sudo`",
+        "Le LV a bien été étendu mais le système de fichiers n'a pas été redimensionné faute de l'option `-r` ; exécuter `resize2fs /dev/vgdata/lvweb` pour étendre le FS",
+        "`df -h` ne reflète pas les changements LVM en temps réel ; redémarrer pour voir le nouvel espace",
+        "Il faut démonter puis remonter le volume pour que le système de fichiers détecte la nouvelle taille"
+      ],
+      "reponse": 1,
+      "explication": "`lvextend` sans `-r` étend uniquement le volume logique au niveau LVM. Le système de fichiers ext4 qui réside sur ce LV conserve sa taille d'origine (10 Go) et ne \"voit\" pas l'espace supplémentaire. `resize2fs /dev/vgdata/lvweb` redimensionne le FS pour occuper tout l'espace du LV. La commande peut être exécutée à chaud sur ext4."
+    },
+    {
+      "id": "q1613",
+      "module": "admin-linux-m08",
+      "difficulte": "difficile",
+      "question": "Un VG `vgdata` contient deux PV : `/dev/sdb1` (10 Go) et `/dev/sdc1` (20 Go). Un LV de 25 Go est créé. Sur quel(s) PV les données seront-elles stockées ?",
+      "choix": [
+        "Uniquement sur `/dev/sdc1` car le LV dépasse la capacité de `/dev/sdb1`",
+        "LVM répartit les données sur les deux PV selon ses algorithmes d'allocation — le LV peut s'étendre sur plusieurs PV transparemment pour l'utilisateur",
+        "La création du LV échouera car aucun PV individuel n'a 25 Go disponibles",
+        "Les données seront stockées sur `/dev/sdb1` en priorité jusqu'à saturation, puis sur `/dev/sdc1`"
+      ],
+      "reponse": 1,
+      "explication": "C'est l'un des avantages fondamentaux de LVM : un volume logique peut s'étendre sur plusieurs volumes physiques de manière totalement transparente. LVM gère l'allocation des extents sur les PV disponibles du VG. L'utilisateur voit un seul volume cohérent de 25 Go, sans se préoccuper de la répartition physique sous-jacente."
+    },
+    {
+      "id": "q1614",
+      "module": "admin-linux-m08",
+      "difficulte": "difficile",
+      "question": "Un administrateur doit réduire un LV de 20 Go à 15 Go pour libérer de l'espace. Quelle est la procédure correcte et le risque principal ?",
+      "choix": [
+        "`lvreduce -L 15G /dev/vgdata/lvdata` suffit ; LVM gère automatiquement le redimensionnement du FS",
+        "La réduction est impossible sous Linux ; seule l'extension est supportée",
+        "Il faut d'abord sauvegarder les données, réduire le système de fichiers avec `resize2fs` à moins de 15 Go, puis seulement réduire le LV avec `lvreduce` ; le risque principal est la perte de données si les étapes sont inversées ou si le FS contient plus de 15 Go de données",
+        "`lvreduce -r -L 15G` suffit ; l'option `-r` gère automatiquement la réduction du FS comme pour l'extension"
+      ],
+      "reponse": 2,
+      "explication": "La réduction d'un LV est une opération à haut risque. L'ordre impératif est : sauvegarder → démonter le FS → `resize2fs` pour réduire le FS → `lvreduce` pour réduire le LV. Réduire le LV avant le FS tronque les données. L'option `-r` de `lvextend` ne fonctionne pas de façon sûre pour la réduction. `lvreduce` doit être évité en production."
+    },
+    {
+      "id": "q1615",
+      "module": "admin-linux-m08",
+      "difficulte": "difficile",
+      "question": "`lvextend -r -l +100%FREE /dev/vgdata/lvweb` est exécuté mais échoue avec \"Insufficient free space\". Quelle vérification effectuer et quelle solution mettre en œuvre ?",
+      "choix": [
+        "Vérifier avec `lvs` si le LV est déjà à sa taille maximale ; reformater avec `mkfs.ext4` pour libérer de l'espace",
+        "Vérifier avec `vgs` la colonne VFree pour confirmer l'absence d'espace libre dans le VG ; ajouter un nouveau disque, le déclarer en PV avec `pvcreate`, puis l'intégrer avec `vgextend`",
+        "Vérifier avec `pvs` si les PV sont corrompus ; recréer le VG depuis zéro",
+        "Vider le cache LVM avec `vgscan` puis relancer la commande"
+      ],
+      "reponse": 1,
+      "explication": "`vgs` affiche la colonne `VFree` indiquant l'espace libre dans le VG. Si elle est à 0, aucune extension n'est possible sans ajout de capacité. La solution est d'ajouter un nouveau disque physique, de le partitionner et typer `8e`, de l'initialiser avec `pvcreate`, puis de l'intégrer dans le VG avec `vgextend`. L'espace nouvellement disponible sera immédiatement utilisable par `lvextend`."
+    },
+    {
+      "id": "q1616",
+      "module": "admin-linux-m08",
+      "difficulte": "difficile",
+      "question": "Quelle différence fonctionnelle existe entre `pvdisplay /dev/sdb1` et `pvs` pour diagnostiquer un problème sur un volume physique ?",
+      "choix": [
+        "`pvdisplay` affiche uniquement les PV actifs, `pvs` inclut les PV défaillants",
+        "`pvs` donne une vue synthétique (nom, VG, taille, utilisé/libre) idéale pour un aperçu rapide, tandis que `pvdisplay` fournit tous les détails (UUID, taille des extents, nombre d'extents libres/utilisés) utiles pour un diagnostic approfondi",
+        "`pvdisplay` requiert les droits root, `pvs` est accessible à tous les utilisateurs",
+        "Les deux commandes sont identiques en contenu, seul le format d'affichage diffère"
+      ],
+      "reponse": 1,
+      "explication": "`pvs` affiche une ligne par PV avec les informations essentielles, idéal pour une consultation rapide de l'état global. `pvdisplay` donne une vue détaillée de chaque PV incluant l'UUID, la taille des physical extents, le nombre d'extents alloués et libres, et le VG d'appartenance — informations précieuses pour le diagnostic d'un problème de capacité ou d'intégrité."
+    },
+    {
+      "id": "q1617",
+      "module": "admin-linux-m08",
+      "difficulte": "difficile",
+      "question": "Un administrateur crée un VG `vgsystem` avec `/dev/sdb1`, puis tente d'ajouter `/dev/sdb1` à un second VG `vgbackup` avec `vgextend vgbackup /dev/sdb1`. Que se passe-t-il ?",
+      "choix": [
+        "/dev/sdb1 est automatiquement partagé entre les deux VG en mode miroir",
+        "La commande réussit car un PV peut appartenir à plusieurs VG simultanément",
+        "La commande échoue car un PV ne peut appartenir qu'à un seul VG à la fois",
+        "/dev/sdb1 est retiré de `vgsystem` et ajouté à `vgbackup`"
+      ],
+      "reponse": 2,
+      "explication": "Un volume physique ne peut appartenir qu'à un seul groupe de volumes simultanément. LVM refuse d'intégrer dans `vgbackup` un PV déjà membre de `vgsystem`. Pour partager de la capacité entre deux VG, il faut des partitions/disques distincts, ou retirer le PV de son VG actuel (`vgreduce`) avant de l'ajouter à un autre."
+    },
+    {
+      "id": "q1618",
+      "module": "admin-linux-m08",
+      "difficulte": "difficile",
+      "question": "Après une infrastructure LVM complète créée (`pvcreate`, `vgcreate`, `lvcreate`), quelle est l'étape suivante pour rendre le volume logique utilisable par le système ?",
+      "choix": [
+        "`vgactivate /dev/vgdata/lvweb` pour activer le LV",
+        "`mkfs.ext4 /dev/vgdata/lvweb` pour formater le LV, puis `mount /dev/vgdata/lvweb /point/montage` pour le monter",
+        "`lvformat -t ext4 /dev/vgdata/lvweb` pour formater avec les outils LVM dédiés",
+        "Le LV est directement utilisable après `lvcreate` sans formatage supplémentaire"
+      ],
+      "reponse": 1,
+      "explication": "LVM ne crée que le volume logique comme un périphérique bloc vide. Pour le rendre utilisable, il faut : le formater avec `mkfs.ext4` (ou un autre FS), puis le monter sur un point de montage avec `mount`. Pour une persistance au redémarrage, ajouter une entrée dans `/etc/fstab`. Ces étapes sont hors LVM mais constituent la suite logique indispensable."
+    },
+    {
+      "id": "q1619",
+      "module": "admin-linux-m08",
+      "difficulte": "difficile",
+      "question": "Un serveur dispose d'un VG `vgdata` avec 5 Go libres. Un LV `lvbdd` doit être étendu de 8 Go. Quelle séquence complète l'administrateur doit-il suivre ?",
+      "choix": [
+        "`lvextend -r -L +8G /dev/vgdata/lvbdd` directement, LVM gère automatiquement l'espace manquant",
+        "Ajouter un nouveau disque → `fdisk` (partition + type `8e`) → `pvcreate` → `vgextend vgdata` → `lvextend -r -L +8G /dev/vgdata/lvbdd`",
+        "`vgextend vgdata` seul suffit à créer automatiquement l'espace nécessaire",
+        "Réduire d'abord les autres LV pour libérer 8 Go dans le VG, puis `lvextend`"
+      ],
+      "reponse": 1,
+      "explication": "Avec seulement 5 Go libres dans le VG pour une extension de 8 Go, il est impossible d'étendre directement. La séquence complète est : ajouter un disque physique, le partitionner et typer `8e` dans `fdisk`, l'initialiser avec `pvcreate`, l'intégrer dans le VG avec `vgextend`, puis étendre le LV avec `lvextend -r`. Chaque étape est obligatoire dans cet ordre."
+    },
+    {
+      "id": "q1620",
+      "module": "admin-linux-m08",
+      "difficulte": "difficile",
+      "question": "En production, un administrateur hésite entre `lvextend -r -L +5G /dev/vgdata/lvweb` et `lvextend -r -l +100%FREE /dev/vgdata/lvweb`. Dans quel contexte choisir l'une plutôt que l'autre ?",
+      "choix": [
+        "`-L +5G` est pour les LV ext4, `-l +100%FREE` uniquement pour xfs",
+        "`-L +5G` est adapté quand on veut conserver de l'espace libre dans le VG pour d'autres LV ou extensions futures ; `-l +100%FREE` est adapté quand le VG est dédié à ce seul LV ou quand on veut allouer tout l'espace restant sans calcul manuel",
+        "Les deux options sont identiques si le VG dispose d'exactement 5 Go libres",
+        "`-l +100%FREE` est dangereuse car elle peut dépasser la capacité physique du disque"
+      ],
+      "reponse": 1,
+      "explication": "Le choix dépend de la stratégie d'allocation : `-L +5G` est précis et préserve l'espace libre pour d'autres usages (autres LV, extensions futures, snapshots), ce qui est la bonne pratique dans un VG partagé entre plusieurs LV. `-l +100%FREE` est pratique quand le VG est entièrement dédié à ce LV ou lors de la mise en production d'un seul volume, évitant tout calcul manuel de l'espace disponible."
+    },
+    {
+      "id": "q1621",
+      "module": "admin-linux-m09",
+      "difficulte": "moyen",
+      "question": "Parmi les informations suivantes, laquelle n'est PAS stockée dans un inode ?",
+      "choix": [
+        "Les permissions du fichier",
+        "Le nom du fichier",
+        "Les timestamps (dates d'accès, modification)",
+        "Le propriétaire (UID) et le groupe (GID)"
+      ],
+      "reponse": 1,
+      "explication": "L'inode contient toutes les métadonnées d'un fichier (type, permissions, UID/GID, taille, timestamps, pointeurs vers les blocs de données) mais pas son nom. Le nom est stocké dans le répertoire parent qui fait le lien entre le nom et le numéro d'inode. C'est un piège classique et incontournable à l'examen."
+    },
+    {
+      "id": "q1622",
+      "module": "admin-linux-m09",
+      "difficulte": "moyen",
+      "question": "Quelle est la principale différence entre EXT2 et EXT3 ?",
+      "choix": [
+        "EXT3 supporte des fichiers plus volumineux qu'EXT2",
+        "EXT3 ajoute la journalisation à EXT2, permettant la récupération après crash sans vérifier tout le disque",
+        "EXT3 est plus rapide qu'EXT2 grâce à une meilleure gestion des blocs",
+        "EXT2 supporte LVM, EXT3 uniquement les partitions classiques"
+      ],
+      "reponse": 1,
+      "explication": "La journalisation est l'apport fondamental d'EXT3 par rapport à EXT2. Elle enregistre les opérations avant leur exécution. En cas de coupure brutale, le journal permet de rejouer les opérations incomplètes sans effectuer une vérification complète du disque (`fsck` intégral). EXT2 sans journalisation impose un `fsck` complet après tout crash."
+    },
+    {
+      "id": "q1623",
+      "module": "admin-linux-m09",
+      "difficulte": "moyen",
+      "question": "Quelle commande formate le volume logique `/dev/vgdata/lvweb` en ext4 ?",
+      "choix": [
+        "format -t ext4 /dev/vgdata/lvweb",
+        "mkfs -ext4 /dev/vgdata/lvweb",
+        "mkfs.ext4 /dev/vgdata/lvweb",
+        "mke2fs /dev/vgdata/lvweb ext4"
+      ],
+      "reponse": 2,
+      "explication": "`mkfs.ext4` est la commande standard pour formater un volume en ext4. Elle peut aussi s'écrire `mkfs -t ext4`. L'option `-L` permet d'ajouter un label lors du formatage. Attention : `mkfs.ext4` sur un volume avec des données les efface définitivement sans avertissement."
+    },
+    {
+      "id": "q1624",
+      "module": "admin-linux-m09",
+      "difficulte": "moyen",
+      "question": "Pourquoi est-il recommandé d'utiliser les UUID plutôt que `/dev/sda1` dans `/etc/fstab` ?",
+      "choix": [
+        "Les UUID sont plus courts et plus faciles à saisir que les chemins `/dev/`",
+        "Les UUID sont attribués au formatage et restent stables même si l'ordre de détection des disques change, contrairement aux noms `/dev/sdX` qui peuvent varier",
+        "Les noms `/dev/sdX` ne sont pas supportés dans `fstab` depuis Debian 10",
+        "Les UUID permettent de monter plusieurs partitions sur le même point de montage"
+      ],
+      "reponse": 1,
+      "explication": "Le nom `/dev/sda1` est attribué dynamiquement par le noyau selon l'ordre de détection des disques. Si un disque est ajouté ou que l'ordre change, `/dev/sda1` peut pointer vers un autre disque, causant des erreurs au démarrage. L'UUID est attribué lors du formatage et identifie le FS de manière unique et permanente."
+    },
+    {
+      "id": "q1625",
+      "module": "admin-linux-m09",
+      "difficulte": "moyen",
+      "question": "Quelle est la structure d'une ligne `/etc/fstab` dans le bon ordre ?",
+      "choix": [
+        "Point de montage / Périphérique / Type / Options / dump / pass",
+        "Périphérique / Point de montage / Type / Options / dump / pass",
+        "Périphérique / Type / Point de montage / Options / pass / dump",
+        "Type / Périphérique / Point de montage / Options / dump / pass"
+      ],
+      "reponse": 1,
+      "explication": "Les 6 colonnes de `/etc/fstab` sont dans l'ordre : périphérique (ce qu'on monte), point de montage (où on le monte), type de FS, options de montage, dump (0 ou 1), pass (ordre fsck : 0=non, 1=racine, 2=autres). Cet ordre est strict et toute erreur peut empêcher le démarrage."
+    },
+    {
+      "id": "q1626",
+      "module": "admin-linux-m09",
+      "difficulte": "moyen",
+      "question": "Quelle commande modifie le label d'un système de fichiers ext4 sans le reformater ?",
+      "choix": [
+        "mkfs.ext4 -L NEWLABEL /dev/vgdata/lvweb",
+        "rename -L NEWLABEL /dev/vgdata/lvweb",
+        "tune2fs -L NEWLABEL /dev/vgdata/lvweb",
+        "e2label /dev/vgdata/lvweb NEWLABEL"
+      ],
+      "reponse": 2,
+      "explication": "`tune2fs -L` modifie le label d'un FS ext sans reformater, préservant toutes les données existantes. `mkfs.ext4 -L` applique un label mais écrase toutes les données car il formate. `e2label` est une alternative valide mais moins citée dans le cours. Ne jamais utiliser `mkfs` pour changer uniquement un label."
+    },
+    {
+      "id": "q1627",
+      "module": "admin-linux-m09",
+      "difficulte": "moyen",
+      "question": "Quelle commande affiche l'espace utilisé et disponible sur tous les systèmes de fichiers montés en format lisible ?",
+      "choix": [
+        "du -h",
+        "lsblk -f",
+        "findmnt",
+        "df -h"
+      ],
+      "reponse": 3,
+      "explication": "`df -h` (disk free, human-readable) affiche l'espace total, utilisé et disponible pour chaque système de fichiers monté. `du -h` calcule la taille d'un répertoire ou fichier spécifique. `lsblk -f` montre la hiérarchie des périphériques avec UUID. `findmnt` affiche l'arborescence des FS montés sans détail d'espace."
+    },
+    {
+      "id": "q1628",
+      "module": "admin-linux-m09",
+      "difficulte": "moyen",
+      "question": "Quelle valeur dans la colonne `pass` de `/etc/fstab` doit être attribuée à la partition racine `/` ?",
+      "choix": [
+        "0",
+        "1",
+        "2",
+        "3"
+      ],
+      "reponse": 1,
+      "explication": "La colonne `pass` définit l'ordre de vérification `fsck` au démarrage : `0` = pas de vérification, `1` = vérifié en premier (réservé à la partition racine `/`), `2` = vérifié après la racine (autres partitions). Attribuer `2` à la racine ou `1` à plusieurs partitions est une erreur de configuration."
+    },
+    {
+      "id": "q1629",
+      "module": "admin-linux-m09",
+      "difficulte": "moyen",
+      "question": "Que se passe-t-il si le dossier de montage contient des fichiers avant un `mount` ?",
+      "choix": [
+        "Le montage échoue car le dossier n'est pas vide",
+        "Les fichiers existants sont déplacés automatiquement dans un sous-dossier",
+        "Le montage réussit mais le contenu préexistant du dossier devient inaccessible tant que le montage est actif",
+        "Les fichiers existants sont fusionnés avec le contenu du périphérique monté"
+      ],
+      "reponse": 2,
+      "explication": "Sous Linux, monter un périphérique sur un dossier non vide masque le contenu préexistant. Les fichiers ne sont pas supprimés mais deviennent inaccessibles tant que le montage est actif. Après `umount`, les fichiers originaux réapparaissent. C'est pourquoi la bonne pratique est d'utiliser des dossiers vides comme points de montage."
+    },
+    {
+      "id": "q1630",
+      "module": "admin-linux-m09",
+      "difficulte": "moyen",
+      "question": "Quelle commande affiche les UUID, types et labels de toutes les partitions et volumes logiques du système ?",
+      "choix": [
+        "lsblk",
+        "fdisk -l",
+        "blkid",
+        "pvdisplay"
+      ],
+      "reponse": 2,
+      "explication": "`blkid` affiche pour chaque partition ou LV son UUID, type de système de fichiers et label. C'est la commande de référence pour récupérer l'UUID à insérer dans `/etc/fstab`. `lsblk -f` fournit également les UUID mais dans une vue hiérarchique. `fdisk -l` ne montre pas les UUID."
+    },
+    {
+      "id": "q1631",
+      "module": "admin-linux-m09",
+      "difficulte": "difficile",
+      "question": "Après avoir modifié `/etc/fstab` pour ajouter un nouveau montage, un administrateur redémarre sans tester. Le système entre en mode rescue avec l'erreur \"failed to mount /srv/bdd\". Quelle erreur a-t-il commise et comment l'éviter ?",
+      "choix": [
+        "Il aurait dû exécuter `fsck /srv/bdd` avant de redémarrer pour vérifier le FS",
+        "Il n'a pas testé la configuration avec `mount /srv/bdd` avant de redémarrer ; une erreur de syntaxe ou un UUID incorrect dans `fstab` empêche le démarrage. La bonne pratique est de toujours sauvegarder `fstab`, tester avec `mount`, et corriger avant tout redémarrage",
+        "Il aurait dû exécuter `systemctl daemon-reload` pour recharger la configuration `fstab`",
+        "Le type de FS dans `fstab` ne correspond pas au FS réel ; il faut toujours vérifier avec `blkid` avant d'éditer `fstab`"
+      ],
+      "reponse": 1,
+      "explication": "Une erreur dans `fstab` (UUID incorrect, faute de frappe, type FS erroné) peut bloquer le démarrage car le système tente de monter tous les FS marqués. La procédure correcte est : sauvegarder avec `cp /etc/fstab /etc/fstab.bak`, éditer, tester avec `mount /srv/bdd`, vérifier avec `lsblk` ou `findmnt`, puis seulement redémarrer si tout est correct."
+    },
+    {
+      "id": "q1632",
+      "module": "admin-linux-m09",
+      "difficulte": "difficile",
+      "question": "Un administrateur tente `umount /var/www` mais obtient \"target is busy\". Quelle est la cause probable et la procédure de diagnostic ?",
+      "choix": [
+        "Le FS est monté en lecture seule ; utiliser `mount -o remount,rw` avant `umount`",
+        "Un processus ou utilisateur a des fichiers ouverts sur ce point de montage ; identifier avec `lsof /var/www` ou `fuser /var/www`, terminer le processus, puis relancer `umount`",
+        "Le FS est corrompu ; exécuter `fsck /var/www` pour réparer avant de démonter",
+        "Le montage est défini dans `fstab` avec l'option `defaults` qui empêche le démontage manuel"
+      ],
+      "reponse": 1,
+      "explication": "\"Device is busy\" signifie qu'un processus a des fichiers ouverts ou qu'un utilisateur est dans le répertoire monté. `lsof /var/www` liste les fichiers ouverts et les processus responsables, `fuser /var/www` identifie les PIDs utilisant ce point de montage. Après avoir terminé ces processus, `umount` peut être relancé."
+    },
+    {
+      "id": "q1633",
+      "module": "admin-linux-m09",
+      "difficulte": "difficile",
+      "question": "Quel rôle joue le superbloc dans un système de fichiers ext4 et pourquoi est-il dupliqué ?",
+      "choix": [
+        "Le superbloc contient les données des fichiers récemment accédés en cache ; il est dupliqué pour accélérer les lectures",
+        "Le superbloc contient les métadonnées globales du FS (taille, UUID, état, date de création…) ; il est dupliqué à plusieurs endroits du disque pour permettre la récupération en cas de corruption du superbloc principal",
+        "Le superbloc contient la table des inodes ; sa duplication permet de gérer plusieurs utilisateurs simultanément",
+        "Le superbloc est le premier bloc de données du FS ; sa duplication assure la redondance des fichiers critiques"
+      ],
+      "reponse": 1,
+      "explication": "Le superbloc stocke les métadonnées globales indispensables au montage du FS : taille des blocs, nombre d'inodes, UUID, état (`clean`/`dirty`), dates et paramètres de vérification. Sa corruption rendrait le FS inaccessible. Les copies distribuées sur le disque permettent la récupération avec `e2fsck -b [bloc_backup]` en mode rescue."
+    },
+    {
+      "id": "q1634",
+      "module": "admin-linux-m09",
+      "difficulte": "difficile",
+      "question": "Un administrateur exécute `mkfs.ext4 /dev/vgdata/lvbdd` sur un volume contenant une base de données de production. Quelle est la conséquence et comment éviter cette erreur ?",
+      "choix": [
+        "`mkfs.ext4` détecte les données existantes et demande confirmation avant de continuer",
+        "Le formatage efface définitivement toutes les données du volume sans avertissement ; il faut toujours vérifier avec `lsblk`, `findmnt` ou `df -h` l'état du volume avant tout formatage, et s'assurer d'une sauvegarde",
+        "Les données sont compressées et déplacées vers `/lost+found` avant le formatage",
+        "Le formatage échoue si le volume est déjà formaté en ext4"
+      ],
+      "reponse": 1,
+      "explication": "`mkfs.ext4` formate le volume sans demander de confirmation et sans préserver les données existantes. C'est une opération destructive et irréversible. La vérification préalable (volume bien démonté, bon périphérique identifié, sauvegarde effectuée) est impérative. Pour changer uniquement un label, `tune2fs -L` est l'outil correct qui préserve les données."
+    },
+    {
+      "id": "q1635",
+      "module": "admin-linux-m09",
+      "difficulte": "difficile",
+      "question": "Dans `/etc/fstab`, quelle différence de comportement au démarrage existe entre `pass 0`, `pass 1` et `pass 2` ?",
+      "choix": [
+        "`pass 0` monte le FS en priorité, `pass 1` après la racine, `pass 2` en dernier",
+        "`pass 0` désactive la vérification `fsck` au démarrage, `pass 1` déclenche `fsck` en premier (réservé à `/`), `pass 2` déclenche `fsck` après la racine pour les autres partitions",
+        "`pass 0` désactive le montage automatique, `pass 1` et `pass 2` définissent l'ordre de montage",
+        "La colonne `pass` est obsolète depuis Debian 10 et n'a plus aucun effet"
+      ],
+      "reponse": 1,
+      "explication": "La colonne `pass` contrôle uniquement l'ordre de vérification `fsck` au démarrage : `0` = jamais vérifié automatiquement (swap, tmpfs, NFS…), `1` = vérifié en premier, réservé exclusivement à la partition racine, `2` = vérifié après la racine, pour toutes les autres partitions. Deux partitions à `1` simultanément est une mauvaise configuration."
+    },
+    {
+      "id": "q1636",
+      "module": "admin-linux-m09",
+      "difficulte": "difficile",
+      "question": "Un administrateur ajoute dans `fstab` : `LABEL=BDD /srv/bdd ext4 defaults 0 2`. Le montage avec `mount /srv/bdd` échoue avec \"can't find LABEL=BDD\". Quelle est la cause et la solution ?",
+      "choix": [
+        "La syntaxe `LABEL=` est invalide dans `fstab` ; utiliser l'UUID à la place",
+        "Aucun label \"BDD\" n'existe sur le système ; il faut l'attribuer avec `tune2fs -L BDD /dev/vgdata/lvbdd` puis relancer `mount /srv/bdd`",
+        "Le point de montage `/srv/bdd` n'existe pas ; créer le dossier avec `mkdir -p /srv/bdd`",
+        "Le type `ext4` est incorrect pour un montage par label ; utiliser `auto` à la place"
+      ],
+      "reponse": 1,
+      "explication": "`LABEL=BDD` dans `fstab` fonctionne uniquement si le FS a effectivement ce label assigné. Si le label n'a pas été défini lors du formatage (`mkfs.ext4 -L BDD`) ou après (`tune2fs -L BDD`), le système ne peut pas trouver le FS correspondant. `blkid` permet de vérifier les labels existants sur le système."
+    },
+    {
+      "id": "q1637",
+      "module": "admin-linux-m09",
+      "difficulte": "difficile",
+      "question": "Quelle est la limite maximale de taille d'un fichier unique sur un système de fichiers EXT4 avec des blocs de 4 Ko ?",
+      "choix": [
+        "2 Go",
+        "2 To",
+        "16 To",
+        "1 Eo"
+      ],
+      "reponse": 2,
+      "explication": "EXT4 avec des blocs de 4 Ko supporte des fichiers individuels jusqu'à 16 To. Cette valeur est fréquemment testée à l'examen. Le volume EXT4 lui-même peut atteindre théoriquement 1 Eo, mais la limite pratique par fichier est 16 To. EXT4 supporte également jusqu'à 4 milliards de fichiers et des noms de fichiers jusqu'à 255 octets."
+    },
+    {
+      "id": "q1638",
+      "module": "admin-linux-m09",
+      "difficulte": "difficile",
+      "question": "Un volume logique LVM vient d'être étendu de 10 Go à 15 Go avec `lvextend -L 15G`. `df -h` affiche toujours 10 Go. Quelle commande corriger la situation et pourquoi était-elle nécessaire ?",
+      "choix": [
+        "`mount -o remount /var/www` pour forcer la détection de la nouvelle taille",
+        "`resize2fs /dev/vgdata/lvweb` pour redimensionner le système de fichiers ext4 jusqu'aux nouvelles limites du LV, car `lvextend` sans `-r` n'étend que le LV pas le FS",
+        "`tune2fs -L /dev/vgdata/lvweb` pour mettre à jour les métadonnées du superbloc",
+        "`fsck /dev/vgdata/lvweb` pour forcer la détection de l'espace supplémentaire"
+      ],
+      "reponse": 1,
+      "explication": "`lvextend` sans l'option `-r` agrandit le volume logique au niveau LVM mais le système de fichiers ext4 conserve sa taille d'origine dans son superbloc. `resize2fs` lit la nouvelle taille du LV et étend le FS pour occuper tout l'espace disponible. Cette opération peut être effectuée à chaud sur ext4 sans démonter le volume."
+    },
+    {
+      "id": "q1639",
+      "module": "admin-linux-m09",
+      "difficulte": "difficile",
+      "question": "Après ajout d'un second disque sur un serveur, l'administrateur constate que le disque système est maintenant référencé `/dev/sdb` au lieu de `/dev/sda`. Si `fstab` contient `/dev/sda1 / ext4 defaults 1 1`, quel problème survient au démarrage et comment l'éviter ?",
+      "choix": [
+        "Aucun problème car Linux adapte automatiquement les références dans `fstab` au démarrage",
+        "Le système cherche la racine sur `/dev/sda1` qui pointe maintenant vers le nouveau disque vide, causant un échec de démarrage ; la solution est d'utiliser l'UUID dans `fstab` car l'UUID est lié au FS et non à l'ordre de détection",
+        "Le système démarrera mais toutes les partitions secondaires seront inaccessibles",
+        "GRUB corrige automatiquement les références `fstab` lors du chargement du noyau"
+      ],
+      "reponse": 1,
+      "explication": "Les noms `/dev/sdX` sont attribués dynamiquement par le noyau selon l'ordre de détection SCSI/SATA au démarrage. L'ajout d'un disque peut modifier cet ordre. Si `fstab` référence `/dev/sda1` et que ce nom pointe maintenant vers le nouveau disque, le système ne trouve pas sa partition racine et ne démarre pas. L'UUID, attribué au formatage et lié au FS lui-même, est immunisé contre ce problème."
+    },
+    {
+      "id": "q1640",
+      "module": "admin-linux-m09",
+      "difficulte": "difficile",
+      "question": "Un administrateur doit vérifier l'intégrité d'une partition `/dev/sdb1` avec `fsck`. La partition est actuellement montée. Que doit-il faire et pourquoi `fsck` ne peut-il pas s'exécuter sur une partition montée ?",
+      "choix": [
+        "`fsck` peut s'exécuter sur une partition montée en mode lecture seule sans risque",
+        "Il doit démonter `/dev/sdb1` avec `umount` avant d'exécuter `fsck`, car vérifier un FS en cours d'utilisation peut corrompre les structures si des écritures surviennent simultanément pendant la vérification",
+        "Il suffit de passer l'option `-f` à `fsck` pour forcer la vérification sur un FS monté",
+        "Il doit passer le FS en lecture seule avec `mount -o remount,ro` puis exécuter `fsck`"
+      ],
+      "reponse": 1,
+      "explication": "`fsck` ne doit jamais être exécuté sur un système de fichiers monté. Si des processus écrivent pendant la vérification, `fsck` peut détecter des incohérences normales comme des erreurs, voire corriger des structures valides, causant une corruption. La procédure correcte est de démonter le FS avec `umount`, puis d'exécuter `fsck`. Pour la partition racine, un redémarrage en mode rescue est nécessaire."
+    },
+    {
+      "id": "q1641",
+      "module": "admin-linux-m10",
+      "difficulte": "moyen",
+      "question": "Quelle plage d'UID est réservée aux utilisateurs humains (comptes réels) sur un système Debian ?",
+      "choix": [
+        "0 à 99",
+        "100 à 999",
+        "1000 et au-delà",
+        "500 et au-delà"
+      ],
+      "reponse": 2,
+      "explication": "Les UID sont répartis ainsi : 0 = root (super-administrateur), 1 à 999 = utilisateurs de service (daemons, comptes techniques système), 1000 et au-delà = utilisateurs humains réels. Ces plages sont classiquement testées à l'examen TSSR."
+    },
+    {
+      "id": "q1642",
+      "module": "admin-linux-m10",
+      "difficulte": "moyen",
+      "question": "Dans `/etc/shadow`, que signifie le caractère `!` placé devant le hash du mot de passe ?",
+      "choix": [
+        "Le compte utilise un algorithme de hachage obsolète",
+        "Le compte est verrouillé — la connexion par mot de passe est impossible",
+        "Le compte est un compte de service sans mot de passe défini",
+        "Le mot de passe a expiré et doit être changé"
+      ],
+      "reponse": 1,
+      "explication": "Le préfixe `!` devant le hash dans `/etc/shadow` indique que le compte est verrouillé : l'authentification par mot de passe est bloquée. C'est ce que produit `passwd -l login` ou `usermod -L login`. La valeur `*` indique un compte désactivé, et un hash sans `!` correspond à un compte actif."
+    },
+    {
+      "id": "q1643",
+      "module": "admin-linux-m10",
+      "difficulte": "moyen",
+      "question": "Quelle commande crée un utilisateur `jdoe` avec un répertoire home, le shell bash et le groupe secondaire `informatique` ?",
+      "choix": [
+        "useradd jdoe -home -shell bash -group informatique",
+        "adduser -m -s /bin/bash -G informatique jdoe",
+        "useradd -m -s /bin/bash -G informatique jdoe",
+        "useradd -H -b /bin/bash -g informatique jdoe"
+      ],
+      "reponse": 2,
+      "explication": "La syntaxe correcte est `useradd -m` (créer le home), `-s /bin/bash` (définir le shell), `-G informatique` (groupe secondaire), suivi du login. Sans `-m`, aucun répertoire home n'est créé. `-G` (majuscule) définit les groupes secondaires, `-g` (minuscule) définit le groupe principal."
+    },
+    {
+      "id": "q1644",
+      "module": "admin-linux-m10",
+      "difficulte": "moyen",
+      "question": "Quels sont les 7 champs de `/etc/passwd` dans le bon ordre ?",
+      "choix": [
+        "Login / UID / GID / Commentaire / Home / Shell / Mot de passe",
+        "Login / x / UID / GID / Commentaire / Home / Shell",
+        "UID / Login / GID / x / Home / Shell / Commentaire",
+        "Login / x / GID / UID / Home / Shell / Commentaire"
+      ],
+      "reponse": 1,
+      "explication": "Les 7 champs de `/etc/passwd` séparés par `:` sont : login, `x` (mot de passe dans shadow), UID, GID (groupe principal), commentaire (nom complet, fonction), répertoire personnel, shell. Le `x` au champ 2 indique que le mot de passe hashé est stocké dans `/etc/shadow`."
+    },
+    {
+      "id": "q1645",
+      "module": "admin-linux-m10",
+      "difficulte": "moyen",
+      "question": "Quelle est la différence entre `usermod -G groupe login` et `usermod -a -G groupe login` ?",
+      "choix": [
+        "`-G` sans `-a` ajoute le groupe sans toucher aux existants, `-a -G` remplace tous les groupes",
+        "`-G` sans `-a` remplace la liste complète des groupes secondaires, `-a -G` ajoute le groupe sans supprimer les autres",
+        "Les deux commandes sont identiques depuis Debian 10",
+        "`-G` modifie le groupe principal, `-a -G` modifie les groupes secondaires"
+      ],
+      "reponse": 1,
+      "explication": "C'est un piège classique et critique : `usermod -G groupe login` remplace entièrement la liste des groupes secondaires par `groupe` uniquement, supprimant tous les autres. `usermod -a -G groupe login` ajoute `groupe` à la liste existante sans rien écraser. L'option `-a` (append) est impérative pour une addition non destructive."
+    },
+    {
+      "id": "q1646",
+      "module": "admin-linux-m10",
+      "difficulte": "moyen",
+      "question": "Quelle commande ajoute l'utilisateur `jdoe` au groupe secondaire `direction` sans modifier ses autres groupes ?",
+      "choix": [
+        "usermod -G direction jdoe",
+        "groupmod -a jdoe direction",
+        "gpasswd -a jdoe direction",
+        "addgroup jdoe direction"
+      ],
+      "reponse": 2,
+      "explication": "`gpasswd -a jdoe direction` ajoute `jdoe` au groupe `direction` sans modifier ses autres appartenances. `usermod -a -G direction jdoe` est également valide. `gpasswd -d` retire un utilisateur d'un groupe. `usermod -G` sans `-a` remplacerait tous les groupes secondaires de `jdoe`."
+    },
+    {
+      "id": "q1647",
+      "module": "admin-linux-m10",
+      "difficulte": "moyen",
+      "question": "Quelle commande supprime l'utilisateur `stagiaire` ET son répertoire personnel `/home/stagiaire` ?",
+      "choix": [
+        "userdel stagiaire",
+        "userdel -r stagiaire",
+        "usermod -d stagiaire",
+        "deluser --remove-home stagiaire"
+      ],
+      "reponse": 1,
+      "explication": "`userdel -r stagiaire` supprime le compte ET son répertoire home ainsi que son spool mail. Sans `-r`, `userdel` supprime uniquement l'entrée dans `/etc/passwd`, `/etc/shadow` et `/etc/group`, laissant le répertoire `/home/stagiaire` sur le disque, ce qui constitue un résidu à nettoyer manuellement."
+    },
+    {
+      "id": "q1648",
+      "module": "admin-linux-m10",
+      "difficulte": "moyen",
+      "question": "Quelle commande force l'utilisateur `jdoe` à changer son mot de passe à sa prochaine connexion ?",
+      "choix": [
+        "passwd -l jdoe",
+        "usermod -p expired jdoe",
+        "passwd -e jdoe",
+        "chage -m 0 jdoe"
+      ],
+      "reponse": 2,
+      "explication": "`passwd -e jdoe` (expire) marque le mot de passe comme immédiatement expiré. À sa prochaine connexion, `jdoe` sera obligé de définir un nouveau mot de passe avant d'accéder au système. `passwd -l` verrouille le compte (connexion impossible), et `chage -m 0` définit uniquement le délai minimum entre changements."
+    },
+    {
+      "id": "q1649",
+      "module": "admin-linux-m10",
+      "difficulte": "moyen",
+      "question": "Quel algorithme de hachage est indiqué par le préfixe `$6$` dans `/etc/shadow` ?",
+      "choix": [
+        "MD5",
+        "SHA-256",
+        "SHA-512",
+        "bcrypt"
+      ],
+      "reponse": 2,
+      "explication": "Le préfixe `$6$` dans le champ mot de passe de `/etc/shadow` identifie l'algorithme SHA-512. Les autres préfixes courants sont `$1$` (MD5), `$5$` (SHA-256). SHA-512 est l'algorithme par défaut sur Debian pour le hachage des mots de passe utilisateurs."
+    },
+    {
+      "id": "q1650",
+      "module": "admin-linux-m10",
+      "difficulte": "moyen",
+      "question": "Quel shell assigner à un compte de service pour lui interdire toute connexion interactive ?",
+      "choix": [
+        "/bin/false",
+        "/dev/null",
+        "/usr/sbin/nologin",
+        "/bin/sh"
+      ],
+      "reponse": 2,
+      "explication": "`/usr/sbin/nologin` est le shell dédié aux comptes de service : toute tentative de connexion interactive est refusée avec un message explicatif. C'est la bonne pratique pour les daemons et comptes techniques. `/bin/false` fonctionne également mais sans message. Les deux sont valides mais `/usr/sbin/nologin` est la référence du cours."
+    },
+    {
+      "id": "q1651",
+      "module": "admin-linux-m10",
+      "difficulte": "difficile",
+      "question": "Un technicien exécute `su` sans tiret pour passer root, puis tente `useradd -m testuser` et obtient \"commande introuvable\". Quelle est la cause précise et la solution ?",
+      "choix": [
+        "`useradd` n'est pas installé sur le système ; l'installer avec `apt install passwd`",
+        "`su` sans tiret ne charge pas le `$PATH` complet de root ; `/usr/sbin` où se trouve `useradd` est absent du PATH ; la solution est de toujours utiliser `su -` avec le tiret",
+        "`useradd` nécessite des droits au-delà de root ; utiliser `sudo useradd`",
+        "Le compte root est verrouillé ; déverrouiller avec `passwd -u root`"
+      ],
+      "reponse": 1,
+      "explication": "`su` sans tiret conserve le `$PATH` de l'utilisateur précédent qui n'inclut pas `/usr/sbin` et `/sbin` où résident les commandes d'administration système (`useradd`, `groupadd`, `fdisk`…). `su -` charge l'environnement complet de root avec le `$PATH` correct. C'est un piège classique d'examen et un problème fréquent en production."
+    },
+    {
+      "id": "q1652",
+      "module": "admin-linux-m10",
+      "difficulte": "difficile",
+      "question": "Un administrateur crée l'utilisateur `alice` avec `useradd alice` sans aucune option supplémentaire. Alice tente de se connecter mais n'a pas de répertoire home. Quelle option manquait et quelle est la procédure de correction ?",
+      "choix": [
+        "L'option `-s /bin/bash` manquait ; corriger avec `usermod -s /bin/bash alice`",
+        "L'option `-m` manquait ; si personne ne s'est encore connecté, supprimer avec `userdel alice` et recréer avec `useradd -m -s /bin/bash alice`",
+        "Le répertoire home est créé automatiquement à la première connexion ; redémarrer le service `login`",
+        "L'option `-d /home/alice` manquait ; créer manuellement `mkdir /home/alice && chown alice:alice /home/alice`"
+      ],
+      "reponse": 1,
+      "explication": "Sans `-m`, `useradd` ne crée pas de répertoire home. La solution propre est de supprimer et recréer l'utilisateur avec `-m` si aucune donnée n'existe encore. Si des données ont déjà été créées, une alternative est de créer manuellement le home (`mkdir`, `chown`, `cp /etc/skel/.*`) mais la suppression/recréation est plus propre pour un compte neuf."
+    },
+    {
+      "id": "q1653",
+      "module": "admin-linux-m10",
+      "difficulte": "difficile",
+      "question": "Dans `/etc/group`, la ligne `web:x:1050:alice,bob` signifie que Alice et Bob ont le groupe `web` comme groupe secondaire. Si Alice crée un fichier, quel groupe sera attribué à ce fichier et pourquoi ?",
+      "choix": [
+        "Le groupe `web` car Alice est membre de ce groupe",
+        "Le groupe principal d'Alice (défini dans `/etc/passwd`), car c'est le groupe courant à la connexion qui est appliqué aux nouveaux fichiers",
+        "Le groupe `root` car seul root peut créer des fichiers dans les répertoires système",
+        "Le groupe du répertoire parent où le fichier est créé"
+      ],
+      "reponse": 1,
+      "explication": "À la connexion, l'utilisateur récupère son groupe principal défini dans `/etc/passwd`. C'est ce groupe qui est appliqué aux nouveaux fichiers créés, même si l'utilisateur a des groupes secondaires actifs. Pour créer un fichier appartenant à un groupe secondaire, il faut utiliser `newgrp web` pour changer de groupe courant ou modifier les permissions du répertoire parent avec le sticky bit."
+    },
+    {
+      "id": "q1654",
+      "module": "admin-linux-m10",
+      "difficulte": "difficile",
+      "question": "Un administrateur veut verrouiller le compte `stagiaire` pour l'empêcher de se connecter, mais constate qu'après `passwd -l stagiaire`, l'utilisateur parvient toujours à se connecter via SSH par clé publique. Quelle est la cause et la solution complète ?",
+      "choix": [
+        "`passwd -l` est inefficace sur Debian 12 ; utiliser `usermod -L` à la place",
+        "`passwd -l` verrouille uniquement l'authentification par mot de passe ; la connexion par clé SSH reste possible. Pour bloquer complètement, utiliser `usermod -e 1 stagiaire` (date d'expiration passée) ou attribuer le shell `/usr/sbin/nologin`",
+        "Supprimer la clé publique dans `/home/stagiaire/.ssh/authorized_keys` suffit",
+        "Il faut désactiver SSH pour cet utilisateur dans `/etc/ssh/sshd_config` avec `DenyUsers stagiaire`"
+      ],
+      "reponse": 1,
+      "explication": "`passwd -l` et `usermod -L` ajoutent `!` devant le hash dans `/etc/shadow`, bloquant uniquement l'authentification par mot de passe. L'authentification par clé SSH ne consulte pas `/etc/shadow` et reste fonctionnelle. Pour un blocage complet, `usermod -e 1` fixe la date d'expiration au passé (bloque toutes les méthodes d'auth), ou changer le shell en `/usr/sbin/nologin` empêche toute session interactive."
+    },
+    {
+      "id": "q1655",
+      "module": "admin-linux-m10",
+      "difficulte": "difficile",
+      "question": "Quelle est la différence de sécurité fondamentale entre `su -` et `sudo` pour l'administration d'un serveur Debian ?",
+      "choix": [
+        "`su -` est plus sécurisé car il nécessite le mot de passe root connu uniquement de l'administrateur principal",
+        "`sudo` est plus sécurisé en environnement multi-administrateur : il ne nécessite pas de partager le mot de passe root, chaque action est tracée dans les logs avec l'identité de l'utilisateur réel, et les droits peuvent être finement délégués dans `/etc/sudoers`",
+        "Les deux méthodes offrent le même niveau de sécurité — le choix est purement une question de préférence",
+        "`su -` est préférable car il charge l'environnement complet de root, contrairement à `sudo`"
+      ],
+      "reponse": 1,
+      "explication": "`sudo` présente plusieurs avantages de sécurité : pas de partage du mot de passe root entre administrateurs, traçabilité complète des actions (qui a fait quoi, quand), granularité des droits configurables dans `/etc/sudoers` (on peut autoriser uniquement certaines commandes). `su -` nécessite de connaître et partager le mot de passe root, ce qui est une mauvaise pratique en équipe."
+    },
+    {
+      "id": "q1656",
+      "module": "admin-linux-m10",
+      "difficulte": "difficile",
+      "question": "Linux identifie les utilisateurs par leur UID et non par leur nom. Quel problème concret cela pose-t-il dans un environnement avec un partage NFS entre deux serveurs ?",
+      "choix": [
+        "NFS ne supporte pas les noms d'utilisateurs, uniquement les UID — les fichiers sont donc toujours lisibles par tous",
+        "Si l'utilisateur `jdoe` a l'UID 1001 sur le serveur A et l'UID 1002 sur le serveur B, les fichiers créés par `jdoe` sur A apparaîtront comme appartenant à l'UID 1002 sur B, donnant potentiellement accès à un autre utilisateur",
+        "NFS synchronise automatiquement les UID entre serveurs — aucun problème ne peut survenir",
+        "Les noms d'utilisateurs sont toujours prioritaires sur les UID dans les systèmes de fichiers réseau"
+      ],
+      "reponse": 1,
+      "explication": "NFS transmet les UID/GID dans les requêtes réseau, pas les noms. Si les UID ne sont pas synchronisés entre serveurs, `jdoe` (UID 1001) sur le serveur A et `jdoe` (UID 1002) sur le serveur B auront des droits croisés sur les fichiers partagés. C'est pourquoi les environnements avec NFS utilisent LDAP ou des outils de synchronisation d'annuaire pour garantir la cohérence des UID/GID."
+    },
+    {
+      "id": "q1657",
+      "module": "admin-linux-m10",
+      "difficulte": "difficile",
+      "question": "Un technicien exécute `usermod -G sudo,web jdoe` alors que `jdoe` appartenait déjà aux groupes `informatique` et `direction`. Quel est l'état final des groupes secondaires de `jdoe` ?",
+      "choix": [
+        "`jdoe` appartient désormais aux groupes `sudo`, `web`, `informatique` et `direction`",
+        "`jdoe` appartient uniquement aux groupes `sudo` et `web` — `informatique` et `direction` ont été supprimés car `-G` sans `-a` remplace la liste complète",
+        "La commande échoue car `jdoe` n'appartient pas encore à `sudo`",
+        "`jdoe` conserve tous ses groupes et `sudo` et `web` sont ajoutés en supplément"
+      ],
+      "reponse": 1,
+      "explication": "`usermod -G` sans `-a` remplace intégralement la liste des groupes secondaires. Après cette commande, `jdoe` n'appartient plus qu'à `sudo` et `web`. Les groupes `informatique` et `direction` sont perdus. Pour éviter cela, la commande correcte est `usermod -a -G sudo,web jdoe`. C'est l'une des erreurs les plus dangereuses en gestion des utilisateurs."
+    },
+    {
+      "id": "q1658",
+      "module": "admin-linux-m10",
+      "difficulte": "difficile",
+      "question": "La commande `groupdel informatique` échoue. Quelles peuvent être les deux causes et comment les résoudre ?",
+      "choix": [
+        "Le groupe `informatique` n'existe pas ; vérifier avec `cat /etc/group`",
+        "Soit le groupe contient encore des membres secondaires (les retirer avec `gpasswd -d` pour chacun), soit il est le groupe principal d'un utilisateur dans `/etc/passwd` (changer le groupe principal de cet utilisateur avant la suppression)",
+        "Un processus utilise actuellement le groupe ; attendre la fin du processus",
+        "`groupdel` nécessite que le groupe soit vide depuis plus de 24h pour des raisons de sécurité"
+      ],
+      "reponse": 1,
+      "explication": "`groupdel` échoue dans deux cas distincts : si des utilisateurs ont ce groupe comme groupe principal (entrée GID dans `/etc/passwd`), `groupdel` refuse car cela laisserait ces utilisateurs sans groupe principal valide ; si des membres secondaires sont listés dans `/etc/group`, certaines versions exigent qu'ils soient retirés préalablement. La démarche est de vérifier avec `grep :informatique: /etc/passwd` et `cat /etc/group` avant de procéder."
+    },
+    {
+      "id": "q1659",
+      "module": "admin-linux-m10",
+      "difficulte": "difficile",
+      "question": "Un administrateur doit créer 50 comptes utilisateurs avec des UID consécutifs à partir de 2000, tous membres du groupe `employes` (GID 2000) avec le shell bash. Quelle approche et quelles options `useradd` utiliser ?",
+      "choix": [
+        "Créer les comptes un par un avec `useradd -m -s /bin/bash login` ; les UID sont automatiquement consécutifs",
+        "Utiliser un script shell avec `useradd -m -s /bin/bash -u [UID] -G employes [login]` en incrémentant l'UID, après avoir créé le groupe `employes` avec `groupadd -g 2000 employes`",
+        "`useradd` ne supporte pas les UID personnalisés ; utiliser `adduser` à la place",
+        "Créer le premier compte manuellement puis utiliser `usermod --clone` pour les 49 suivants"
+      ],
+      "reponse": 1,
+      "explication": "La procédure correcte est : d'abord créer le groupe avec `groupadd -g 2000 employes`, puis scripter la création des comptes avec `useradd -m -s /bin/bash -u [UID] -G employes [login]` en incrémentant l'UID à chaque itération. L'option `-u` force l'UID souhaité. Sans `-u`, les UID sont attribués automatiquement mais pas nécessairement consécutifs selon les comptes existants."
+    },
+    {
+      "id": "q1660",
+      "module": "admin-linux-m10",
+      "difficulte": "difficile",
+      "question": "Un administrateur constate qu'un fichier appartient à l'UID 1047 alors qu'aucun utilisateur avec cet UID n'existe sur le système. `ls -l` affiche `1047` au lieu d'un nom. Quelle est la cause et quelles sont les implications de sécurité ?",
+      "choix": [
+        "C'est une erreur du système de fichiers ; lancer `fsck` pour corriger",
+        "Le fichier a été créé par un utilisateur dont le compte a été supprimé avec `userdel` sans `-r` ; l'UID 1047 n'existe plus dans `/etc/passwd`. Ces fichiers orphelins peuvent représenter un risque si un nouveau compte créé avec le même UID 1047 en hérite automatiquement",
+        "Le fichier est corrompu ; le supprimer et restaurer depuis une sauvegarde",
+        "C'est un fichier système protégé par le noyau ; seul root peut le modifier"
+      ],
+      "reponse": 1,
+      "explication": "Linux affiche l'UID numérique quand aucun utilisateur correspondant n'existe dans `/etc/passwd`. Cela indique typiquement un fichier orphelin créé par un utilisateur supprimé sans `-r`. Le risque de sécurité est réel : si un nouveau compte est créé avec l'UID 1047, il hérite automatiquement de tous ces fichiers orphelins et de leurs permissions, ce qui peut donner des accès non prévus. La bonne pratique est de rechercher ces fichiers (`find / -nouser`) et de les traiter après toute suppression d'utilisateur."
+    },
+    {
+      "id": "q1661",
+      "module": "admin-linux-m11",
+      "difficulte": "moyen",
+      "question": "Quelle est la valeur octale correspondant aux droits `rwxr-xr-x` ?",
+      "choix": [
+        "755",
+        "775",
+        "654",
+        "744"
+      ],
+      "reponse": 0,
+      "explication": "Le calcul est : propriétaire `rwx` = 4+2+1 = 7, groupe `r-x` = 4+0+1 = 5, autres `r-x` = 4+0+1 = 5, soit `755`. C'est la valeur standard pour un dossier accessible à tous ou un exécutable public. Connaître `755` et `644` par cœur est indispensable pour l'examen."
+    },
+    {
+      "id": "q1662",
+      "module": "admin-linux-m11",
+      "difficulte": "moyen",
+      "question": "Quelle est la différence de signification du droit `w` entre un fichier et un répertoire ?",
+      "choix": [
+        "Sur un fichier, `w` permet de lire le contenu ; sur un répertoire, il permet de créer des sous-dossiers uniquement",
+        "Sur un fichier, `w` permet de modifier ou supprimer le fichier ; sur un répertoire, il permet de créer, supprimer et renommer des éléments dans ce répertoire",
+        "Les deux significations sont identiques : `w` permet toujours de modifier le contenu",
+        "Sur un fichier, `w` permet d'exécuter le fichier ; sur un répertoire, il permet d'écrire dedans"
+      ],
+      "reponse": 1,
+      "explication": "Le droit `w` a des effets distincts selon le contexte : sur un fichier, il autorise la modification ou suppression du fichier lui-même ; sur un répertoire, il autorise la création, suppression et renommage d'éléments à l'intérieur. Cette différence de sémantique est un classique des QCM TSSR."
+    },
+    {
+      "id": "q1663",
+      "module": "admin-linux-m11",
+      "difficulte": "moyen",
+      "question": "Avec un `umask 027`, quels droits auront les nouveaux fichiers créés ?",
+      "choix": [
+        "rw-rw-r-- (664)",
+        "rw-r--r-- (644)",
+        "rw-r----- (640)",
+        "rwxr-x--- (750)"
+      ],
+      "reponse": 2,
+      "explication": "Pour les fichiers, les droits maximaux sont 666 (jamais `x` par défaut). Le calcul est 666 - 027 = 640, soit `rw-r-----`. L'umask 027 donne 750 pour les répertoires (777 - 027). L'option D correspond aux droits des répertoires avec ce même umask."
+    },
+    {
+      "id": "q1664",
+      "module": "admin-linux-m11",
+      "difficulte": "moyen",
+      "question": "Quelle commande active le SetGID sur le dossier `/partage` ?",
+      "choix": [
+        "chmod u+s /partage",
+        "chmod o+t /partage",
+        "chmod g+s /partage",
+        "chmod 4755 /partage"
+      ],
+      "reponse": 2,
+      "explication": "`chmod g+s` active le SetGID sur un dossier. Son effet est que tous les nouveaux fichiers et sous-dossiers créés dans `/partage` héritent automatiquement du groupe propriétaire du dossier, indépendamment du groupe principal de l'utilisateur qui les crée. `chmod u+s` active le SetUID, `chmod o+t` le Sticky Bit."
+    },
+    {
+      "id": "q1665",
+      "module": "admin-linux-m11",
+      "difficulte": "moyen",
+      "question": "Que signifie le Sticky Bit sur un répertoire comme `/tmp` ?",
+      "choix": [
+        "Les fichiers dans ce répertoire ne peuvent pas être supprimés, même par root",
+        "Les fichiers créés dans ce répertoire sont stockés en mémoire RAM pour des performances optimales",
+        "Seuls le propriétaire d'un fichier et root peuvent supprimer ce fichier, même si d'autres utilisateurs ont les droits d'écriture sur le répertoire",
+        "Les fichiers dans ce répertoire sont accessibles en lecture seule par tous les utilisateurs"
+      ],
+      "reponse": 2,
+      "explication": "Le Sticky Bit sur un répertoire protège les fichiers de la suppression par d'autres utilisateurs. Dans `/tmp`, tous les utilisateurs peuvent créer des fichiers (écriture sur le répertoire) mais ne peuvent supprimer que leurs propres fichiers. Seuls le propriétaire du fichier et root peuvent le supprimer. C'est l'exemple de référence pour le Sticky Bit."
+    },
+    {
+      "id": "q1666",
+      "module": "admin-linux-m11",
+      "difficulte": "moyen",
+      "question": "Quelle est la différence entre `chmod +x` et `chmod +X` ?",
+      "choix": [
+        "`+x` ajoute le droit d'exécution uniquement au propriétaire, `+X` à tous les utilisateurs",
+        "`+x` ajoute `x` à tous (fichiers et répertoires), `+X` ajoute `x` uniquement aux répertoires et aux fichiers déjà exécutables",
+        "Les deux commandes sont identiques, `+X` est juste un alias récent de `+x`",
+        "`+x` fonctionne récursivement, `+X` uniquement sur le fichier ciblé"
+      ],
+      "reponse": 1,
+      "explication": "`chmod +x` (minuscule) ajoute le bit d'exécution à tous les fichiers et répertoires sans distinction. `chmod +X` (majuscule) est plus sûr : il n'ajoute `x` qu'aux répertoires et aux fichiers qui ont déjà `x` pour au moins une catégorie. C'est la commande recommandée pour rétablir les droits de traversée des répertoires sans rendre des fichiers de données exécutables."
+    },
+    {
+      "id": "q1667",
+      "module": "admin-linux-m11",
+      "difficulte": "moyen",
+      "question": "Qui peut changer le propriétaire d'un fichier avec `chown` ?",
+      "choix": [
+        "Le propriétaire du fichier ou un membre du groupe propriétaire",
+        "Uniquement root",
+        "N'importe quel utilisateur ayant le droit `w` sur le fichier",
+        "Le propriétaire du fichier ou root"
+      ],
+      "reponse": 1,
+      "explication": "Sous Linux, seul root peut changer le propriétaire d'un fichier. Un utilisateur ordinaire peut changer le groupe propriétaire (dans la limite des groupes dont il fait partie), mais pas le propriétaire. Cette restriction empêche les utilisateurs de \"donner\" un fichier à quelqu'un d'autre pour contourner les quotas ou les permissions."
+    },
+    {
+      "id": "q1668",
+      "module": "admin-linux-m11",
+      "difficulte": "moyen",
+      "question": "Quelle valeur affiche `ls -l /usr/bin/passwd` pour indiquer que le SetUID est actif ?",
+      "choix": [
+        "-rwxr-xr-x (pas de droit spécial)",
+        "-rwSr-xr-x (SetUID sans `x`)",
+        "-rwsr-xr-x (SetUID avec `x`)",
+        "-rwxr-sr-x (SetGID actif)"
+      ],
+      "reponse": 2,
+      "explication": "Le SetUID actif avec le droit `x` présent s'affiche avec un `s` minuscule à la position du `x` utilisateur : `-rwsr-xr-x`. Grâce à ce SetUID, `passwd` s'exécute avec les droits de root (propriétaire du fichier) pour écrire dans `/etc/shadow`, même quand lancé par un utilisateur standard. `S` majuscule indiquerait SetUID sans `x`."
+    },
+    {
+      "id": "q1669",
+      "module": "admin-linux-m11",
+      "difficulte": "moyen",
+      "question": "Comment rendre un umask permanent pour un utilisateur ?",
+      "choix": [
+        "Exécuter `umask 027` dans le terminal à chaque connexion",
+        "Ajouter `umask 027` dans le fichier `/etc/fstab`",
+        "Ajouter `umask 027` dans le fichier `~/.bashrc` de l'utilisateur",
+        "Modifier `/etc/default/umask` avec la valeur souhaitée"
+      ],
+      "reponse": 2,
+      "explication": "`umask` exécuté en ligne de commande est temporaire (valable uniquement pour la session courante). Pour le rendre permanent, il faut l'ajouter dans `~/.bashrc`, qui est sourcé à chaque ouverture de session bash interactive. Pour tous les utilisateurs, `/etc/profile` ou `/etc/bash.bashrc` peuvent être utilisés."
+    },
+    {
+      "id": "q1670",
+      "module": "admin-linux-m11",
+      "difficulte": "moyen",
+      "question": "Quelle commande change à la fois le propriétaire en `alice` et le groupe en `web` pour le fichier `index.html` ?",
+      "choix": [
+        "chown alice /web/index.html && chgrp web /web/index.html",
+        "chown alice web /web/index.html",
+        "chown alice:web /web/index.html",
+        "chmod alice:web /web/index.html"
+      ],
+      "reponse": 2,
+      "explication": "`chown user:groupe fichier` change simultanément le propriétaire et le groupe en une seule commande. La syntaxe `user:groupe` (avec deux-points) est la forme standard. `chown :web` sans utilisateur change uniquement le groupe. `chgrp` ne modifie que le groupe."
+    },
+    {
+      "id": "q1671",
+      "module": "admin-linux-m11",
+      "difficulte": "difficile",
+      "question": "Un dossier `/data/commun` a les droits `rwxrwx---` et appartient au groupe `informatique`. Un utilisateur membre du groupe crée un fichier dont le groupe propriétaire est `jdoe` (son groupe principal). Les autres membres du groupe ne peuvent pas modifier ce fichier. Quelle solution résout ce problème structurellement ?",
+      "choix": [
+        "Appliquer `chmod 777` sur le dossier pour que tout le monde puisse modifier tous les fichiers",
+        "Activer le SetGID sur le dossier avec `chmod g+s /data/commun` pour que les nouveaux fichiers héritent automatiquement du groupe `informatique`",
+        "Demander à chaque utilisateur de faire `chgrp informatique` sur chaque fichier qu'il crée",
+        "Modifier le groupe principal de tous les utilisateurs pour qu'il soit `informatique`"
+      ],
+      "reponse": 1,
+      "explication": "Le SetGID sur un dossier résout ce problème structurellement : tous les fichiers créés dans `/data/commun` héritent automatiquement du groupe `informatique`, indépendamment du groupe principal de l'utilisateur créateur. C'est la solution professionnelle pour les dossiers partagés. Les autres options sont soit dangereuses (777), soit contraignantes manuellement."
+    },
+    {
+      "id": "q1672",
+      "module": "admin-linux-m11",
+      "difficulte": "difficile",
+      "question": "Un administrateur exécute `chmod -R -x /var/www` pour retirer le droit d'exécution des fichiers PHP. Il constate que le serveur web ne peut plus accéder aux dossiers. Quelle erreur a-t-il commise et comment la corriger ?",
+      "choix": [
+        "`chmod -R -x` ne fonctionne pas récursivement ; recommencer avec `find`",
+        "`-x` récursif a supprimé le bit d'exécution sur tous les fichiers ET répertoires, rendant les répertoires intraversables (`cd` impossible). Corriger avec `chmod -R +X /var/www` (majuscule) qui restaure `x` uniquement sur les répertoires",
+        "Le serveur Apache nécessite les droits `777` pour fonctionner ; appliquer `chmod -R 777 /var/www`",
+        "Il faut redémarrer Apache pour que les changements de permissions prennent effet"
+      ],
+      "reponse": 1,
+      "explication": "`chmod -R -x` retire `x` indistinctement sur tous les fichiers et répertoires. Sans `x` sur les répertoires, il est impossible de les traverser (`cd`) ou d'accéder aux fichiers qu'ils contiennent. `chmod -R +X` (majuscule) est la commande corrective : elle restaure `x` uniquement sur les répertoires, laissant les fichiers PHP non exécutables comme voulu."
+    },
+    {
+      "id": "q1673",
+      "module": "admin-linux-m11",
+      "difficulte": "difficile",
+      "question": "La commande `ls -ld /tmp` retourne `drwxrwxrwt`. Décomposer chaque élément et expliquer le rôle du `t` en fin de chaîne.",
+      "choix": [
+        "`d`=répertoire, `rwx`=tous les droits pour tous, `t`=fichiers stockés en mémoire temporaire",
+        "`d`=répertoire, propriétaire `rwx`=7, groupe `rwx`=7, autres `rwx`=7 mais le `t` remplace le `x` des autres pour indiquer le Sticky Bit : seul le propriétaire d'un fichier ou root peut le supprimer",
+        "`d`=répertoire, `rwxrwxrwt`=droits 777 avec chiffrement activé",
+        "`t` indique que le répertoire est temporaire et sera vidé au redémarrage"
+      ],
+      "reponse": 1,
+      "explication": "`drwxrwxrwt` se décompose ainsi : `d` = répertoire, `rwx` (propriétaire) = 7, `rwx` (groupe) = 7, `rwt` (autres) = le `t` minuscule remplace le `x` pour indiquer le Sticky Bit actif avec `x` présent. La valeur octale est `1777`. Le Sticky Bit de `/tmp` protège les fichiers de chaque utilisateur de la suppression par les autres, tout en permettant à tous d'écrire dans le répertoire."
+    },
+    {
+      "id": "q1674",
+      "module": "admin-linux-m11",
+      "difficulte": "difficile",
+      "question": "Avec `umask 077`, quels droits auront les nouveaux fichiers et répertoires créés ? Quel cas d'usage justifie un umask aussi restrictif ?",
+      "choix": [
+        "Fichiers : 644 / Répertoires : 755 — usage standard en entreprise",
+        "Fichiers : 600 (`rw-------`) / Répertoires : 700 (`rwx------`) — uniquement le propriétaire peut lire et écrire ; recommandé pour les comptes root ou les répertoires contenant des clés privées et données sensibles",
+        "Fichiers : 666 / Répertoires : 777 — umask 077 n'applique aucune restriction",
+        "Fichiers : 022 / Répertoires : 022 — l'umask s'applique directement comme droits"
+      ],
+      "reponse": 1,
+      "explication": "Calcul : fichiers = 666 - 077 = 600 (`rw-------`), répertoires = 777 - 077 = 700 (`rwx------`). Avec `umask 077`, seul le propriétaire a accès — ni le groupe ni les autres ne peuvent lire ou écrire. C'est le umask recommandé pour les comptes root, les répertoires contenant des clés SSH privées (`~/.ssh`), des certificats ou des données de configuration sensibles."
+    },
+    {
+      "id": "q1675",
+      "module": "admin-linux-m11",
+      "difficulte": "difficile",
+      "question": "`ls -l /usr/bin/su` retourne `-rwsr-xr-x root root`. Expliquer pourquoi le SetUID est indispensable sur cette commande.",
+      "choix": [
+        "Sans SetUID, la commande `su` ne pourrait être exécutée que par root",
+        "Le SetUID permet à `su` de s'exécuter avec les droits de root (propriétaire du fichier) quel que soit l'utilisateur qui le lance, ce qui est nécessaire pour accéder à `/etc/shadow` et vérifier le mot de passe root lors d'un changement d'identité",
+        "SetUID sur `su` permet aux utilisateurs standards d'exécuter n'importe quelle commande root",
+        "Sans SetUID, `su` ne pourrait pas créer de nouveaux processus avec un UID différent"
+      ],
+      "reponse": 1,
+      "explication": "`su` doit vérifier le mot de passe root en lisant `/etc/shadow`, fichier accessible uniquement par root. Sans SetUID, un utilisateur standard ne pourrait pas lire ce fichier lors de l'exécution de `su`. Grâce au SetUID, `su` s'exécute temporairement avec les droits de root (son propriétaire) pour effectuer cette vérification, puis bascule vers l'identité demandée si le mot de passe est correct."
+    },
+    {
+      "id": "q1676",
+      "module": "admin-linux-m11",
+      "difficulte": "difficile",
+      "question": "Un fichier a les droits `---rwxrwx` (027 en octal). L'utilisateur propriétaire tente de lire le fichier et obtient \"Permission denied\". Pourquoi, et quel principe cela illustre-t-il ?",
+      "choix": [
+        "Les droits sont évalués de gauche à droite et s'accumulent ; l'utilisateur bénéficie des droits du groupe et des autres",
+        "Linux évalue les droits de manière exclusive : si l'utilisateur est le propriétaire, seuls les droits de la première triade (ici `---`) s'appliquent, même si le groupe ou les autres ont plus de droits. L'appartenance au groupe ne compense pas",
+        "Les fichiers avec des droits `027` sont automatiquement chiffrés et nécessitent une clé",
+        "L'utilisateur propriétaire doit utiliser `sudo cat fichier` pour contourner ses propres restrictions"
+      ],
+      "reponse": 1,
+      "explication": "Les permissions Linux sont évaluées de manière exclusive et hiérarchique : si l'utilisateur est le propriétaire du fichier, seuls les droits de la triade U (utilisateur) s'appliquent, même si les droits G et O sont plus permissifs. Linux ne \"cumule\" pas les droits des différentes triades. C'est un principe fondamental souvent mal compris."
+    },
+    {
+      "id": "q1677",
+      "module": "admin-linux-m11",
+      "difficulte": "difficile",
+      "question": "Un dossier partagé doit permettre à tous les membres du groupe `rh` de créer des fichiers, mais empêcher les membres de supprimer les fichiers des autres. Quelle combinaison de droits est nécessaire ?",
+      "choix": [
+        "`chmod 770 /partage/rh` suffit",
+        "`chmod g+w /partage/rh` + `chmod g+s /partage/rh`",
+        "`chmod 770 /partage/rh` + `chmod o+t /partage/rh`, soit `chmod 1770 /partage/rh`",
+        "`chmod 777 /partage/rh` + `chmod g+s /partage/rh`"
+      ],
+      "reponse": 2,
+      "explication": "Pour que le groupe `rh` puisse créer des fichiers (`rwx` pour le groupe = 770) mais que les membres ne puissent pas supprimer les fichiers des autres, le Sticky Bit est indispensable. La combinaison est `chmod 1770` ou `chmod 770 /partage/rh && chmod o+t /partage/rh`. En notation octale, le Sticky Bit ajoute 1000, donnant `1770`. SetGID (`g+s`) serait utile en plus si l'héritage du groupe est également voulu."
+    },
+    {
+      "id": "q1678",
+      "module": "admin-linux-m11",
+      "difficulte": "difficile",
+      "question": "Un administrateur applique `chmod 4644 /usr/local/bin/monoutil`. Quels sont les droits résultants et quel problème fonctionnel peut survenir ?",
+      "choix": [
+        "`rwsr--r--` — SetUID actif avec `x` présent pour le propriétaire uniquement ; le binaire s'exécutera avec les droits du propriétaire pour tous les utilisateurs ayant le droit `r`",
+        "`rwSr--r--` — SetUID actif mais `x` absent pour le propriétaire (S majuscule) ; le binaire ne peut pas être exécuté même par le propriétaire, rendant le SetUID inutile et potentiellement dangereux",
+        "`rwxr--r--` — le chiffre 4 est ignoré si le fichier n'est pas dans `/usr/bin`",
+        "`rw-r--r--` avec SetUID — le chiffre 4 active SetUID mais supprime le `x` du propriétaire"
+      ],
+      "reponse": 1,
+      "explication": "`chmod 4644` donne : SetUID (4) + propriétaire `rw-` (6) + groupe `r--` (4) + autres `r--` (4). Le propriétaire a `rw-` sans `x`, donc le SetUID s'affiche `S` (majuscule = SetUID sans `x`). Le fichier ne peut pas être exécuté. Pour un SetUID fonctionnel, il faut impérativement que `x` soit présent pour au moins le propriétaire : `chmod 4755` ou `chmod 4744`."
+    },
+    {
+      "id": "q1679",
+      "module": "admin-linux-m11",
+      "difficulte": "difficile",
+      "question": "Un utilisateur `bob` appartient au groupe `dev` (groupe principal) et au groupe `ops` (groupe secondaire). Il se trouve dans `/projet` qui appartient au groupe `ops` avec les droits `rwxrwx---` et SetGID actif. Bob crée le fichier `deploy.sh`. Quel sera le groupe propriétaire de ce fichier ?",
+      "choix": [
+        "`dev` car c'est le groupe principal de Bob",
+        "`ops` car le SetGID sur le répertoire force l'héritage du groupe du répertoire parent",
+        "`bob` car Linux crée toujours un groupe du même nom que l'utilisateur",
+        "Le groupe dépend du dernier `newgrp` exécuté par Bob"
+      ],
+      "reponse": 1,
+      "explication": "Le SetGID sur un répertoire fait hériter du groupe du répertoire parent tous les fichiers créés dans ce répertoire, indépendamment du groupe principal de l'utilisateur créateur. Bob crée `deploy.sh` dans `/projet` (groupe `ops`, SetGID actif) → le fichier appartient au groupe `ops`, pas à `dev` (groupe principal de Bob). C'est précisément l'utilité du SetGID pour les dossiers partagés."
+    },
+    {
+      "id": "q1680",
+      "module": "admin-linux-m11",
+      "difficulte": "difficile",
+      "question": "Un administrateur veut appliquer récursivement les droits `750` sur un répertoire `/var/app` et tout son contenu, mais veut que les fichiers Python `.py` (non exécutables) conservent les droits `640` sans `x`. Quelle approche combine `chmod` et `find` correctement ?",
+      "choix": [
+        "`chmod -R 750 /var/app` puis `chmod -R 640 /var/app/*.py`",
+        "`chmod -R 750 /var/app` pour tout le contenu, puis `find /var/app -type f -name \"*.py\" -exec chmod 640 {} \\;` pour retirer `x` des fichiers Python uniquement",
+        "`chmod -R +X /var/app` suffit à différencier répertoires et fichiers",
+        "`chmod -R 750 /var/app` puis `chmod 640 /var/app` pour retirer `x` du répertoire racine"
+      ],
+      "reponse": 1,
+      "explication": "La démarche correcte en deux étapes : d'abord `chmod -R 750` applique `rwxr-x---` sur tous les éléments (fichiers et répertoires), puis `find /var/app -type f -name \"*.py\" -exec chmod 640 {} \\;` cible précisément les fichiers Python pour leur retirer `x` (640 = `rw-r-----`). Les répertoires et les autres fichiers exécutables conservent leurs `x`. `find -type f` est indispensable pour ne pas toucher aux répertoires."
+    },
+    {
+      "id": "q1681",
+      "module": "admin-linux-m12",
+      "difficulte": "moyen",
+      "question": "Quel est le comportement par défaut de journald concernant la persistance des logs après redémarrage ?",
+      "choix": [
+        "journald stocke les logs dans `/var/log/journal` de façon permanente par défaut",
+        "journald est volatile par défaut — les logs sont stockés en RAM dans `/run/log/journal` et perdus au redémarrage",
+        "journald synchronise automatiquement ses logs avec rsyslog pour assurer la persistance",
+        "journald conserve les logs 7 jours par défaut avant de les supprimer"
+      ],
+      "reponse": 1,
+      "explication": "Par défaut, journald stocke ses journaux dans `/run/log/journal` qui est un système de fichiers temporaire en RAM. Ces logs sont donc perdus à chaque redémarrage. Pour activer la persistance, il faut créer le répertoire `/var/log/journal`, ce qui amène journald à y stocker ses logs de façon permanente."
+    },
+    {
+      "id": "q1682",
+      "module": "admin-linux-m12",
+      "difficulte": "moyen",
+      "question": "Quelle commande permet de suivre en temps réel les logs du service SSH avec journalctl ?",
+      "choix": [
+        "journalctl --follow ssh",
+        "journalctl -u ssh -f",
+        "journalctl -s ssh --live",
+        "journalctl /ssh -r"
+      ],
+      "reponse": 1,
+      "explication": "`journalctl -u ssh -f` combine `-u ssh` (filtrer par unité/service) et `-f` (follow, mode temps réel équivalent à `tail -f`). Sous Debian, le service s'appelle `ssh` et non `sshd` — utiliser `sshd` ne retournerait aucun résultat."
+    },
+    {
+      "id": "q1683",
+      "module": "admin-linux-m12",
+      "difficulte": "moyen",
+      "question": "Dans la syntaxe cron, quel est l'ordre correct des 5 champs ?",
+      "choix": [
+        "Heure / Minute / Jour du mois / Mois / Jour de la semaine",
+        "Minute / Heure / Jour du mois / Mois / Jour de la semaine",
+        "Minute / Heure / Mois / Jour du mois / Jour de la semaine",
+        "Jour de la semaine / Mois / Jour du mois / Heure / Minute"
+      ],
+      "reponse": 1,
+      "explication": "L'ordre des 5 champs cron est : Minute (0-59) / Heure (0-23) / Jour du mois (1-31) / Mois (1-12) / Jour de la semaine (0-7, où 0 et 7 = dimanche). Cet ordre est strict et doit être mémorisé. Le moyen mnémotechnique est \"M H D M W\" (Minute Hour Day Month Weekday)."
+    },
+    {
+      "id": "q1684",
+      "module": "admin-linux-m12",
+      "difficulte": "moyen",
+      "question": "Quelle est la différence principale entre `cron` et `anacron` ?",
+      "choix": [
+        "`cron` s'exécute en root, `anacron` peut s'exécuter en utilisateur standard",
+        "`cron` planifie à la minute près, `anacron` rattrape les tâches manquées si la machine était éteinte lors de l'exécution prévue",
+        "`anacron` remplace complètement `cron` depuis Debian 10",
+        "`cron` gère les tâches système, `anacron` gère uniquement les tâches utilisateurs"
+      ],
+      "reponse": 1,
+      "explication": "`cron` ne récupère pas les tâches manquées : si la machine est éteinte à l'heure prévue, la tâche est simplement ignorée. `anacron` est conçu pour les systèmes non permanents : il enregistre la dernière exécution et rattrape les tâches manquées au prochain démarrage. Sa granularité minimale est le jour."
+    },
+    {
+      "id": "q1685",
+      "module": "admin-linux-m12",
+      "difficulte": "moyen",
+      "question": "Quelle entrée cron déclenche un script tous les vendredis à 16h55 ?",
+      "choix": [
+        "55 16 * * 5 /script.sh",
+        "16 55 * * 5 /script.sh",
+        "55 16 5 * * /script.sh",
+        "* * * * 5 /script.sh"
+      ],
+      "reponse": 0,
+      "explication": "`55 16 * * 5` se lit : minute 55, heure 16, tous les jours du mois (`*`), tous les mois (`*`), vendredi (5). Les deux premiers champs sont minute puis heure — l'inverser (B) donnerait 55h16, valeur invalide. Le champ 5 positionné en 3ème position (C) signifierait le 5ème jour du mois."
+    },
+    {
+      "id": "q1686",
+      "module": "admin-linux-m12",
+      "difficulte": "moyen",
+      "question": "Quelle commande liste les tâches cron de l'utilisateur courant ?",
+      "choix": [
+        "crontab -e",
+        "crontab -r",
+        "cat /etc/crontab",
+        "crontab -l"
+      ],
+      "reponse": 3,
+      "explication": "`crontab -l` (list) affiche les tâches cron de l'utilisateur courant. `crontab -e` ouvre l'éditeur pour modifier la crontab, `-r` supprime toute la crontab sans confirmation (dangereux), et `/etc/crontab` est la crontab système, pas celle de l'utilisateur courant."
+    },
+    {
+      "id": "q1687",
+      "module": "admin-linux-m12",
+      "difficulte": "moyen",
+      "question": "Dans la hiérarchie des niveaux de priorité rsyslog, lequel est le plus grave ?",
+      "choix": [
+        "crit",
+        "alert",
+        "emerg",
+        "err"
+      ],
+      "reponse": 2,
+      "explication": "L'ordre des niveaux rsyslog du plus au moins grave est : `emerg` → `alert` → `crit` → `err` → `warning` → `notice` → `info` → `debug`. `emerg` signifie \"système inutilisable\" et est le niveau le plus critique. `debug` est le moins grave, utilisé uniquement pour le débogage."
+    },
+    {
+      "id": "q1688",
+      "module": "admin-linux-m12",
+      "difficulte": "moyen",
+      "question": "Quelle commande affiche l'utilisation de la mémoire RAM et du swap en format lisible ?",
+      "choix": [
+        "top -m",
+        "df -h",
+        "free -h",
+        "lscpu"
+      ],
+      "reponse": 2,
+      "explication": "`free -h` affiche l'utilisation de la RAM (total, utilisée, libre, partagée, cache) et du swap en format human-readable. `df -h` concerne l'espace disque des systèmes de fichiers, `lscpu` les informations processeur, et `top` est une supervision temps réel multi-ressources."
+    },
+    {
+      "id": "q1689",
+      "module": "admin-linux-m12",
+      "difficulte": "moyen",
+      "question": "Quel fichier de configuration principale gère les règles de journalisation rsyslog ?",
+      "choix": [
+        "/etc/systemd/journald.conf",
+        "/var/log/syslog",
+        "/etc/rsyslog.conf",
+        "/etc/logrotate.conf"
+      ],
+      "reponse": 2,
+      "explication": "`/etc/rsyslog.conf` est le fichier de configuration principal de rsyslog, définissant les règles `facility.niveau → fichier_destination`. `/etc/systemd/journald.conf` configure journald, `/var/log/syslog` est le fichier de log rsyslog, et `/etc/logrotate.conf` gère la rotation des logs."
+    },
+    {
+      "id": "q1690",
+      "module": "admin-linux-m12",
+      "difficulte": "moyen",
+      "question": "Quelle commande envoie un message test dans syslog avec la facility `mail` et le niveau `warning` ?",
+      "choix": [
+        "logger mail.warning \"test\"",
+        "rsyslog -p mail.warn \"test\"",
+        "logger -p mail.warn \"test mail\"",
+        "syslog -f mail -l warn \"test\""
+      ],
+      "reponse": 2,
+      "explication": "`logger` est la commande dédiée à l'envoi de messages dans syslog depuis le terminal. L'option `-p` spécifie `facility.niveau` (ici `mail.warn`). C'est un outil indispensable pour tester la configuration rsyslog avant déploiement en production."
+    },
+    {
+      "id": "q1691",
+      "module": "admin-linux-m12",
+      "difficulte": "difficile",
+      "question": "Un administrateur constate que `journalctl -p err` affiche aussi des messages de niveau `crit` et `emerg`. Se plaint-il à juste titre d'un dysfonctionnement ?",
+      "choix": [
+        "Oui, `-p err` devrait afficher uniquement les messages de niveau `err` exactement",
+        "Non, le comportement est correct : `-p err` affiche les messages de niveau `err` ET tous les niveaux plus graves (`emerg`, `alert`, `crit`), conformément au fonctionnement des filtres de priorité rsyslog et journald",
+        "Oui, il faut utiliser `-p err..err` pour limiter strictement au niveau `err`",
+        "Non, mais c'est un bug connu de journald — utiliser `journalctl --level=err` à la place"
+      ],
+      "reponse": 1,
+      "explication": "Le filtrage par priorité dans journald (comme dans rsyslog) fonctionne par seuil minimal de gravité : `-p err` affiche les messages de niveau `err` et tous les niveaux plus graves (emerg, alert, crit). C'est le comportement attendu et documenté. Pour filtrer un niveau unique exact, il faudrait combiner avec `grep`."
+    },
+    {
+      "id": "q1692",
+      "module": "admin-linux-m12",
+      "difficulte": "difficile",
+      "question": "Un administrateur ajoute la tâche cron `*/15 9-17 * * 1-5 /opt/check.sh`. À quelle fréquence et dans quel contexte ce script s'exécute-t-il ?",
+      "choix": [
+        "Toutes les 15 minutes, du lundi au vendredi, entre 9h et 17h",
+        "Toutes les 15 heures, 5 jours par semaine, à partir de 9h",
+        "À 9h, 12h et 17h les jours ouvrés (lundi au vendredi)",
+        "Toutes les 15 minutes, tous les jours, entre 9h et 17h"
+      ],
+      "reponse": 0,
+      "explication": "Décomposition : `*/15` = toutes les 15 minutes, `9-17` = de 9h à 17h, `*` = tous les jours du mois, `*` = tous les mois, `1-5` = du lundi (1) au vendredi (5). C'est une configuration typique de surveillance pendant les heures de bureau en semaine. `*/15` avec le tiret `-` pour les intervalles est un usage combiné fréquemment testé."
+    },
+    {
+      "id": "q1693",
+      "module": "admin-linux-m12",
+      "difficulte": "difficile",
+      "question": "Un script planifié dans la crontab d'un utilisateur fonctionne parfaitement en ligne de commande mais ne s'exécute jamais via cron. Quelle est la cause la plus probable et la solution ?",
+      "choix": [
+        "Le service cron n'est pas actif ; démarrer avec `systemctl start cron`",
+        "Les variables d'environnement (notamment `PATH`) sont absentes dans l'environnement cron qui est minimal ; la solution est d'utiliser des chemins absolus dans le script et de définir `PATH` en début de crontab",
+        "La crontab doit être rechargée avec `systemctl reload cron` après chaque modification",
+        "Cron ne peut pas exécuter des scripts appartenant à un utilisateur standard ; copier le script dans `/etc/cron.d/`"
+      ],
+      "reponse": 1,
+      "explication": "L'environnement d'exécution cron est très minimal : le `PATH` ne contient pas `/usr/local/bin`, `/usr/sbin`, etc. Un script appelant des commandes par leur nom court (sans chemin absolu) échouera silencieusement. La bonne pratique est d'utiliser des chemins absolus (`/usr/bin/python3`, `/opt/scripts/monscript.sh`) et de déclarer `PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin` en début de crontab."
+    },
+    {
+      "id": "q1694",
+      "module": "admin-linux-m12",
+      "difficulte": "difficile",
+      "question": "Comment configurer journald pour qu'il conserve ses logs après redémarrage tout en limitant l'espace total à 500 Mo avec des fichiers de maximum 50 Mo ?",
+      "choix": [
+        "Modifier `/etc/rsyslog.conf` pour rediriger les logs journald vers `/var/log/`",
+        "Créer `/var/log/journal` pour activer la persistance, puis décommenter et définir `SystemMaxUse=500M` et `SystemMaxFileSize=50M` dans `/etc/systemd/journald.conf`, puis `systemctl restart systemd-journald`",
+        "Ajouter `--max-size=500M` à la ligne `ExecStart` dans l'unité systemd de journald",
+        "Configurer logrotate pour gérer les fichiers de journal journald dans `/var/log/journal/`"
+      ],
+      "reponse": 1,
+      "explication": "La procédure complète est : 1) `mkdir /var/log/journal` active la persistance, 2) les paramètres `SystemMaxUse=500M` et `SystemMaxFileSize=50M` dans `/etc/systemd/journald.conf` limitent l'espace total et la taille par fichier, 3) `systemctl restart systemd-journald` applique la configuration. Sans la création du répertoire, les paramètres de taille n'ont aucun effet."
+    },
+    {
+      "id": "q1695",
+      "module": "admin-linux-m12",
+      "difficulte": "difficile",
+      "question": "Dans `/etc/rsyslog.conf`, la règle `*.*;auth,authpriv.none -/var/log/syslog` contient deux éléments particuliers. Que signifient `auth,authpriv.none` et le `-` devant le chemin du fichier ?",
+      "choix": [
+        "`auth,authpriv.none` exclut les logs d'authentification du fichier syslog ; le `-` indique que le fichier est en lecture seule",
+        "`auth,authpriv.none` exclut explicitement les facilities `auth` et `authpriv` (pour éviter les doublons avec `/var/log/auth.log`) ; le `-` devant le chemin indique une écriture asynchrone sur disque, améliorant les performances",
+        "`auth,authpriv.none` désactive rsyslog pour ces facilities ; le `-` est un commentaire",
+        "`auth,authpriv.none` signifie que ces facilities sont traitées sans niveau de priorité ; le `-` indique une rotation automatique"
+      ],
+      "reponse": 1,
+      "explication": "Dans rsyslog, `none` après un point signifie \"exclure cette facility\". `*.*;auth,authpriv.none` envoie tous les logs (`*.*`) sauf ceux des facilities `auth` et `authpriv` (déjà gérés dans `/var/log/auth.log`, évitant les doublons). Le `-` devant le chemin active l'écriture asynchrone (buffering), ce qui améliore les performances en évitant une synchronisation disque à chaque message."
+    },
+    {
+      "id": "q1696",
+      "module": "admin-linux-m12",
+      "difficulte": "difficile",
+      "question": "Un administrateur exécute accidentellement `crontab -r` au lieu de `crontab -e`. Toutes ses tâches planifiées sont supprimées. Quelle bonne pratique aurait évité ce problème et que faire immédiatement ?",
+      "choix": [
+        "`crontab -r` demande toujours confirmation ; l'administrateur a validé par erreur — aucune prévention possible",
+        "La bonne pratique est de sauvegarder régulièrement avec `crontab -l > ~/crontab.bak` ; immédiatement, si une sauvegarde existe, restaurer avec `crontab ~/crontab.bak` ; sinon reconstituer depuis `/var/log/syslog` ou les logs cron qui tracent les exécutions passées",
+        "Utiliser `crontab -u root -e` à la place de `crontab -e` protège contre la suppression accidentelle",
+        "Activer le mode interactif de cron avec `cron --safe` pour que `-r` demande confirmation"
+      ],
+      "reponse": 1,
+      "explication": "`crontab -r` supprime immédiatement et sans confirmation toute la crontab. La prévention est la sauvegarde régulière avec `crontab -l > ~/crontab.bak`. En cas de perte, la restauration se fait avec `crontab ~/crontab.bak`. Les logs cron dans `/var/log/syslog` ou `/var/log/cron.log` peuvent aider à retrouver les commandes et horaires des anciennes tâches."
+    },
+    {
+      "id": "q1697",
+      "module": "admin-linux-m12",
+      "difficulte": "difficile",
+      "question": "Quelle est la bonne pratique pour ajouter une tâche système hebdomadaire plutôt que d'éditer directement la crontab root, et pourquoi ?",
+      "choix": [
+        "Éditer `/etc/crontab` directement car c'est le fichier officiel des tâches système",
+        "Créer un lien symbolique vers le script dans `/etc/cron.weekly/` ; cela délègue la gestion à anacron qui récupère les tâches manquées, facilite la maintenance (un fichier = une tâche) et évite les erreurs de syntaxe dans la crontab root",
+        "Placer le script dans `/var/spool/cron/crontabs/root` qui est le fichier crontab de root",
+        "Utiliser `crontab -e` en tant que root et ajouter `@weekly /opt/scripts/majsys.sh`"
+      ],
+      "reponse": 1,
+      "explication": "Déposer un script (ou un lien symbolique) dans `/etc/cron.weekly/` présente plusieurs avantages : les tâches sont gérées par anacron qui rattrape les exécutions manquées, chaque tâche est dans son propre fichier facilitant la maintenance, et on évite d'éditer la crontab root (risque d'erreurs de syntaxe bloquant toutes les tâches). La commande est `ln -s /opt/scripts/majsys.sh /etc/cron.weekly/majsys`."
+    },
+    {
+      "id": "q1698",
+      "module": "admin-linux-m12",
+      "difficulte": "difficile",
+      "question": "Un serveur de production voit sa partition `/` saturée progressivement. L'analyse montre que `/var/log/journal` grossit sans limite. Quelle configuration dans journald permettrait de corriger ce problème durablement ?",
+      "choix": [
+        "Supprimer le répertoire `/var/log/journal` pour repasser en mode volatile",
+        "Configurer `SystemMaxUse=500M` dans `/etc/systemd/journald.conf` pour limiter la taille totale des logs journald, et idéalement déplacer `/var/log/journal` sur un LV dédié séparé de la partition racine",
+        "Désactiver journald avec `systemctl disable systemd-journald` et utiliser uniquement rsyslog",
+        "Modifier les permissions de `/var/log/journal` en lecture seule pour bloquer l'écriture"
+      ],
+      "reponse": 1,
+      "explication": "`SystemMaxUse=500M` dans `journald.conf` limite l'espace total utilisé par journald et supprime automatiquement les logs les plus anciens quand la limite est atteinte. La bonne pratique complémentaire est de placer `/var/log/journal` sur un LV LVM dédié, isolant ainsi les logs de la partition racine et empêchant toute saturation accidentelle de `/`."
+    },
+    {
+      "id": "q1699",
+      "module": "admin-linux-m12",
+      "difficulte": "difficile",
+      "question": "Un administrateur configure logrotate pour `/var/log/apache2/access.log` avec les directives `weekly`, `compress`, `delaycompress`, `rotate 52`. Que signifie `delaycompress` et pourquoi est-il utilisé avec `compress` ?",
+      "choix": [
+        "`delaycompress` compresse les logs avec un délai de 24h pour réduire la charge CPU",
+        "`delaycompress` retarde la compression d'une rotation : le fichier le plus récent reste non compressé, permettant à Apache d'y écrire ou à des outils de monitoring de le lire facilement sans décompression ; la compression s'applique uniquement à partir de la 2ème rotation",
+        "`delaycompress` désactive la compression pour les fichiers de plus de 30 jours",
+        "`delaycompress` est obligatoire avec `compress` — sans lui la compression échouerait"
+      ],
+      "reponse": 1,
+      "explication": "`compress` active la compression gzip des logs rotés. `delaycompress` diffère la compression d'un cycle : le fichier de la rotation précédente reste non compressé (`.1` au lieu de `.1.gz`). Cela est utile quand un service (comme Apache) a encore le fichier de log précédent ouvert en écriture, ou quand des scripts de monitoring lisent les logs récents sans gestion de décompression."
+    },
+    {
+      "id": "q1700",
+      "module": "admin-linux-m12",
+      "difficulte": "difficile",
+      "question": "Un technicien constate que `/var/log/cron.log` n'existe pas sur son serveur Debian et que `journalctl -u cron -f` ne montre aucune exécution de ses tâches planifiées. Quelles sont les deux causes possibles et comment les diagnostiquer ?",
+      "choix": [
+        "Le service cron n'est pas installé ; l'installer avec `apt install cron` puis vérifier avec `systemctl status cron`",
+        "Première cause : dans `/etc/rsyslog.conf`, la ligne `cron.*` est commentée par défaut sur Debian (désactivant le fichier `/var/log/cron.log`) — décommenter pour activer ; deuxième cause : les tâches cron peuvent ne pas s'exécuter car la syntaxe de la crontab est incorrecte — vérifier avec `crontab -l` et tester manuellement le script",
+        "`journalctl` ne peut pas voir les logs cron car cron utilise rsyslog uniquement",
+        "Les logs cron nécessitent les droits root pour être visibles — utiliser `sudo journalctl -u cron`"
+      ],
+      "reponse": 1,
+      "explication": "Deux causes distinctes sont plausibles : 1) sous Debian, la ligne `#cron.* /var/log/cron.log` est commentée dans `/etc/rsyslog.conf` par défaut, ce qui désactive le fichier de log cron dédié ; la décommenter et redémarrer rsyslog l'active. 2) Si les tâches ne s'exécutent pas du tout, la syntaxe crontab peut être incorrecte, le script absent ou non exécutable, ou les variables d'environnement manquantes. `crontab -l`, `systemctl status cron` et les logs syslog généraux permettent le diagnostic."
     }
   ]
 };

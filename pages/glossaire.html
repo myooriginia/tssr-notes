@@ -438,6 +438,9 @@
       .gl-main { padding: 1rem; }
     }
   </style>
+  <script>
+    (function(){ var t = localStorage.getItem("tssr_theme") || "dark"; document.documentElement.setAttribute("data-theme", t); })();
+  </script>
 </head>
 <body>
   <header>
@@ -460,6 +463,7 @@
 
         <div class="navbar__actions">
           <div class="navbar__auth-slot"></div>
+          <button class="theme-toggle" title="Changer le thème" aria-label="Changer le thème">☀️</button>
           <button class="navbar__burger" aria-label="Menu" aria-expanded="false">
             <span></span><span></span><span></span>
           </button>

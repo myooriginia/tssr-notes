@@ -685,7 +685,32 @@ function initNavigation() {
    8. INITIALISATION
    ═══════════════════════════════════════════════════════════ */
 
+/* ── Thème clair/sombre ── */
+function initTheme() {
+  const saved = localStorage.getItem('tssr_theme') || 'dark';
+  document.documentElement.setAttribute('data-theme', saved);
+  document.querySelectorAll('.theme-toggle').forEach(btn => {
+    btn.textContent = saved === 'light' ? '🌙' : '☀️';
+    btn.title = saved === 'light' ? 'Passer en mode sombre' : 'Passer en mode clair';
+  });
+}
+
+function toggleTheme() {
+  const current = document.documentElement.getAttribute('data-theme') || 'dark';
+  const next = current === 'dark' ? 'light' : 'dark';
+  document.documentElement.setAttribute('data-theme', next);
+  localStorage.setItem('tssr_theme', next);
+  document.querySelectorAll('.theme-toggle').forEach(btn => {
+    btn.textContent = next === 'light' ? '🌙' : '☀️';
+    btn.title = next === 'light' ? 'Passer en mode sombre' : 'Passer en mode clair';
+  });
+}
+
 document.addEventListener('DOMContentLoaded', () => {
+  initTheme();
+  document.querySelectorAll('.theme-toggle').forEach(btn => {
+    btn.addEventListener('click', toggleTheme);
+  });
   initNavigation();
   initPageProgress();
 

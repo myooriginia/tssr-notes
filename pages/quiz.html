@@ -690,8 +690,30 @@
       .score-circle { width: 130px; height: 130px; }
       .score-circle__pct { font-size: 32px; }
       .module-stats-grid { grid-template-columns: repeat(2, 1fr); }
+
+      /* Bouton "Suivante" pleine largeur */
+      .quiz-nav { flex-direction: column; align-items: stretch; }
+      .btn-next { width: 100%; min-width: unset; margin-left: 0; text-align: center; justify-content: center; }
+
+      /* Boutons résultats en colonne */
+      .result-actions { flex-direction: column; }
+      .result-actions .btn { width: 100%; justify-content: center; }
+    }
+
+    @media (max-width: 480px) {
+      /* Stats en colonne unique */
+      .home-stats { grid-template-columns: 1fr; }
+      .result-stats { grid-template-columns: 1fr; }
+      .module-stats-grid { grid-template-columns: 1fr; }
+
+      /* Carte module : bouton passe sous le nom */
+      .mod-card { flex-wrap: wrap; gap: 6px; }
+      .mod-card__btn { flex: 1 1 100%; text-align: center; justify-content: center; }
     }
   </style>
+  <script>
+    (function(){ var t = localStorage.getItem("tssr_theme") || "dark"; document.documentElement.setAttribute("data-theme", t); })();
+  </script>
 </head>
 
 <body class="quiz-page">
@@ -719,6 +741,7 @@
         <div class="navbar__actions">
           <div class="navbar__auth-slot"></div>
 
+          <button class="theme-toggle" title="Changer le thème" aria-label="Changer le thème">☀️</button>
           <button class="navbar__burger" aria-label="Menu" aria-expanded="false">
             <span></span><span></span><span></span>
           </button>
@@ -1072,6 +1095,18 @@
     'sec-m06':                { label: 'VPN Télétravail & Site-à-Site', emoji: '🔒' },
     'sec-m07':                { label: 'Connecter les sites (IPSec)',   emoji: '🏢' },
     'sauv-m01':               { label: 'Sauvegarde & Disponibilité',   emoji: '💾' },
+    'admin-linux-m01':        { label: 'Historique & versions Debian', emoji: '🐧' },
+    'admin-linux-m02':        { label: 'Installation de Debian',       emoji: '💿' },
+    'admin-linux-m03':        { label: 'Démarrage, GRUB & Systemd',    emoji: '🚀' },
+    'admin-linux-m04':        { label: 'Mode maintenance & récupération', emoji: '🛠️' },
+    'admin-linux-m05':        { label: 'Configuration réseau',         emoji: '🌐' },
+    'admin-linux-m06':        { label: 'Gestion des paquets APT',      emoji: '📦' },
+    'admin-linux-m07':        { label: 'Partitionnement fdisk',        emoji: '💽' },
+    'admin-linux-m08':        { label: 'LVM',                          emoji: '🗄️' },
+    'admin-linux-m09':        { label: 'Systèmes de fichiers & fstab', emoji: '📁' },
+    'admin-linux-m10':        { label: 'Utilisateurs & groupes',       emoji: '👥' },
+    'admin-linux-m11':        { label: 'Droits & permissions',         emoji: '🔒' },
+    'admin-linux-m12':        { label: 'Logs & planification',         emoji: '📋' },
   };
 
   const MODE_LABELS = {

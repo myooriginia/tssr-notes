@@ -74,20 +74,20 @@
 
     .hero__title {
       font-size: clamp(2rem, 5vw, 3.25rem);
-      font-weight: var(--weight-bold);
-      color: #fff;
+      font-weight: 800;
+      color: #1e1e2e;
       line-height: 1.1;
       margin-bottom: 14px;
       letter-spacing: -0.02em;
     }
 
     .hero__title span {
-      color: #93C5FD;
+      color: #6d28d9;
     }
 
     .hero__subtitle {
       font-size: var(--text-lg);
-      color: rgba(255,255,255,.8);
+      color: #1e1e2e;
       margin-bottom: 36px;
       max-width: 560px;
       line-height: var(--leading-relaxed);
@@ -112,13 +112,13 @@
     .hero-progress__title {
       font-size: var(--text-sm);
       font-weight: var(--weight-semibold);
-      color: rgba(255,255,255,.9);
+      color: #1e1e2e;
     }
 
     .hero-progress__pct {
       font-size: var(--text-2xl);
       font-weight: var(--weight-bold);
-      color: #fff;
+      color: #1e1e2e;
       font-variant-numeric: tabular-nums;
     }
 
@@ -141,7 +141,7 @@
 
     .hero-progress__label {
       font-size: var(--text-xs);
-      color: rgba(255,255,255,.6);
+      color: #1e1e2e;
     }
 
     /* ── Section wrapper ── */
@@ -519,6 +519,9 @@
       #module-grid { grid-template-columns: 1fr; }
     }
   </style>
+  <script>
+    (function(){ var t = localStorage.getItem("tssr_theme") || "dark"; document.documentElement.setAttribute("data-theme", t); })();
+  </script>
 </head>
 
 <body class="page-wrapper">
@@ -586,6 +589,9 @@
                   title="Réinitialiser toutes les données (démo)">
             ↺ Démo
           </button>
+
+          <!-- Thème -->
+          <button class="theme-toggle" title="Changer le thème" aria-label="Changer le thème">☀️</button>
 
           <!-- Burger -->
           <button class="navbar__burger"

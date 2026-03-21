@@ -482,12 +482,16 @@
     }
 
     @media (max-width: 600px) {
+      .tb-main { padding: 1rem 0.75rem 3rem; }
       .tb-grid-3 { grid-template-columns: 1fr; }
       .tb-stat-row { flex-direction: column; }
       .heatmap-cell { width: 9px; height: 9px; }
-      .badges-grid { grid-template-columns: repeat(3, 1fr); }
+      .badges-grid { grid-template-columns: repeat(2, 1fr); }
     }
   </style>
+  <script>
+    (function(){ var t = localStorage.getItem("tssr_theme") || "dark"; document.documentElement.setAttribute("data-theme", t); })();
+  </script>
 </head>
 <body>
   <header>
@@ -510,6 +514,7 @@
 
         <div class="navbar__actions">
           <div class="navbar__auth-slot"></div>
+          <button class="theme-toggle" title="Changer le thème" aria-label="Changer le thème">☀️</button>
           <button class="navbar__burger" aria-label="Menu" aria-expanded="false">
             <span></span><span></span><span></span>
           </button>
